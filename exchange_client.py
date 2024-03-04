@@ -10,6 +10,7 @@ import logging as log
 # import binascii
 from random import randrange, randint
 import itertools
+from openai import OpenAI
 
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
 
@@ -55,12 +56,11 @@ class Client():
         response_msg = message_type.from_bytes(payload, header=False)
         return response_msg
 
-    async def recver(self, loop):
+    async def recver(self):
         if self.reader is None:
             reader, writer = await asyncio.streams.open_connection(
             options.host, 
-            options.port, 
-            loop=loop)
+            options.port)
             self.reader = reader
             self.writer = writer
         index = 0
@@ -84,12 +84,11 @@ class Client():
         self.writer.write(bytes(request))
         await self.writer.drain()
 
-    async def sender(self, loop):
+    async def sender(self):
         if self.reader is None:
             reader, writer = await asyncio.streams.open_connection(
             options.host, 
-            options.port, 
-            loop=loop)
+            options.port)
             self.reader = reader
             self.writer = writer
 
@@ -107,7 +106,9 @@ class Client():
                 intermarket_sweep_eligibility=b'N',
                 minimum_quantity=1,
                 cross_type=b'N',
-                customer_type=b' ')
+                customer_type=b' ',
+                midpoint_peg=b' ')
+                
             #print('send message: ', request)
             #log.info("Sending Ouch message: %s", request)
             await self.send(request)
@@ -150,11 +151,10 @@ class Client():
                 print('sent {} messages'.format(index))   
             await asyncio.sleep(options.delay) 
 
-    async def start(self, loop):
+    async def start(self):
         reader, writer = await asyncio.streams.open_connection(
             options.host, 
-            options.port, 
-            loop=loop)
+            options.port)
         self.reader = reader
         self.writer = writer
         await self.sender()
@@ -170,8 +170,8 @@ def main():
     client = Client()
     loop = asyncio.get_event_loop()
     # creates a client and connects to our server
-    asyncio.ensure_future(client.sender(loop), loop = loop)
-    asyncio.ensure_future(client.recver(loop), loop = loop)
+    asyncio.ensure_future(client.sender(), loop = loop)
+    asyncio.ensure_future(client.recver(), loop = loop)
 
     try:
         loop.run_forever()       
@@ -179,4 +179,16 @@ def main():
         loop.close()
 
 if __name__ == '__main__':
-    main()
+    client = OpenAI()
+    userinput = input("enter prompt for openai: ")
+    completion = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "Market Assistant"},
+            {"role": "user", "content": userinput}
+        ],
+    )
+
+    print(completion.choices[0].message)
+    
+    #main()

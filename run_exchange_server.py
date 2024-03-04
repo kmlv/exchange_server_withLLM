@@ -27,7 +27,7 @@ p.add('--delay', default = None, type=float, help="(IEX) 'speed bump' time that 
 options, args = p.parse_known_args()
 
 
-def main():
+async def main():
     log.basicConfig(level=log.DEBUG if options.debug else log.INFO,
         format = "[%(asctime)s.%(msecs)03d] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s",
         datefmt = '%H:%M:%S',
@@ -59,14 +59,17 @@ def main():
                             delay = options.delay)
     
     server.register_listener(exchange.process_message)
-    server.start(loop)
+    await server.start()
 
     try:
-        loop.run_forever()
+        await asyncio.get_running_loop().create_future()
     except KeyboardInterrupt:
-        loop.close()
-    finally:
-        loop.close()
+        pass
+        # loop.run_forever()
+    # except KeyboardInterrupt:
+    #     loop.close()
+    # finally:
+    #     loop.close()
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())

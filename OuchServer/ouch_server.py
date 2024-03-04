@@ -120,18 +120,17 @@ class ProtocolMessageServer(object):
         for callback in self.listeners.values():
             await callback(client_msg)
         
-    def start(self, loop):
+    async def start(self):
         """
         Starts the server, listening on the specified port.
         For each client that connects, the accept_client method gets
         called.  This method runs the loop until the server sockets
         are ready to accept connections.
         """
-        self.server = loop.run_until_complete(
-            asyncio.streams.start_server(self._accept_client,
+        self.server = await asyncio.streams.start_server(self._accept_client,
                                          options.host, 
-                                         options.port,
-                                         loop=loop))
+                                         options.port
+                                         )
 
     def stop(self, loop):
         """
