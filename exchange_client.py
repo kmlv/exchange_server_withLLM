@@ -92,13 +92,14 @@ class Client():
             self.reader = reader
             self.writer = writer
 
-        for index in itertools.count():
+        for index in itertools.count(): 
+            order_token = int(input("Enter the order token number: "))
             request = OuchClientMessages.EnterOrder(
-                order_token='{:014d}'.format(index).encode('ascii'),
-                buy_sell_indicator=b'B' if randint(0,1)==1 else b'S',
+                order_token=f'{order_token:014d}'.encode('ascii'),
+                buy_sell_indicator=b'B' if input("B or S: ") == 'B' else b'S',
                 shares=1,#randrange(1,10**6-1),
                 stock=b'AMAZGOOG',
-                price=rounduprounddown(randrange(1,100), 40, 60, 0, 2147483647 ),
+                price=int(input("Enter price: ")),#rounduprounddown(randrange(1,100), 40, 60, 0, 2147483647 ),
                 time_in_force=options.time_in_force,
                 firm=b'OUCH',
                 display=b'N',
@@ -179,16 +180,16 @@ def main():
         loop.close()
 
 if __name__ == '__main__':
-    client = OpenAI()
-    userinput = input("enter prompt for openai: ")
-    completion = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "Market Assistant"},
-            {"role": "user", "content": userinput}
-        ],
-    )
+    # client = OpenAI()
+    # userinput = input("enter prompt for openai: ")
+    # completion = client.chat.completions.create(
+    #     model="gpt-3.5-turbo",
+    #     messages=[
+    #         {"role": "system", "content": "Market Assistant"},
+    #         {"role": "user", "content": userinput}
+    #     ],
+    # )
 
-    print(completion.choices[0].message)
+    # print(completion.choices[0].message)
     
-    #main()
+    main()
