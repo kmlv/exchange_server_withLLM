@@ -184,10 +184,17 @@ class Exchange:
                 self.outgoing_broadcast_messages.append(bbo_message)
 
     def cancel_order_atomic(self, cancel_order_message, timestamp, reason=b'U'):
-
         #if cancel_order_message['order_token'] not in self.order_store.orders.get():
         if self.order_store.orders.get(cancel_order_message['order_token']) is None:
             log.debug(f"No such order to cancel, ignored. Token to cancel: {cancel_order_message['order_token']}")
+            print(f"No such order to cancel, ignored. Token to cancel: {cancel_order_message['order_token']}")
+            # self.outgoing_messages.extend([
+            #     OuchServerMessages.CancelReject(
+            #         timestamp=timestamp,
+            #         order_token=cancel_order_message['order_token'] 
+            #     )
+            # ])
+            # return
         else:
             store_entry = self.order_store.orders[cancel_order_message['order_token']]
             original_enter_message = store_entry.original_enter_message

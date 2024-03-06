@@ -1,6 +1,8 @@
 """
 Client class that communicates with a Continuous Double Auction exchange following the
 Ouch Message Protocol
+todo: Reconstruct on client side using built-in book class
+client attributes: balance, orders, etc.
 """ 
 import sys
 import asyncio
@@ -39,6 +41,7 @@ class Client():
         print(f"Invalid direction {user_input}")
         return False
 
+
     def _validate_user_input(self, prompt, expected_type, conditions=None):
         """Check that user input matches specified type
         
@@ -73,6 +76,18 @@ class Client():
             except ValueError:
                 print(f"Received {type(input)}, Expected {type(expected_type)}")
 
+    def _user_order_input(self):
+        """USED FOR CODE TESTING get needed input from terminal to make an order
+        
+        returns: Tuple(order token:int, order direction: str, shares: int,price: int)
+        """
+        return (
+            self._validate_user_input("Order Token: ", int()),
+            self._validate_user_input("Buy(B) or Sell(S): ", str(), self._order_direction_condition),
+            1,
+            self._validate_user_input("Enter a price: ", int()),
+        )
+
     async def recv(self):
         """Convert response from bytes into ouch response format
         
@@ -98,7 +113,7 @@ class Client():
         response_msg = message_type.from_bytes(payload, header=False)
         return response_msg
 
-    # NOTE: Unused and unsure if it is needed for anything - Kristian
+    # NOTE: Unused and unsure if it is needed for anything - Kristian M.
     async def recver(self):
         if self.reader is None:
             reader, writer = await asyncio.streams.open_connection(
@@ -129,14 +144,22 @@ class Client():
         self.writer.write(bytes(request))
         await self.writer.drain()
 
-    def _handle_order(self):
-        """Convert Limit Order into Ouch order"""
+    def _handle_order(self, new_order_token : int, direction : str,  shares: int , price : int):
+        """Convert Limit Order into Ouch order
+        args:
+            new_order_token: int that represents order id
+            direction: string that represents whether the order is buy or sell
+            shares: int that represents quantity of an order
+            price: int that represents price to buy the stock at
+        return:
+            Ouchmessage in the form of an order
+        """
         order_request = OuchClientMessages.EnterOrder(
-                order_token=f'{self._validate_user_input("Order Token: ", int()):014d}'.encode('ascii'),
-                buy_sell_indicator=b'B' if self._validate_user_input("Buy(B) or Sell(S): ", str(), self._order_direction_condition) == 'B' else b'S',
-                shares=1,
+                order_token=f'{new_order_token:014d}'.encode('ascii'),
+                buy_sell_indicator=b'B' if direction == 'B' else b'S',
+                shares=shares,
                 stock=b'AMAZGOOG',
-                price=self._validate_user_input("Enter a price: ", int()),
+                price=price,
                 time_in_force=options.time_in_force,
                 firm=b'OUCH',
                 display=b'N',
@@ -148,7 +171,13 @@ class Client():
                 midpoint_peg=b' ')
         return order_request
         
-
+    def _handle_cancel(self):
+        """Convert user input into cancel order """
+        cancel_request = OuchClientMessages.CancelOrder(
+            order_token=f'{self._validate_user_input("Order Token to Cancel: ", int()):014d}'.encode('ascii'), 
+            shares=1,
+        )
+        return cancel_request
     async def sender(self):
         """"""
         if self.reader is None:
@@ -158,13 +187,18 @@ class Client():
             self.reader = reader
             self.writer = writer
         while True:
+            response = None
             cmd = input("Make a command: ")
             if cmd == "order":
-                await self.send(self._handle_order())
+                await self.send(self._handle_order(*self._user_order_input()))
                 response = await self.recv()
-                print(f"Server response: {response}, {type(response)}")
+            elif cmd == "cancel":
+                await self.send(self._handle_cancel())
+                response = await self.recv()
             else:
                 print(f"Invalid command {cmd}")
+                continue
+            print(f"Server response: {response}, {type(response)}")
 def main():
     log.basicConfig(level=log.INFO if not options.debug else log.DEBUG)
     log.debug(options)
@@ -178,6 +212,7 @@ def main():
         loop.run_forever()       
     finally:
         loop.close()
+
 
 if __name__ == '__main__':   
     main()
