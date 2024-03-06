@@ -1,4 +1,6 @@
-"""(1)Implement logic such that clients can decide when to make an order or when to cancel
+"""
+Client class that communicates with a Continuous Double Auction exchange following the
+Ouch Message Protocol
 """ 
 import sys
 import asyncio
@@ -20,21 +22,63 @@ p.add('--debug', action='store_true')
 p.add('--time_in_force', default=99999, type=int)
 options, args = p.parse_known_args()
 
-def rounduprounddown(i, minlimit, maxlimit, roundeddown, roundedup):
-    if i<minlimit:
-        return roundeddown
-    elif i>maxlimit:
-        return roundedup
-    else: 
-        return i
-
 
 class Client():
     def __init__(self):
         self.reader = None
         self.writer = None
 
+    def _order_direction_condition(self, user_input):
+        """Order direction must be 'B' or 'S'
+        Arg: string containing user input that specifies order direction
+
+        Return: boolean that describes whether the user entered a valid direction
+        """
+        if user_input == "B" or user_input == "S":
+            return True
+        print(f"Invalid direction {user_input}")
+        return False
+
+    def _validate_user_input(self, prompt, expected_type, conditions=None):
+        """Check that user input matches specified type
+        
+        Args: 
+            prompt: A string displayed to the user
+            expected_type: A builtin or custom class type specifier
+            conditions: any additional conditions associated with the prompt and type
+        Returns: value of expected_type from user input
+
+        (Ex):  user_int = validate_user_input("Enter a price: ",int()) 
+            Asks for another input if the user enters anything other than an int
+        (Ex2): user_direction = validate_user_input("Enter a direction: ",str(), self._order_direction_condition)
+            Similar to previous example but with added conditions. In this case the user must enter 'B' or 'S'.
+        """
+        while True:
+            try:
+                valid_input = None
+                if isinstance(expected_type, int):
+                    valid_input = int(input(prompt))
+                if isinstance(expected_type, str):
+                    valid_input = input(prompt)
+                if isinstance(expected_type, float):
+                    valid_input = float(input(prompt))
+                # Conditions present
+                if conditions:
+                    res = conditions(valid_input)
+                    # Conditions not met user needs to enter valid input
+                    if not res:
+                        continue
+                # Valid input was entered
+                return valid_input
+            except ValueError:
+                print(f"Received {type(input)}, Expected {type(expected_type)}")
+
     async def recv(self):
+        """Convert response from bytes into ouch response format
+        
+        Returns: OuchServer.ouch_message object in the format of one of the many formats
+        (found in Lines past 134 in OuchServer\ouch_messages.py):
+        """
         try:
             header = (await self.reader.readexactly(1))
         except asyncio.IncompleteReadError:
@@ -54,6 +98,7 @@ class Client():
         response_msg = message_type.from_bytes(payload, header=False)
         return response_msg
 
+    # NOTE: Unused and unsure if it is needed for anything - Kristian
     async def recver(self):
         if self.reader is None:
             reader, writer = await asyncio.streams.open_connection(
@@ -78,17 +123,20 @@ class Client():
             print('recv message: ', response)
             #log.debug("Received response Ouch message: %s", response)
 
+
     async def send(self, request):
+        """Send Ouch message to server"""
         self.writer.write(bytes(request))
         await self.writer.drain()
 
     def _handle_order(self):
+        """Convert Limit Order into Ouch order"""
         order_request = OuchClientMessages.EnterOrder(
-                order_token=f'{int(input("Enter Order Token")):014d}'.encode('ascii'),
-                buy_sell_indicator=b'B' if input("Buy(B) or Sell(S): ") == 'B' else b'S',
-                shares=1,#randrange(1,10**6-1),
+                order_token=f'{self._validate_user_input("Order Token: ", int()):014d}'.encode('ascii'),
+                buy_sell_indicator=b'B' if self._validate_user_input("Buy(B) or Sell(S): ", str(), self._order_direction_condition) == 'B' else b'S',
+                shares=1,
                 stock=b'AMAZGOOG',
-                price=int(input("Enter price: ")),#rounduprounddown(randrange(1,100), 40, 60, 0, 2147483647 ),
+                price=self._validate_user_input("Enter a price: ", int()),
                 time_in_force=options.time_in_force,
                 firm=b'OUCH',
                 display=b'N',
@@ -102,6 +150,7 @@ class Client():
         
 
     async def sender(self):
+        """"""
         if self.reader is None:
             reader, writer = await asyncio.streams.open_connection(
             options.host, 
@@ -112,109 +161,23 @@ class Client():
             cmd = input("Make a command: ")
             if cmd == "order":
                 await self.send(self._handle_order())
-            # elif cmd == "cancel":
-            #     _handle_cancel(self)
+                response = await self.recv()
+                print(f"Server response: {response}, {type(response)}")
             else:
                 print(f"Invalid command {cmd}")
-        # for index in itertools.count(): 
-        #     order_token = int(input("Enter the order token number: "))
-        #     request = OuchClientMessages.EnterOrder(
-        #         order_token=f'{order_token:014d}'.encode('ascii'),
-        #         buy_sell_indicator=b'B' if input("B or S: ") == 'B' else b'S',
-        #         shares=1,#randrange(1,10**6-1),
-        #         stock=b'AMAZGOOG',
-        #         price=int(input("Enter price: ")),#rounduprounddown(randrange(1,100), 40, 60, 0, 2147483647 ),
-        #         time_in_force=options.time_in_force,
-        #         firm=b'OUCH',
-        #         display=b'N',
-        #         capacity=b'O',
-        #         intermarket_sweep_eligibility=b'N',
-        #         minimum_quantity=1,
-        #         cross_type=b'N',
-        #         customer_type=b' ',
-        #         midpoint_peg=b' ')
-                
-        #     #print('send message: ', request)
-        #     #log.info("Sending Ouch message: %s", request)
-        #     await self.send(request)
-        #     # data = await self.reader.read(100)
-        #     # print(f"Received {data}")
-        #     reprequest = OuchClientMessages.ReplaceOrder(
-        #         existing_order_token='{:014d}'.format(index).encode('ascii'),
-        #         replacement_order_token='{:014d}'.format(900000000+index).encode('ascii'),
-        #         shares=2*request['shares'],
-        #         price=request['price'],
-        #         time_in_force=options.time_in_force,
-        #         display=b'N',
-        #         intermarket_sweep_eligibility=b'N',
-        #         minimum_quantity=1)
-        #     #print('send message: ', request)
-        #     #log.info("Sending Ouch message: %s", request)
-        #     await self.send(reprequest)
-
-        #     reprequestii = OuchClientMessages.ReplaceOrder(
-        #         existing_order_token='{:014d}'.format(900000000+index).encode('ascii'),
-        #         replacement_order_token='{:014d}'.format(910000000+index).encode('ascii'),
-        #         shares=2*request['shares'],
-        #         price=request['price'],
-        #         time_in_force=options.time_in_force,
-        #         display=b'N',
-        #         intermarket_sweep_eligibility=b'N',
-        #         minimum_quantity=1)
-        #     #print('send message: ', request)
-        #     #log.info("Sending Ouch message: %s", request)
-        #     await self.send(reprequestii)
-
-
-        #     cancelhalf = OuchClientMessages.CancelOrder(
-        #         order_token='{:014d}'.format(910000000+index).encode('ascii'),
-        #         shares=request['shares'])
-        #     #print('send message: ', request)
-        #     #log.info("Sending Ouch message: %s", request)
-        #     await self.send(cancelhalf)            
-
-            # if index % 1000 == 0:
-            #     print('sent {} messages'.format(index))   
-            await asyncio.sleep(options.delay) 
-
-    async def start(self):
-        reader, writer = await asyncio.streams.open_connection(
-            options.host, 
-            options.port)
-        self.reader = reader
-        self.writer = writer
-        await self.sender()
-        writer.close()
-        await asyncio.sleep(0.5)
-
-
 def main():
-
     log.basicConfig(level=log.INFO if not options.debug else log.DEBUG)
     log.debug(options)
-
-    client = Client()
-    loop = asyncio.get_event_loop()
     # creates a client and connects to our server
+    client = Client()
+    loop = asyncio.new_event_loop()
+   
     asyncio.ensure_future(client.sender(), loop = loop)
-    asyncio.ensure_future(client.recver(), loop = loop)
 
     try:
         loop.run_forever()       
     finally:
         loop.close()
 
-if __name__ == '__main__':
-    # client = OpenAI()
-    # userinput = input("enter prompt for openai: ")
-    # completion = client.chat.completions.create(
-    #     model="gpt-3.5-turbo",
-    #     messages=[
-    #         {"role": "system", "content": "Market Assistant"},
-    #         {"role": "user", "content": userinput}
-    #     ],
-    # )
-
-    # print(completion.choices[0].message)
-    
+if __name__ == '__main__':   
     main()

@@ -170,6 +170,7 @@ class Exchange:
                     enter_order_message['shares'],
                     enter_into_book)
             #log.debug("Resulting book: %s", self.order_book)
+            print(f"REsulting book {self.order_book}")
             m=self.accepted_from_enter(enter_order_message, 
                 order_reference_number=next(self.order_ref_numbers),
                 timestamp=timestamp)
@@ -320,10 +321,12 @@ class Exchange:
     async def send_outgoing_messages(self):
         while len(self.outgoing_messages)>0:
             m = self.outgoing_messages.popleft()
+            print(m, type(m))
             await self.order_reply(m)
 
     async def process_message(self, message):
         log.debug('Processing message %s', message)
+        print(f"processing msg {message}, {type(message)}")
         if message.message_type in self.handlers:
             timestamp = nanoseconds_since_midnight()
             self.handlers[message.message_type](message, timestamp)
