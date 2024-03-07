@@ -24,70 +24,24 @@ p.add('--debug', action='store_true')
 p.add('--time_in_force', default=99999, type=int)
 options, args = p.parse_known_args()
 
+DEFAULT_BALANCE = 100
 
 class Client():
-    def __init__(self):
+    def __init__(self, balance=None):
         self.reader = None
         self.writer = None
+        self.balance = balance if balance else DEFAULT_BALANCE
+        self.owned_shares = 0
+        self.account_info = {"balance": self.balance, "owned_shares" : self.owned_shares}
 
-    def _order_direction_condition(self, user_input):
-        """Order direction must be 'B' or 'S'
-        Arg: string containing user input that specifies order direction
-
-        Return: boolean that describes whether the user entered a valid direction
-        """
-        if user_input == "B" or user_input == "S":
-            return True
-        print(f"Invalid direction {user_input}")
-        return False
-
-
-    def _validate_user_input(self, prompt, expected_type, conditions=None):
-        """Check that user input matches specified type
+    def __str__(self):
+        return (f"Account Information\n"
+                f"Balance: {self.balance}\n"
+                f"Owned_shares: {self.owned_shares}\n")
         
-        Args: 
-            prompt: A string displayed to the user
-            expected_type: A builtin or custom class type specifier
-            conditions: any additional conditions associated with the prompt and type
-        Returns: value of expected_type from user input
-
-        (Ex):  user_int = validate_user_input("Enter a price: ",int()) 
-            Asks for another input if the user enters anything other than an int
-        (Ex2): user_direction = validate_user_input("Enter a direction: ",str(), self._order_direction_condition)
-            Similar to previous example but with added conditions. In this case the user must enter 'B' or 'S'.
-        """
-        while True:
-            try:
-                valid_input = None
-                if isinstance(expected_type, int):
-                    valid_input = int(input(prompt))
-                if isinstance(expected_type, str):
-                    valid_input = input(prompt)
-                if isinstance(expected_type, float):
-                    valid_input = float(input(prompt))
-                # Conditions present
-                if conditions:
-                    res = conditions(valid_input)
-                    # Conditions not met user needs to enter valid input
-                    if not res:
-                        continue
-                # Valid input was entered
-                return valid_input
-            except ValueError:
-                print(f"Received {type(input)}, Expected {type(expected_type)}")
-
-    def _user_order_input(self):
-        """USED FOR CODE TESTING get needed input from terminal to make an order
-        
-        returns: Tuple(order token:int, order direction: str, shares: int,price: int)
-        """
-        return (
-            self._validate_user_input("Order Token: ", int()),
-            self._validate_user_input("Buy(B) or Sell(S): ", str(), self._order_direction_condition),
-            1,
-            self._validate_user_input("Enter a price: ", int()),
-        )
-
+    def account_information(self):
+        return self.account_info
+    
     async def recv(self):
         """Convert response from bytes into ouch response format
         
@@ -113,59 +67,73 @@ class Client():
         response_msg = message_type.from_bytes(payload, header=False)
         return response_msg
 
-    # NOTE: Unused and unsure if it is needed for anything - Kristian M.
-    async def recver(self):
-        if self.reader is None:
-            reader, writer = await asyncio.streams.open_connection(
-            options.host, 
-            options.port)
-            self.reader = reader
-            self.writer = writer
-        index = 0
-        while True:
-            response = await self.recv()
-            index += 1 
-            while not self.reader.at_eof():
-                response = await self.recv()
-                index += 1
-                if index % 1000==0:
-                    print('received {} messages'.format(index))
-            await asyncio.sleep(0.0000001)
-            if index % 1000==0:
-                print('received {} messages'.format(index))
-            #log.info('Received msg %s', response)
-            #response = await recv()
-            print('recv message: ', response)
-            #log.debug("Received response Ouch message: %s", response)
+    def _valid_order_input(self, quantity=None, price=None, direction=None, order_token=None):
+        """Determine if valid parameters were entered
+        Args:
+            quantity: an expected int 
+            price: an expected int 
+            direction an expected str
+            order_token an expected int
+        Returns:
+            False, if args are invalid
+            tuple containing args in their respective formats
+        """
+        try:
+            if quantity is not None:
+                quantity = int(quantity)
+                if quantity < 1:
+                    return False
+            
+            if price is not None:
+                price = int(price)
+                if price < 1:
+                    return False
 
+            if direction is not None:
+                if direction not in {'B', 'S'}:
+                    return False
 
+            if order_token is not None:
+                order_token = int(order_token)
+                if order_token < 1:
+                    return False
+
+            return (quantity, price, direction, order_token)
+        except ValueError:
+            return False
+
+    # NOTE: Possibly update this function to then wait for response from server to update 
+    # Client account.
     async def send(self, request):
+        """Send Ouch message to server"""
         if not request:
+            print("Invalid order")
             return
         self.writer.write(bytes(request))
         await self.writer.drain()
 
-    def place_order(self):
-        order_token = int(input("Enter order token: "))
-        direction = input("Enter 'B' for buy or 'S' for sell: ")
-        if direction != 'B' and direction != 'S':
+    def place_order(self, quantity, price, direction, order_token):
+        """Make an Ouch Limit order
+        Args:
+            quantity: an int representing number of shares for the order
+            price: an int representing price to buy shares at
+            direction: str that specifies whether the order is a BUY or SELL
+            order_token: int that represents a unique order id
+
+        Returns:
+            None if order contains improper arguments
+            Else return OuchClientMessages.EnterOrder
+        """
+        res = self._valid_order_input(quantity, price, direction, order_token)
+        if not res:
             return None
-        price = int(input("Enter price per share: "))
-        quantity = int(input("Enter number of shares: "))
-        return self._handle_order(quantity, price, direction, order_token)
-
-    def cancel_order(self):
-        order_token = int(input("Enter order token: "))
-        quantity_removed = int(input("Enter number of shares to remove: "))
-        return self._handle_cancel(order_token, quantity_removed)
-
-    def _handle_order(self, quantity, price, direction, order_token):
+        quantity, price, direction, order_token = res
         order_request = OuchClientMessages.EnterOrder(
                 order_token=f'{order_token:014d}'.encode('ascii'),
                 buy_sell_indicator=b'B' if direction == 'B' else b'S',
-                shares=quantity,#randrange(1,10**6-1),
+                shares=quantity,
                 stock=b'AMAZGOOG',
-                price=price,#rounduprounddown(randrange(1,100), 40, 60, 0, 2147483647 ),
+                price=price,
                 time_in_force=options.time_in_force,
                 firm=b'OUCH',
                 display=b'N',
@@ -174,59 +142,65 @@ class Client():
                 minimum_quantity=1,
                 cross_type=b'N',
                 customer_type=b' ',
-                midpoint_peg=b' ',
-                client_id=b'10')
+                midpoint_peg=b' ')
         return order_request
 
-    def _handle_cancel(self, order_token, quantity_removed):
-        """Convert user input into cancel order """
+    def cancel_order(self, order_token, quantity_removed):
+        """Convert user input into cancel order 
+        Args:
+            order_token: an int representing order id
+            quantity_removed: an int representing how many shares to remove from the order
+        
+        Returns:
+            None if order contains improper arguments
+            Else return OuchClientMessages.CancelOrder
+        """
+        if not self._valid_order_input(order_token=order_token, quantity=quantity_removed):
+            return None
         cancel_request = OuchClientMessages.CancelOrder(
             order_token=f'{order_token:014d}'.encode('ascii'), 
             shares=quantity_removed,
         )
         return cancel_request
 
-    async def sender(self):
-        """"""
-        if self.reader is None:
-            reader, writer = await asyncio.streams.open_connection(
-            options.host, 
-            options.port)
-            self.reader = reader
-            self.writer = writer
-        while True:
-            response = None
-            cmd = input("Make a command: ")
-            if cmd == "order":
-                await self.send(self.place_order())
-            elif cmd == "cancel":
-                await self.send(self.cancel_order())
-            else:
-                print(f"Invalid command {cmd}")
-        
 
-    async def start(self):
+
+async def sender(client: Client):
+    """
+    Currently, this is where all Client send operations are called
+    """
+    if client.reader is None:
         reader, writer = await asyncio.streams.open_connection(
-            options.host, 
-            options.port)
-        self.reader = reader
-        self.writer = writer
-        await self.sender()
-        writer.close()
-        await asyncio.sleep(0.5)
-
-
+        options.host, 
+        options.port)
+        client.reader = reader
+        client.writer = writer
+    while True:
+        response = None
+        print(client)
+        cmd = input("Make a command order(O) or cancel(C): ")
+        if cmd == "O":
+            user_quantity = input("Enter number of shares: ")
+            user_price = input("Enter share price: ")
+            user_direction = input("Buy(B) or Sell(S): ")
+            user_order_token = input("Order id: ")
+            await client.send(client.place_order(user_quantity, user_price, user_direction, user_order_token))
+        elif cmd == "C":
+            user_order_token = input("ID of order to cancel: ")
+            user_shares_removed = input("How many shares to remove: ")
+            await client.send(client.cancel_order(user_order_token, user_shares_removed))
+        else:
+            print(f"Invalid command {cmd}")
+        
 def main():
     log.basicConfig(level=log.INFO if not options.debug else log.DEBUG)
     log.debug(options)
 
-    client = Client()
-    loop = asyncio.new_event_loop()
     # creates a client and connects to our server
     client = Client()
     loop = asyncio.new_event_loop()
    
-    asyncio.ensure_future(client.sender(), loop = loop)
+    asyncio.ensure_future(sender(client), loop = loop)
 
     try:
         loop.run_forever()       

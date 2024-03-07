@@ -3,6 +3,7 @@ Client class that communicates with a Continuous Double Auction exchange followi
 Ouch Message Protocol
 todo: Reconstruct on client side using built-in book class
 client attributes: balance, orders, etc.
+Feel free to use this as a reference for any future additions
 """ 
 import sys
 import asyncio
