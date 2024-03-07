@@ -183,7 +183,6 @@ class Exchange:
                 self.outgoing_broadcast_messages.append(bbo_message)
 
     def cancel_order_atomic(self, cancel_order_message, timestamp, reason=b'U'):
-
         #if cancel_order_message['order_token'] not in self.order_store.orders.get():
         if self.order_store.orders.get(cancel_order_message['order_token']) is None:
             log.info(f"No such order to cancel, ignored. Token to cancel: {cancel_order_message['order_token']}")
@@ -320,10 +319,12 @@ class Exchange:
     async def send_outgoing_messages(self):
         while len(self.outgoing_messages)>0:
             m = self.outgoing_messages.popleft()
+            print(m, type(m))
             await self.order_reply(m)
 
     async def process_message(self, message):
         log.debug('Processing message %s', message)
+        print(f"processing msg {message['client_id']}, {type(message)}")
         if message.message_type in self.handlers:
             timestamp = nanoseconds_since_midnight()
             self.handlers[message.message_type](message, timestamp)

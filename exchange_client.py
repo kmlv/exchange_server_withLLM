@@ -39,6 +39,7 @@ class Client():
     async def recv(self):
         try:
             header = (await self.reader.readexactly(1))
+            print(f"header: {header}")
         except asyncio.IncompleteReadError:
             log.error('connection terminated without response')
             return None
@@ -46,7 +47,8 @@ class Client():
         log.debug('bytes: %r', list(header))
         message_type = OuchServerMessages.lookup_by_header_bytes(header)
         try:
-            payload = (await self.reader.readexactly(message_type.payload_size))
+            payload = (await self.reader.read(message_type.payload_size))
+            print(f"payload {payload}")
         except asyncio.IncompleteReadError as err:
             log.error('Connection terminated mid-packet!')
             return None
@@ -66,15 +68,16 @@ class Client():
         index = 0
         while True:
             response = await self.recv()
+            print(f"REsponse is THIS {response}")
             index += 1 
             while not self.reader.at_eof():
                 response = await self.recv()
                 index += 1
-                if index % 1000==0:
-                    print('received {} messages'.format(index))
-            await asyncio.sleep(0.0000001)
-            if index % 1000==0:
+                # if index % 1000==0:
                 print('received {} messages'.format(index))
+            await asyncio.sleep(0.0000001)
+            # if index % 1000==0:
+            print('received {} messages'.format(index))
             #log.info('Received msg %s', response)
             #response = await recv()
             print('recv message: ', response)
@@ -108,13 +111,33 @@ class Client():
                 minimum_quantity=1,
                 cross_type=b'N',
                 customer_type=b' ',
-                midpoint_peg=b' ')
+                midpoint_peg=b' ',
+                client_id=b'10')
                 
             #print('send message: ', request)
             #log.info("Sending Ouch message: %s", request)
             await self.send(request)
+            # data = await self.recv()
+            # print(f"server repsonse {data}")
             # data = await self.reader.read(100)
             # print(f"Received {data}")
+            reprequest = OuchClientMessages.ReplaceOrder(
+                existing_order_token='{:014d}'.format(index).encode('ascii'),
+                replacement_order_token='{:014d}'.format(900000000+index).encode('ascii'),
+                shares=2*request['shares'],
+                price=request['price'],
+                time_in_force=options.time_in_force,
+                display=b'N',
+                intermarket_sweep_eligibility=b'N',
+                minimum_quantity=1)
+            #print('send message: ', request)
+            #log.info("Sending Ouch message: %s", request)
+            await self.send(reprequest)
+            
+            data = self.recv()
+            data = await self.reader.read(250)
+            print(f"Received: {data}, {type(data)}")
+
             reprequest = OuchClientMessages.ReplaceOrder(
                 existing_order_token='{:014d}'.format(index).encode('ascii'),
                 replacement_order_token='{:014d}'.format(900000000+index).encode('ascii'),
@@ -170,10 +193,12 @@ def main():
     log.debug(options)
 
     client = Client()
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     # creates a client and connects to our server
-    asyncio.ensure_future(client.sender(), loop = loop)
-    asyncio.ensure_future(client.recver(), loop = loop)
+    asyncio.ensure_future(client.recver(), loop=loop)
+    asyncio.ensure_future(client.sender(), loop=loop)
+    
 
     try:
         loop.run_forever()       
@@ -194,3 +219,4 @@ if __name__ == '__main__':
     # print(completion.choices[0].message)
     
     main()
+    

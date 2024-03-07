@@ -148,6 +148,8 @@ class ProtocolMessage(object):
         return self._message_type_spec
 
     def __bytes__(self):
+        #print(f"before bytes[header: {self._message_type_spec.header}, payload: {self.payload}]")
+        #print(f'bytes[header : {bytes(self._message_type_spec.header)}{type(self._message_type_spec.header)}, Paylod {bytes(self.payload)}{type(self.payload)}], SUM: {bytes(self._message_type_spec.header) + bytes(self.payload)} ')
         return bytes(self._message_type_spec.header) + bytes(self.payload)
 
     def __len__(self):

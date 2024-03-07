@@ -140,32 +140,26 @@ class Client():
 
 
     async def send(self, request):
-        if not request:
-            return
+        """Send Ouch message to server"""
         self.writer.write(bytes(request))
         await self.writer.drain()
 
-    def place_order(self):
-        order_token = int(input("Enter order token: "))
-        direction = input("Enter 'B' for buy or 'S' for sell: ")
-        if direction != 'B' and direction != 'S':
-            return None
-        price = int(input("Enter price per share: "))
-        quantity = int(input("Enter number of shares: "))
-        return self._handle_order(quantity, price, direction, order_token)
-
-    def cancel_order(self):
-        order_token = int(input("Enter order token: "))
-        quantity_removed = int(input("Enter number of shares to remove: "))
-        return self._handle_cancel(order_token, quantity_removed)
-
-    def _handle_order(self, quantity, price, direction, order_token):
+    def _handle_order(self, new_order_token : int, direction : str,  shares: int , price : int):
+        """Convert Limit Order into Ouch order
+        args:
+            new_order_token: int that represents order id
+            direction: string that represents whether the order is buy or sell
+            shares: int that represents quantity of an order
+            price: int that represents price to buy the stock at
+        return:
+            Ouchmessage in the form of an order
+        """
         order_request = OuchClientMessages.EnterOrder(
-                order_token=f'{order_token:014d}'.encode('ascii'),
+                order_token=f'{new_order_token:014d}'.encode('ascii'),
                 buy_sell_indicator=b'B' if direction == 'B' else b'S',
-                shares=quantity,#randrange(1,10**6-1),
+                shares=shares,
                 stock=b'AMAZGOOG',
-                price=price,#rounduprounddown(randrange(1,100), 40, 60, 0, 2147483647 ),
+                price=price,
                 time_in_force=options.time_in_force,
                 firm=b'OUCH',
                 display=b'N',
@@ -177,15 +171,14 @@ class Client():
                 midpoint_peg=b' ',
                 client_id=b'10')
         return order_request
-
-    def _handle_cancel(self, order_token, quantity_removed):
+        
+    def _handle_cancel(self):
         """Convert user input into cancel order """
         cancel_request = OuchClientMessages.CancelOrder(
-            order_token=f'{order_token:014d}'.encode('ascii'), 
-            shares=quantity_removed,
+            order_token=f'{self._validate_user_input("Order Token to Cancel: ", int()):014d}'.encode('ascii'), 
+            shares=1,
         )
         return cancel_request
-
     async def sender(self):
         """"""
         if self.reader is None:
@@ -198,30 +191,18 @@ class Client():
             response = None
             cmd = input("Make a command: ")
             if cmd == "order":
-                await self.send(self.place_order())
+                await self.send(self._handle_order(*self._user_order_input()))
+                response = await self.recv()
             elif cmd == "cancel":
-                await self.send(self.cancel_order())
+                await self.send(self._handle_cancel())
+                response = await self.recv()
             else:
                 print(f"Invalid command {cmd}")
-        
-
-    async def start(self):
-        reader, writer = await asyncio.streams.open_connection(
-            options.host, 
-            options.port)
-        self.reader = reader
-        self.writer = writer
-        await self.sender()
-        writer.close()
-        await asyncio.sleep(0.5)
-
-
+                continue
+            print(f"Server response: {response}, {type(response)}")
 def main():
     log.basicConfig(level=log.INFO if not options.debug else log.DEBUG)
     log.debug(options)
-
-    client = Client()
-    loop = asyncio.new_event_loop()
     # creates a client and connects to our server
     client = Client()
     loop = asyncio.new_event_loop()
