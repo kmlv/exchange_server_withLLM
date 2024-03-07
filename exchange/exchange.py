@@ -169,7 +169,7 @@ class Exchange:
                     enter_order_message['price'],
                     enter_order_message['shares'],
                     enter_into_book)
-            #log.debug("Resulting book: %s", self.order_book)
+            log.info("Resulting book: %s", self.order_book)
             m=self.accepted_from_enter(enter_order_message, 
                 order_reference_number=next(self.order_ref_numbers),
                 timestamp=timestamp)
@@ -186,7 +186,7 @@ class Exchange:
 
         #if cancel_order_message['order_token'] not in self.order_store.orders.get():
         if self.order_store.orders.get(cancel_order_message['order_token']) is None:
-            log.debug(f"No such order to cancel, ignored. Token to cancel: {cancel_order_message['order_token']}")
+            log.info(f"No such order to cancel, ignored. Token to cancel: {cancel_order_message['order_token']}")
         else:
             store_entry = self.order_store.orders[cancel_order_message['order_token']]
             original_enter_message = store_entry.original_enter_message
@@ -199,7 +199,7 @@ class Exchange:
                         for (id, amount_canceled) in cancelled_orders ]
 
             self.outgoing_messages.extend(cancel_messages) 
-            #log.debug("Resulting book: %s", self.order_book)
+            log.info("Resulting book: %s", self.order_book)
             if new_bbo:
                 bbo_message = self.best_quote_update(cancel_order_message, new_bbo, timestamp)
                 self.outgoing_broadcast_messages.append(bbo_message)

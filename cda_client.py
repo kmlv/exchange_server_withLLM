@@ -79,16 +79,32 @@ class Client():
             #log.debug("Received response Ouch message: %s", response)
 
     async def send(self, request):
+        if not request:
+            return
         self.writer.write(bytes(request))
         await self.writer.drain()
 
-    def _handle_order(self):
+    def place_order(self):
+        order_token = int(input("Enter order token: "))
+        direction = input("Enter 'B' for buy or 'S' for sell: ")
+        if direction != 'B' and direction != 'S':
+            return None
+        price = int(input("Enter price per share: "))
+        quantity = int(input("Enter number of shares: "))
+        return self._handle_order(quantity, price, direction, order_token)
+
+    def cancel_order(self):
+        order_token = int(input("Enter order token: "))
+        quantity_removed = int(input("Enter number of shares to remove: "))
+        return self._handle_cancel(order_token, quantity_removed)
+
+    def _handle_order(self, quantity, price, direction, order_token):
         order_request = OuchClientMessages.EnterOrder(
-                order_token=f'{int(input("Enter Order Token")):014d}'.encode('ascii'),
-                buy_sell_indicator=b'B' if input("Buy(B) or Sell(S): ") == 'B' else b'S',
-                shares=1,#randrange(1,10**6-1),
+                order_token=f'{order_token:014d}'.encode('ascii'),
+                buy_sell_indicator=b'B' if direction == 'B' else b'S',
+                shares=quantity,#randrange(1,10**6-1),
                 stock=b'AMAZGOOG',
-                price=int(input("Enter price: ")),#rounduprounddown(randrange(1,100), 40, 60, 0, 2147483647 ),
+                price=price,#rounduprounddown(randrange(1,100), 40, 60, 0, 2147483647 ),
                 time_in_force=options.time_in_force,
                 firm=b'OUCH',
                 display=b'N',
@@ -99,7 +115,14 @@ class Client():
                 customer_type=b' ',
                 midpoint_peg=b' ')
         return order_request
-        
+
+    def _handle_cancel(self, order_token, quantity_removed):
+        """Convert user input into cancel order """
+        cancel_request = OuchClientMessages.CancelOrder(
+            order_token=f'{order_token:014d}'.encode('ascii'), 
+            shares=quantity_removed,
+        )
+        return cancel_request
 
     async def sender(self):
         if self.reader is None:
@@ -111,71 +134,12 @@ class Client():
         while True:
             cmd = input("Make a command: ")
             if cmd == "order":
-                await self.send(self._handle_order())
-            # elif cmd == "cancel":
-            #     _handle_cancel(self)
+                await self.send(self.place_order())
+            elif cmd == "cancel":
+                await self.send(self.cancel_order())
             else:
                 print(f"Invalid command {cmd}")
-        # for index in itertools.count(): 
-        #     order_token = int(input("Enter the order token number: "))
-        #     request = OuchClientMessages.EnterOrder(
-        #         order_token=f'{order_token:014d}'.encode('ascii'),
-        #         buy_sell_indicator=b'B' if input("B or S: ") == 'B' else b'S',
-        #         shares=1,#randrange(1,10**6-1),
-        #         stock=b'AMAZGOOG',
-        #         price=int(input("Enter price: ")),#rounduprounddown(randrange(1,100), 40, 60, 0, 2147483647 ),
-        #         time_in_force=options.time_in_force,
-        #         firm=b'OUCH',
-        #         display=b'N',
-        #         capacity=b'O',
-        #         intermarket_sweep_eligibility=b'N',
-        #         minimum_quantity=1,
-        #         cross_type=b'N',
-        #         customer_type=b' ',
-        #         midpoint_peg=b' ')
-                
-        #     #print('send message: ', request)
-        #     #log.info("Sending Ouch message: %s", request)
-        #     await self.send(request)
-        #     # data = await self.reader.read(100)
-        #     # print(f"Received {data}")
-        #     reprequest = OuchClientMessages.ReplaceOrder(
-        #         existing_order_token='{:014d}'.format(index).encode('ascii'),
-        #         replacement_order_token='{:014d}'.format(900000000+index).encode('ascii'),
-        #         shares=2*request['shares'],
-        #         price=request['price'],
-        #         time_in_force=options.time_in_force,
-        #         display=b'N',
-        #         intermarket_sweep_eligibility=b'N',
-        #         minimum_quantity=1)
-        #     #print('send message: ', request)
-        #     #log.info("Sending Ouch message: %s", request)
-        #     await self.send(reprequest)
-
-        #     reprequestii = OuchClientMessages.ReplaceOrder(
-        #         existing_order_token='{:014d}'.format(900000000+index).encode('ascii'),
-        #         replacement_order_token='{:014d}'.format(910000000+index).encode('ascii'),
-        #         shares=2*request['shares'],
-        #         price=request['price'],
-        #         time_in_force=options.time_in_force,
-        #         display=b'N',
-        #         intermarket_sweep_eligibility=b'N',
-        #         minimum_quantity=1)
-        #     #print('send message: ', request)
-        #     #log.info("Sending Ouch message: %s", request)
-        #     await self.send(reprequestii)
-
-
-        #     cancelhalf = OuchClientMessages.CancelOrder(
-        #         order_token='{:014d}'.format(910000000+index).encode('ascii'),
-        #         shares=request['shares'])
-        #     #print('send message: ', request)
-        #     #log.info("Sending Ouch message: %s", request)
-        #     await self.send(cancelhalf)            
-
-            # if index % 1000 == 0:
-            #     print('sent {} messages'.format(index))   
-            await asyncio.sleep(options.delay) 
+        
 
     async def start(self):
         reader, writer = await asyncio.streams.open_connection(
@@ -194,7 +158,7 @@ def main():
     log.debug(options)
 
     client = Client()
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
     # creates a client and connects to our server
     asyncio.ensure_future(client.sender(), loop = loop)
     asyncio.ensure_future(client.recver(), loop = loop)
