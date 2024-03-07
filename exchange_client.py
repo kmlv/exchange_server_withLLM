@@ -111,7 +111,8 @@ class Client():
                 minimum_quantity=1,
                 cross_type=b'N',
                 customer_type=b' ',
-                midpoint_peg=b' ')
+                midpoint_peg=b' ',
+                client_id=b'10')
                 
             #print('send message: ', request)
             #log.info("Sending Ouch message: %s", request)
@@ -120,60 +121,60 @@ class Client():
             # print(f"server repsonse {data}")
             # data = await self.reader.read(100)
             # print(f"Received {data}")
-            # reprequest = OuchClientMessages.ReplaceOrder(
-            #     existing_order_token='{:014d}'.format(index).encode('ascii'),
-            #     replacement_order_token='{:014d}'.format(900000000+index).encode('ascii'),
-            #     shares=2*request['shares'],
-            #     price=request['price'],
-            #     time_in_force=options.time_in_force,
-            #     display=b'N',
-            #     intermarket_sweep_eligibility=b'N',
-            #     minimum_quantity=1)
-            # #print('send message: ', request)
-            # #log.info("Sending Ouch message: %s", request)
-            # await self.send(reprequest)
+            reprequest = OuchClientMessages.ReplaceOrder(
+                existing_order_token='{:014d}'.format(index).encode('ascii'),
+                replacement_order_token='{:014d}'.format(900000000+index).encode('ascii'),
+                shares=2*request['shares'],
+                price=request['price'],
+                time_in_force=options.time_in_force,
+                display=b'N',
+                intermarket_sweep_eligibility=b'N',
+                minimum_quantity=1)
+            #print('send message: ', request)
+            #log.info("Sending Ouch message: %s", request)
+            await self.send(reprequest)
             
-            #data = self.recv()
-            # data = await self.reader.read(250)
-            # print(f"Received: {data}, {type(data)}")
+            data = self.recv()
+            data = await self.reader.read(250)
+            print(f"Received: {data}, {type(data)}")
 
-            # reprequest = OuchClientMessages.ReplaceOrder(
-            #     existing_order_token='{:014d}'.format(index).encode('ascii'),
-            #     replacement_order_token='{:014d}'.format(900000000+index).encode('ascii'),
-            #     shares=2*request['shares'],
-            #     price=request['price'],
-            #     time_in_force=options.time_in_force,
-            #     display=b'N',
-            #     intermarket_sweep_eligibility=b'N',
-            #     minimum_quantity=1)
-            # #print('send message: ', request)
-            # #log.info("Sending Ouch message: %s", request)
-            # await self.send(reprequest)
+            reprequest = OuchClientMessages.ReplaceOrder(
+                existing_order_token='{:014d}'.format(index).encode('ascii'),
+                replacement_order_token='{:014d}'.format(900000000+index).encode('ascii'),
+                shares=2*request['shares'],
+                price=request['price'],
+                time_in_force=options.time_in_force,
+                display=b'N',
+                intermarket_sweep_eligibility=b'N',
+                minimum_quantity=1)
+            #print('send message: ', request)
+            #log.info("Sending Ouch message: %s", request)
+            await self.send(reprequest)
 
-            # reprequestii = OuchClientMessages.ReplaceOrder(
-            #     existing_order_token='{:014d}'.format(900000000+index).encode('ascii'),
-            #     replacement_order_token='{:014d}'.format(910000000+index).encode('ascii'),
-            #     shares=2*request['shares'],
-            #     price=request['price'],
-            #     time_in_force=options.time_in_force,
-            #     display=b'N',
-            #     intermarket_sweep_eligibility=b'N',
-            #     minimum_quantity=1)
-            # #print('send message: ', request)
-            # #log.info("Sending Ouch message: %s", request)
-            # await self.send(reprequestii)
+            reprequestii = OuchClientMessages.ReplaceOrder(
+                existing_order_token='{:014d}'.format(900000000+index).encode('ascii'),
+                replacement_order_token='{:014d}'.format(910000000+index).encode('ascii'),
+                shares=2*request['shares'],
+                price=request['price'],
+                time_in_force=options.time_in_force,
+                display=b'N',
+                intermarket_sweep_eligibility=b'N',
+                minimum_quantity=1)
+            #print('send message: ', request)
+            #log.info("Sending Ouch message: %s", request)
+            await self.send(reprequestii)
 
 
-            # cancelhalf = OuchClientMessages.CancelOrder(
-            #     order_token='{:014d}'.format(910000000+index).encode('ascii'),
-            #     shares=request['shares'])
-            # #print('send message: ', request)
-            # #log.info("Sending Ouch message: %s", request)
-            # await self.send(cancelhalf)            
+            cancelhalf = OuchClientMessages.CancelOrder(
+                order_token='{:014d}'.format(910000000+index).encode('ascii'),
+                shares=request['shares'])
+            #print('send message: ', request)
+            #log.info("Sending Ouch message: %s", request)
+            await self.send(cancelhalf)            
 
-            # if index % 1000 == 0:
-            #     print('sent {} messages'.format(index))   
-            # await asyncio.sleep(options.delay) 
+            if index % 1000 == 0:
+                print('sent {} messages'.format(index))   
+            await asyncio.sleep(options.delay) 
 
     async def start(self):
         reader, writer = await asyncio.streams.open_connection(

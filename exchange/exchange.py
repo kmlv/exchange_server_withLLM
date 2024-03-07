@@ -333,7 +333,7 @@ class Exchange:
 
     async def process_message(self, message):
         log.debug('Processing message %s', message)
-        print(f"processing msg {message}, {type(message)}")
+        print(f"processing msg {message['client_id']}, {type(message)}")
         if message.message_type in self.handlers:
             timestamp = nanoseconds_since_midnight()
             self.handlers[message.message_type](message, timestamp)
