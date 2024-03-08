@@ -116,10 +116,11 @@ class Exchange:
         return m
 
     def process_cross(self, id, fulfilling_order_id, price, volume, timestamp, liquidity_flag = b'?'):
-        log.debug('Orders (%s, %s) crossed at price %s, volume %s', id, fulfilling_order_id, price, volume)
+        """Create response msgs for clients involved in a trade(when orders cross)"""
+        log.info('Orders (%s, %s) crossed at price %s, volume %s', id, fulfilling_order_id, price, volume)
         order_message = self.order_store.orders[id].first_message
         fulfilling_order_message = self.order_store.orders[fulfilling_order_id].first_message
-        log.debug('incoming order message: %s, fullfilling order message: %s',order_message,fulfilling_order_message)
+        log.info('incoming order message: %s, fullfilling order message: %s',order_message,fulfilling_order_message)
         match_number = self.next_match_number
         self.next_match_number += 1
         original_enter_message = self.order_store.orders[id].original_enter_message
@@ -189,6 +190,9 @@ class Exchange:
             cross_messages = [m for ((id, fulfilling_order_id), price, volume) in crossed_orders 
                                 for m in self.process_cross(id, fulfilling_order_id, price, volume, timestamp=timestamp)]
             self.outgoing_messages.extend(cross_messages)
+            # Also notify clients when executions have been made! - Kristian M
+            if cross_messages:
+                self.outgoing_broadcast_messages.append(cross_messages[1])
             if new_bbo:
                 bbo_message = self.best_quote_update(enter_order_message, new_bbo, timestamp)
                 self.outgoing_broadcast_messages.append(bbo_message)
@@ -325,6 +329,7 @@ class Exchange:
         """Send Server OuchMessage to all connected clients"""
         while len(self.outgoing_broadcast_messages)>0:
             m = self.outgoing_broadcast_messages.popleft()
+            log.info(f"BROADCASTING: {m}")
             await self.message_broadcast(m)
             
 

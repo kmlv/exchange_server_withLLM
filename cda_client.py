@@ -42,6 +42,22 @@ class Client():
     def account_information(self):
         return self.account_info
     
+    def _update_account(self, cost_per_share, num_shares):
+        """update the state of account"""
+        self.balance += (cost_per_share * num_shares)
+        self.owned_shares += num_shares
+
+    def _can_afford(self, cost_per_share, num_shares):
+        """Can client create the order with their current balance?
+        Args:
+            cost_per_share: an int representing the price per share
+            num_shares: an int representing the quantity of shares to buy
+        Returns:
+            A bool that specifies whether the client has the funds to make a buy
+            num_shares at cost_per_share
+        """
+        return self.balance >= (cost_per_share * num_shares)
+    
     async def recv(self):
         """Convert response from bytes into ouch response format
         
@@ -75,12 +91,19 @@ class Client():
             options.port)
             self.reader = reader
             self.writer = writer
-        while True:
+        while not self.reader.at_eof():
             response = await self.recv()
-            if "price" in response:
-                print("Sever: ", response)
-            if "best_bid" in response:
+            # Order from client was accepted
+            if response.message_type == OuchServerMessages.Accepted:
+                print("Accepted order: ", response, " With price : ", response['price'])
+            # Order book has new best bid or ask(offer)
+            # Ex:(ignoring quantity) buy {$2, $1} sell {}, if a client made a sell order of $1 then
+            # the order book will update to buy {$1} sell {}, which means the new best bid is $1 and best ask is 0 
+            if response.message_type == OuchServerMessages.BestBidAndOffer:
                 print("new best buy offer: ", response)
+            if response.message_type == OuchServerMessages.Executed:
+                print("Executed: ", response)
+            await asyncio.sleep(0)
         
 
     def _valid_order_input(self, quantity=None, price=None, direction=None, order_token=None):
@@ -143,6 +166,11 @@ class Client():
             return None
     
         quantity, price, direction, order_token = res
+        if direction == 'B':
+            if not self._can_afford(price, quantity):
+                return None
+            self._update_account(-price, quantity)
+
         order_request = OuchClientMessages.EnterOrder(
                 order_token=f'{order_token:014d}'.encode('ascii'),
                 buy_sell_indicator=b'B' if direction == 'B' else b'S',
@@ -170,8 +198,11 @@ class Client():
             None if order contains improper arguments
             Else return OuchClientMessages.CancelOrder
         """
-        if not self._valid_order_input(order_token=order_token, quantity=quantity_removed):
+        res = self._valid_order_input(order_token=order_token, quantity=quantity_removed)
+        if not res:
             return None
+    
+        quantity_removed, price, direction, order_token = res
         cancel_request = OuchClientMessages.CancelOrder(
             order_token=f'{order_token:014d}'.encode('ascii'), 
             shares=quantity_removed,
@@ -207,7 +238,7 @@ class Client():
             else:
                 print(f"Invalid command {cmd}")
             # sleeping will allow the client.recver() method to process
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.5)
         
 def main():
     log.basicConfig(level=log.INFO if not options.debug else log.DEBUG)

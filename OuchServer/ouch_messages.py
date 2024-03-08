@@ -111,10 +111,12 @@ class OuchClientMessages(LookupByHeaderBytesMixin, OuchMessageTypeSpec,
             {'msg_type': b'X'},
             ['order_token', 'shares']
         )
+    # used in exchange.py but not fully implemented
     ModifyOrder = ('{order_token}:{buy_sell_indicator}x{shares}',
             {'msg_type': b'M'},
             ['order_token', 'buy_sell_indicator', 'shares']
         )
+    # unused
     TradeNow = ('{order_token}',
             {'msg_type': b'N'},
             ['order_token']
@@ -123,6 +125,7 @@ class OuchClientMessages(LookupByHeaderBytesMixin, OuchMessageTypeSpec,
             {'msg_type': b'H'},
             ['timestamp', 'event_code']
         )
+    # used in iex_exchange
     ExternalFeedChange = ('{e_best_bid}:{e_best_offer}',
             {'msg_type': b'K'},
             ['e_best_bid', 'e_best_offer']
@@ -158,6 +161,7 @@ class OuchServerMessages(LookupByHeaderBytesMixin, OuchMessageTypeSpec,
             {'msg_type': b'C'},
             ['timestamp', 'order_token', 'decrement_shares', 'reason', 'midpoint_peg']
         )
+    # unused
     AIQCanceled = ('{timestamp}:{order_token}:-{decrement_shares}({reason})',
             {'msg_type': b'D'},
             ['timestamp', 'order_token', 'decrement_shares', 'reason',
@@ -175,7 +179,7 @@ class OuchServerMessages(LookupByHeaderBytesMixin, OuchMessageTypeSpec,
             ['timestamp', 'stock', 'best_bid', 'volume_at_best_bid', 'best_ask', 
              'volume_at_best_ask', 'next_bid', 'next_ask']
         )
-
+    # used in fba_exchange.py
     PostBatch = ('{timestamp}:{stock}:{clearing_price}:{transacted_volume}:\
 {best_bid}:{volume_at_best_bid}:{best_ask}:{volume_at_best_ask}:{next_bid}:{next_ask}',
             {'msg_type': b'Z'},
@@ -183,49 +187,57 @@ class OuchServerMessages(LookupByHeaderBytesMixin, OuchMessageTypeSpec,
              'best_bid', 'volume_at_best_bid', 'volume_at_best_ask', 'best_ask', 
              'next_bid', 'next_ask']
         )
-    
+    # used in iex_exchange.py
     PegStateUpdate = ('{timestamp}:{peg_state}:{peg_price}',
             {'msg_type': b'L'},
             ['timestamp', 'peg_state', 'peg_price']
         )
-    
+    # unused
     BrokenTrade = ('{timestamp}:XX{order_token}m{match_number}({reason})',
             {'msg_type': b'B'},
             ['timestamp', 'order_token', 'match_number', 'reason']
         )
+    # unused
     ExecutedWithReferencePrice = ('{timestamp}:{order_token}m{match_number}:{executed_shares}@{execution_price}',
             {'msg_type': b'G'},
             ['timestamp', 'order_token', 'executed_shares',
              'execution_price', 'liquidity_flag', 'match_number',
              'reference_price', 'reference_price_type']
         )
+    # unused
     TradeCorrection = ('{timestamp}:{order_token}m{match_number}:{executed_shares}@{execution_price}({reason})',
             {'msg_type': b'F'},
             ['timestamp', 'order_token', 'executed_shares',
              'execution_price', 'liquidity_flag', 'match_number',
              'reason']
         )
+    # unused
     Rejected = ('{timestamp}:{order_token}({reason})',
             {'msg_type': b'J'},
             ['timestamp', 'order_token', 'reason']
         )
+    # unused
     CancelPending = ('{timestamp}:{order_token}',
             {'msg_type': b'P'},
             ['timestamp', 'order_token']
         )
+    # unused
     CancelReject = ('{timestamp}:{order_token}',
             {'msg_type': b'I'},
             ['timestamp', 'order_token']
         )
+    # unused
     OrderPriorityUpdate = ('{timestamp}:{order_token}({order_reference_number}):{price}',
             {'msg_type': b'T'},
             ['timestamp', 'order_token', 'price', 'display',
              'order_reference_number']
         )
+    # unused
     OrderModified = ('{timestamp}:{order_token}:{buy_sell_indicator}{shares}',
             {'msg_type': b'M'},
             ['timestamp', 'order_token', 'buy_sell_indicator', 'shares']
         )
+    # unused
     TradeNow = ('{timestamp}:{order_token}',
             {'msg_type': b'N'},
             ['timestamp', 'order_token']
