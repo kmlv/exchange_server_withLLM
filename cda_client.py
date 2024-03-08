@@ -67,6 +67,22 @@ class Client():
         response_msg = message_type.from_bytes(payload, header=False)
         return response_msg
 
+    async def recver(self):
+        """Listener to all broadcasts sent from the exchange server"""
+        if self.reader is None:
+            reader, writer = await asyncio.streams.open_connection(
+            options.host, 
+            options.port)
+            self.reader = reader
+            self.writer = writer
+        while True:
+            response = await self.recv()
+            if "price" in response:
+                print("Sever: ", response)
+            if "best_bid" in response:
+                print("new best buy offer: ", response)
+        
+
     def _valid_order_input(self, quantity=None, price=None, direction=None, order_token=None):
         """Determine if valid parameters were entered
         Args:
@@ -102,8 +118,6 @@ class Client():
         except ValueError:
             return False
 
-    # NOTE: Possibly update this function to then wait for response from server to update 
-    # Client account.
     async def send(self, request):
         """Send Ouch message to server"""
         if not request:
@@ -127,6 +141,7 @@ class Client():
         res = self._valid_order_input(quantity, price, direction, order_token)
         if not res:
             return None
+    
         quantity, price, direction, order_token = res
         order_request = OuchClientMessages.EnterOrder(
                 order_token=f'{order_token:014d}'.encode('ascii'),
@@ -165,32 +180,34 @@ class Client():
 
 
 
-async def sender(client: Client):
-    """
-    Currently, this is where all Client send operations are called
-    """
-    if client.reader is None:
-        reader, writer = await asyncio.streams.open_connection(
-        options.host, 
-        options.port)
-        client.reader = reader
-        client.writer = writer
-    while True:
-        response = None
-        print(client)
-        cmd = input("Make a command order(O) or cancel(C): ")
-        if cmd == "O":
-            user_quantity = input("Enter number of shares: ")
-            user_price = input("Enter share price: ")
-            user_direction = input("Buy(B) or Sell(S): ")
-            user_order_token = input("Order id: ")
-            await client.send(client.place_order(user_quantity, user_price, user_direction, user_order_token))
-        elif cmd == "C":
-            user_order_token = input("ID of order to cancel: ")
-            user_shares_removed = input("How many shares to remove: ")
-            await client.send(client.cancel_order(user_order_token, user_shares_removed))
-        else:
-            print(f"Invalid command {cmd}")
+    async def sender(self):
+        """
+        Currently, this is where all Client send operations are called
+        """
+        if self.reader is None:
+            reader, writer = await asyncio.streams.open_connection(
+            options.host, 
+            options.port)
+            self.reader = reader
+            self.writer = writer
+        while True:
+            print(self)
+            cmd = input("Make a command order(O) or cancel(C): ")
+            if cmd == "O":
+                user_quantity = input("Enter number of shares: ")
+                user_price = input("Enter share price: ")
+                user_direction = input("Buy(B) or Sell(S): ")
+                user_order_token = input("Order id: ")
+                await self.send(self.place_order(user_quantity, user_price, user_direction, user_order_token))
+
+            elif cmd == "C":
+                user_order_token = input("ID of order to cancel: ")
+                user_shares_removed = input("How many shares to remove: ")
+                await self.send(self.cancel_order(user_order_token, user_shares_removed))
+            else:
+                print(f"Invalid command {cmd}")
+            # sleeping will allow the client.recver() method to process
+            await asyncio.sleep(0.1)
         
 def main():
     log.basicConfig(level=log.INFO if not options.debug else log.DEBUG)
@@ -199,8 +216,9 @@ def main():
     # creates a client and connects to our server
     client = Client()
     loop = asyncio.new_event_loop()
-   
-    asyncio.ensure_future(sender(client), loop = loop)
+    asyncio.ensure_future(client.sender(), loop=loop)
+    asyncio.ensure_future(client.recver(), loop=loop)
+    
 
     try:
         loop.run_forever()       

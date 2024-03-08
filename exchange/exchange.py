@@ -149,12 +149,21 @@ class Exchange:
         return [r1, r2]
 
     def enter_order_atomic(self, enter_order_message, timestamp, executed_quantity = 0):
+        """add an order to the exchange
+        Args:
+            enter_order_message: OuchMessage.EnterOrder
+            timestamp: int that represents time(in seconds) of when order was made
+            executed_quantity: 
+
+        """
+        # check if server has already processed this order by checking order id
+        # TODO: also check for uuid
         order_stored = self.order_store.store_order( 
             id = enter_order_message['order_token'], 
             message = enter_order_message, 
             executed_quantity = executed_quantity)
         if not order_stored:
-            log.debug('Order already stored with id %s, order ignored', enter_order_message['order_token'])
+            log.info('Order already stored with id %s, order ignored', enter_order_message['order_token'])
             return []
         else:
             time_in_force = enter_order_message['time_in_force']
@@ -175,6 +184,8 @@ class Exchange:
                 timestamp=timestamp)
             self.order_store.add_to_order(m['order_token'], m)
             self.outgoing_messages.append(m)
+            # Prepare messages to broadcast all clients
+            # This includes when the best buy offer changes
             cross_messages = [m for ((id, fulfilling_order_id), price, volume) in crossed_orders 
                                 for m in self.process_cross(id, fulfilling_order_id, price, volume, timestamp=timestamp)]
             self.outgoing_messages.extend(cross_messages)
@@ -311,20 +322,25 @@ class Exchange:
         #log.debug("Resulting orderstore: %s", self.order_store)
 
     async def send_outgoing_broadcast_messages(self):
+        """Send Server OuchMessage to all connected clients"""
         while len(self.outgoing_broadcast_messages)>0:
             m = self.outgoing_broadcast_messages.popleft()
             await self.message_broadcast(m)
             
 
     async def send_outgoing_messages(self):
+        """Send Server OuchMessage directly to sender"""
         while len(self.outgoing_messages)>0:
             m = self.outgoing_messages.popleft()
             print(m, type(m))
             await self.order_reply(m)
 
     async def process_message(self, message):
+        """process Client OuchMessage"""
         log.debug('Processing message %s', message)
         print(f"processing msg {message}, {type(message)}")
+
+        # Perform operation associated with message type
         if message.message_type in self.handlers:
             timestamp = nanoseconds_since_midnight()
             self.handlers[message.message_type](message, timestamp)

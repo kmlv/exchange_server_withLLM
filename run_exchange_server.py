@@ -35,7 +35,7 @@ async def main():
 
     loop = asyncio.get_event_loop()
     server = ProtocolMessageServer(OuchClientMessages)
-  
+    
     if options.mechanism == 'cda':        
         book = CDABook()
         exchange = Exchange(order_book = book,
@@ -65,11 +65,7 @@ async def main():
         await asyncio.get_running_loop().create_future()
     except KeyboardInterrupt:
         pass
-        # loop.run_forever()
-    # except KeyboardInterrupt:
-    #     loop.close()
-    # finally:
-    #     loop.close()
+
 
 if __name__ == '__main__':
     asyncio.run(main())

@@ -31,6 +31,7 @@ class OrderStore:
 
 		Returns true if successful in storing it; false if unsuccesful because the order token is already used.
 		'''
+		# TODO: change this so it also checks for uuid
 		if id in self.orders:
 			log.info('Ignoring store_order command: id %s already in the order store', id)
 			return False
