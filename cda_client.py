@@ -13,6 +13,7 @@ import logging as log
 from random import randrange, randint
 import itertools
 from openai import OpenAI
+import uuid
 
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
 
@@ -33,6 +34,7 @@ class Client():
         self.balance = balance if balance else DEFAULT_BALANCE
         self.owned_shares = 0
         self.account_info = {"balance": self.balance, "owned_shares" : self.owned_shares}
+        self.id = str(uuid.uuid4().hex).encode('ascii')
 
     def __str__(self):
         return (f"Account Information\n"
@@ -120,7 +122,7 @@ class Client():
         try:
             if quantity is not None:
                 quantity = int(quantity)
-                if quantity < 1:
+                if quantity < 0:
                     return False
             
             if price is not None:
@@ -178,7 +180,7 @@ class Client():
                 stock=b'AMAZGOOG',
                 price=price,
                 time_in_force=options.time_in_force,
-                firm=b'OUCH',
+                firm=bytes(self.id),
                 display=b'N',
                 capacity=b'O',
                 intermarket_sweep_eligibility=b'N',
