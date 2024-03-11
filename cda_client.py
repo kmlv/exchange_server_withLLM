@@ -6,6 +6,8 @@ client attributes: balance, orders, etc.
 """ 
 import sys
 import asyncio
+import binascii
+from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
 import asyncio.streams
 import configargparse
 import logging as log
@@ -70,7 +72,7 @@ class Client():
             header = (await self.reader.readexactly(1))
         except asyncio.IncompleteReadError:
             log.error('connection terminated without response')
-            return None
+            return None, None
         log.debug('Received Ouch header as binary: %r', header)
         log.debug('bytes: %r', list(header))
         message_type = OuchServerMessages.lookup_by_header_bytes(header)
@@ -78,12 +80,12 @@ class Client():
             payload = (await self.reader.readexactly(message_type.payload_size))
         except asyncio.IncompleteReadError as err:
             log.error('Connection terminated mid-packet!')
-            return None
+            return None, None
         log.debug('Received Ouch payload as binary: %r', payload)
         log.debug('bytes: %r', list(payload))
 
         response_msg = message_type.from_bytes(payload, header=False)
-        return response_msg
+        return response_msg, message_type
 
     async def recver(self):
         """Listener to all broadcasts sent from the exchange server"""
@@ -94,9 +96,13 @@ class Client():
             self.reader = reader
             self.writer = writer
         while not self.reader.at_eof():
-            response = await self.recv()
+            response, message_type = await self.recv()
+            if response is None or message_type is None:
+                continue
             # Order from client was accepted
-            if response.message_type == OuchServerMessages.Accepted:
+            if message_type == OuchServerMessages.Accepted:
+                self.balance -= response['price'] * response['shares']
+                self.owned_shares += response['shares']
                 print("Accepted order: ", response, " With price : ", response['price'])
             # Order book has new best bid or ask(offer)
             # Ex:(ignoring quantity) buy {$2, $1} sell {}, if a client made a sell order of $1 then
@@ -166,7 +172,7 @@ class Client():
         res = self._valid_order_input(quantity, price, direction, order_token)
         if not res:
             return None
-    
+
         quantity, price, direction, order_token = res
         if direction == 'B':
             if not self._can_afford(price, quantity):
@@ -174,20 +180,21 @@ class Client():
             self._update_account(-price, quantity)
 
         order_request = OuchClientMessages.EnterOrder(
-                order_token=f'{order_token:014d}'.encode('ascii'),
-                buy_sell_indicator=b'B' if direction == 'B' else b'S',
-                shares=quantity,
-                stock=b'AMAZGOOG',
-                price=price,
-                time_in_force=options.time_in_force,
-                firm=bytes(self.id),
-                display=b'N',
-                capacity=b'O',
-                intermarket_sweep_eligibility=b'N',
-                minimum_quantity=1,
-                cross_type=b'N',
-                customer_type=b' ',
-                midpoint_peg=b' ')
+            order_token=f'{order_token:014d}'.encode('ascii'),
+            buy_sell_indicator=b'B' if direction == 'B' else b'S',
+            shares=quantity,
+            stock=b'AMAZGOOG',
+            price=price,
+            time_in_force=options.time_in_force,
+            firm=bytes(self.id),
+            display=b'N',
+            capacity=b'O',
+            intermarket_sweep_eligibility=b'N',
+            minimum_quantity=1,
+            cross_type=b'N',
+            customer_type=b' ',
+            midpoint_peg=b' '
+        )
         return order_request
 
     def cancel_order(self, order_token, quantity_removed):
@@ -209,6 +216,7 @@ class Client():
             order_token=f'{order_token:014d}'.encode('ascii'), 
             shares=quantity_removed,
         )
+        
         return cancel_request
 
 
