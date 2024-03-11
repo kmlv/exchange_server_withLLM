@@ -165,7 +165,16 @@ class Exchange:
             executed_quantity = executed_quantity)
         if not order_stored:
             log.info('Order already stored with id %s, order ignored', enter_order_message['order_token'])
-            return []
+            m = OuchServerMessages.Rejected(
+                    timestamp = timestamp,
+                    order_token = enter_order_message['order_token'],
+                    reason = b'RepeatID',
+                    price = enter_order_message['price'],
+                    shares = enter_order_message['shares']
+                )
+            m.meta = enter_order_message.meta
+            self.outgoing_messages.append(m)
+            return 
         else:
             time_in_force = enter_order_message['time_in_force']
             enter_into_book = True if time_in_force > 0 else False    

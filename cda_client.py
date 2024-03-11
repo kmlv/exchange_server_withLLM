@@ -37,6 +37,7 @@ class Client():
         self.owned_shares = 0
         self.account_info = {"balance": self.balance, "owned_shares" : self.owned_shares}
         self.id = str(uuid.uuid4().hex).encode('ascii')
+        self.orders = dict()
 
     def __str__(self):
         return (f"Account Information\n"
@@ -99,18 +100,16 @@ class Client():
             response, message_type = await self.recv()
             if response is None or message_type is None:
                 continue
-            # Order from client was accepted
-            if message_type == OuchServerMessages.Accepted:
-                self.balance -= response['price'] * response['shares']
-                self.owned_shares += response['shares']
-                print("Accepted order: ", response, " With price : ", response['price'])
             # Order book has new best bid or ask(offer)
             # Ex:(ignoring quantity) buy {$2, $1} sell {}, if a client made a sell order of $1 then
             # the order book will update to buy {$1} sell {}, which means the new best bid is $1 and best ask is 0 
             if response.message_type == OuchServerMessages.BestBidAndOffer:
                 print("new best buy offer: ", response)
-            if response.message_type == OuchServerMessages.Executed:
-                print("Executed: ", response)
+            elif response.message_type == OuchServerMessages.Rejected:
+                price, num_shares = self.orders[response['order_token'].decode()] 
+                self._update_account(-price, -num_shares)
+            else:
+                print(response.message_type)
             await asyncio.sleep(0)
         
 
@@ -195,6 +194,9 @@ class Client():
             customer_type=b' ',
             midpoint_peg=b' '
         )
+
+        # update local orders
+        self.orders[f'{order_token:014d}'] = (price, quantity)
         return order_request
 
     def cancel_order(self, order_token, quantity_removed):

@@ -2,6 +2,18 @@
 from .protocol_message_primitives import *
 
 class OuchFields(ProtocolFieldEnum):
+    """Fields for OuchMessages
+    Tuples have the meaning
+    <field_name> = (datatype, description)
+    datatype:
+        'c': 1 character
+        'I': Integer
+        '8s': string with 8 bits
+        '4s': string with 4 bits
+
+    Notes: Ouch messages can only contain these information fields.
+        So if you want to add new fields, follow the aformentioned style.
+    """
     msg_type = ('c', 'Identifies the type of this message')
     order_token = ('14s', 'todo')
     buy_sell_indicator = ('c', 'todo')
@@ -27,7 +39,7 @@ class OuchFields(ProtocolFieldEnum):
     bbo_weight_indicator = ('c', 'todo')
     previous_order_token = ('14s', 'todo')
     decrement_shares = ('I', 'todo')
-    reason = ('c', 'todo')
+    reason = ('8s', 'todo')
     quantity_prevented_from_trading = ('I', 'todo')
     execution_price = ('I', 'todo')
     liquidity_flag = ('c', 'todo')
@@ -211,10 +223,9 @@ class OuchServerMessages(LookupByHeaderBytesMixin, OuchMessageTypeSpec,
              'execution_price', 'liquidity_flag', 'match_number',
              'reason']
         )
-    # unused
     Rejected = ('{timestamp}:{order_token}({reason})',
             {'msg_type': b'J'},
-            ['timestamp', 'order_token', 'reason']
+            ['timestamp', 'order_token', 'reason', 'shares', 'price']
         )
     # unused
     CancelPending = ('{timestamp}:{order_token}',
