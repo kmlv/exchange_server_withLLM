@@ -1,46 +1,28 @@
 
-Docker
+Getting Started
 ==========
-
-::
-
-    docker-compose up
-    
-creates a multicontainer Docker application. 3 servers with auction formats: CDA, FBA, IEX will listen on host ports 9001 to 9003. configured over environment variables declared in docker-compsose.yaml .
+NOTE: Currently, the project supports python 3.10.9: https://www.python.org/downloads/release/python-3109/
 
 
-Server Setup
-=================
-
-create and activate a virtual environment.
-
-::
-
-    pip install virtualenv
-    virtualenv -p python3.6 env
-    source env/bin/activate
-
-install dependencies.
-
-
+Install dependencies
 ::
 
     pip install -r requirements.txt
-
-To run a CDA instance:
-
-::
-
-    python3 run_exchange_server.py --host 0.0.0.0 --port 9001 --debug --mechanism cda
     
-To run a FBA instance with batch length of 3 seconds:
+
+
+Project Setup
+=================
+
+Run the CDA exchange
 
 ::
 
-    python3 run_exchange_server.py --host 0.0.0.0 --port 9101 --debug --mechanism fba --interval 3
+    python ./run_exchange_server
 
-To run an IEX instance with a speed bump delay of 1 second:
+
+Run the CDA client
 
 ::
 
-    python3 run_exchange_server.py --host 0.0.0.0 --port 9201 --debug --mechanism iex --delay 1
+    python ./cda_client

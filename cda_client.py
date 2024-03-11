@@ -38,6 +38,8 @@ class Client():
         self.account_info = {"balance": self.balance, "owned_shares" : self.owned_shares}
         self.id = str(uuid.uuid4().hex).encode('ascii')
         self.orders = dict()
+        # Used internally for client to send unique orders to Exchange
+        self._cur_order_id = 1
 
     def __str__(self):
         return (f"Account Information\n"
@@ -47,9 +49,19 @@ class Client():
     def account_information(self):
         return self.account_info
     
-    def _update_account(self, cost_per_share, num_shares):
-        """update the state of account"""
-        self.balance += (cost_per_share * num_shares)
+    def _update_account(self, cost_per_share, num_shares, direction):
+        """update the state of account
+        Args:
+            cost_per_share: int specifying the value of 1 share
+            num_shares: int specifying the quantity of shares
+            direction: str specifying how to update the account
+        Note:
+            Client no longer has access to money related to Buy send order.\n
+            When the client sends a Sell order, they lose access to the number
+            of shares they want to sell.
+        """
+        if direction == 'B':
+            self.balance += (cost_per_share * num_shares)
         self.owned_shares += num_shares
 
     def _can_afford(self, cost_per_share, num_shares):
@@ -88,6 +100,7 @@ class Client():
         response_msg = message_type.from_bytes(payload, header=False)
         return response_msg, message_type
 
+    # TODO: update account based on Accept response from server
     async def recver(self):
         """Listener to all broadcasts sent from the exchange server"""
         if self.reader is None:
@@ -100,16 +113,21 @@ class Client():
             response, message_type = await self.recv()
             if response is None or message_type is None:
                 continue
-            # Order book has new best bid or ask(offer)
-            # Ex:(ignoring quantity) buy {$2, $1} sell {}, if a client made a sell order of $1 then
-            # the order book will update to buy {$1} sell {}, which means the new best bid is $1 and best ask is 0 
-            if response.message_type == OuchServerMessages.BestBidAndOffer:
-                print("new best buy offer: ", response)
-            elif response.message_type == OuchServerMessages.Rejected:
-                price, num_shares = self.orders[response['order_token'].decode()] 
-                self._update_account(-price, -num_shares)
-            else:
-                print(response.message_type)
+            match message_type:
+
+                # Order book has new best bid or ask(offer)
+                # Ex:(ignoring quantity) buy {$2, $1} sell {}, if a client made a sell order of $1 then
+                # the order book will update to buy {$1} sell {}, which means the new best bid is $1 and best ask is 0 
+                case OuchServerMessages.BestBidAndOffer:
+                    print("new best buy offer: ", response)
+                # Order was rejected, refund the client
+                case OuchServerMessages.Rejected:
+                    price, num_shares = self.orders[response['order_token'].decode()] 
+                    self._update_account(-price, -num_shares)
+                case OuchServerMessages.Executed:
+                    print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
+                case _:
+                    print(response.header)
             await asyncio.sleep(0)
         
 
@@ -156,27 +174,29 @@ class Client():
         self.writer.write(bytes(request))
         await self.writer.drain()
 
-    def place_order(self, quantity, price, direction, order_token):
+    def place_order(self, quantity, price, direction):
         """Make an Ouch Limit order
         Args:
             quantity: an int representing number of shares for the order
             price: an int representing price to buy shares at
             direction: str that specifies whether the order is a BUY or SELL
-            order_token: int that represents a unique order id
 
         Returns:
             None if order contains improper arguments
             Else return OuchClientMessages.EnterOrder
         """
-        res = self._valid_order_input(quantity, price, direction, order_token)
+        res = self._valid_order_input(quantity, price, direction, self._cur_order_id)
         if not res:
             return None
 
         quantity, price, direction, order_token = res
-        if direction == 'B':
-            if not self._can_afford(price, quantity):
-                return None
-            self._update_account(-price, quantity)
+        if direction == 'B' and self._can_afford(price, quantity):
+            self._update_account(-price, quantity, direction)
+        elif direction == 'S' and quantity <= self.owned_shares:
+            self._update_account(price, -quantity, direction)
+        else:
+            return None
+        
 
         order_request = OuchClientMessages.EnterOrder(
             order_token=f'{order_token:014d}'.encode('ascii'),
@@ -197,6 +217,7 @@ class Client():
 
         # update local orders
         self.orders[f'{order_token:014d}'] = (price, quantity)
+        self._cur_order_id += 1
         return order_request
 
     def cancel_order(self, order_token, quantity_removed):
@@ -240,8 +261,7 @@ class Client():
                 user_quantity = input("Enter number of shares: ")
                 user_price = input("Enter share price: ")
                 user_direction = input("Buy(B) or Sell(S): ")
-                user_order_token = input("Order id: ")
-                await self.send(self.place_order(user_quantity, user_price, user_direction, user_order_token))
+                await self.send(self.place_order(user_quantity, user_price, user_direction))
 
             elif cmd == "C":
                 user_order_token = input("ID of order to cancel: ")
