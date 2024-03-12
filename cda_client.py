@@ -34,7 +34,7 @@ class Client():
         self.reader = None
         self.writer = None
         self.balance = balance if balance else DEFAULT_BALANCE
-        self.owned_shares = 0
+        self.owned_shares = 5
         self.account_info = {"balance": self.balance, "owned_shares" : self.owned_shares}
         self.id = str(uuid.uuid4().hex).encode('ascii')
         self.orders = dict()
@@ -133,7 +133,13 @@ class Client():
                     self._update_account(-price, -num_shares)
                 # TODO: update client account if order was executed
                 case OuchServerMessages.Executed:
+                    print(self.orders)
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
+                    order_id = response['order_token']
+                    if order_id in self.orders:
+                        price, num_shares, direction = self.orders[order_id]
+                        print(price, num_shares, direction)
+                        self.orders.pop(order_id)
                 # TODO: update client local_book 
                 case OuchServerMessages.Accepted:
                     print("The server Accepted order ", response['order_token'])
@@ -232,7 +238,7 @@ class Client():
         )
 
         # update local orders
-        self.orders[order_token] = (price, quantity)
+        self.orders[order_token] = (price, quantity, direction)
         return order_request
 
     def cancel_order(self, order_token, quantity_remaining):
@@ -247,9 +253,6 @@ class Client():
         Note:
 
         """
-        if not self.orders:
-            print("No active order!")
-            return None
         res = self._valid_order_input(order_token=order_token, quantity=quantity_remaining)
         if not res:
             return None
@@ -290,7 +293,10 @@ class Client():
                 user_direction = input("Buy(B) or Sell(S): ")
                 await self.send(self.place_order(user_quantity, user_price, user_direction))
 
-            elif cmd == "C":             
+            elif cmd == "C":
+                if not self.orders:
+                    print("No active orders!")
+                    continue         
                 self.print_orders()
                 user_order_token = input("ID of order to cancel: ")
                 user_shares_removed = input("How many shares should remain?: ")
