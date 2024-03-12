@@ -193,15 +193,16 @@ class Exchange:
                 order_reference_number=next(self.order_ref_numbers),
                 timestamp=timestamp)
             self.order_store.add_to_order(m['order_token'], m)
-            self.outgoing_messages.append(m)
+            #self.outgoing_messages.append(m)
+            self.outgoing_broadcast_messages.append(m)
             # Prepare messages to broadcast all clients
             # This includes when the best buy offer changes
             cross_messages = [m for ((id, fulfilling_order_id), price, volume) in crossed_orders 
                                 for m in self.process_cross(id, fulfilling_order_id, price, volume, timestamp=timestamp)]
-            self.outgoing_messages.extend(cross_messages)
-            # Also notify clients when executions have been made! - Kristian M
-            if cross_messages:
-                self.outgoing_broadcast_messages.append(cross_messages[1])
+            #self.outgoing_messages.extend(cross_messages)
+            self.outgoing_broadcast_messages.extend(cross_messages)
+            # if cross_messages:
+            #     self.outgoing_broadcast_messages.append(cross_messages[1])
             if new_bbo:
                 bbo_message = self.best_quote_update(enter_order_message, new_bbo, timestamp)
                 self.outgoing_broadcast_messages.append(bbo_message)
@@ -221,7 +222,7 @@ class Exchange:
             cancel_messages = [ self.order_cancelled_from_cancel(original_enter_message, timestamp, amount_canceled, reason,order_token= cancel_order_message['order_token'])
                         for (id, amount_canceled) in cancelled_orders ]
 
-            self.outgoing_messages.extend(cancel_messages) 
+            self.outgoing_broadcast_messages.extend(cancel_messages) 
             log.info("Resulting book: %s", self.order_book)
             if new_bbo:
                 bbo_message = self.best_quote_update(cancel_order_message, new_bbo, timestamp)

@@ -16,7 +16,7 @@ from random import randrange, randint
 import itertools
 from openai import OpenAI
 import uuid
-
+from exchange.order_books import cda_book
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
 
 p = configargparse.ArgParser()
@@ -38,14 +38,21 @@ class Client():
         self.account_info = {"balance": self.balance, "owned_shares" : self.owned_shares}
         self.id = str(uuid.uuid4().hex).encode('ascii')
         self.orders = dict()
-        # Used internally for client to send unique orders to Exchange
-        self._cur_order_id = 1
+        self.book_copy = cda_book.CDABook()
 
     def __str__(self):
         return (f"Account Information\n"
                 f"Balance: {self.balance}\n"
                 f"Owned_shares: {self.owned_shares}\n")
-        
+    
+    def print_orders(self):
+        """Display active client orders"""
+        print(f'Your active orders')
+        count = 1
+        for order_id in self.orders:
+            print(f'ID: {count}, {self.orders[order_id][1]} shares @ ${self.orders[order_id][0]}')
+            count += 1
+
     def account_information(self):
         return self.account_info
     
@@ -124,8 +131,15 @@ class Client():
                 case OuchServerMessages.Rejected:
                     price, num_shares = self.orders[response['order_token'].decode()] 
                     self._update_account(-price, -num_shares)
+                # TODO: update client account if order was executed
                 case OuchServerMessages.Executed:
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
+                # TODO: update client local_book 
+                case OuchServerMessages.Accepted:
+                    print("The server Accepted order ", response['order_token'])
+                # TODO: update client local_book(can merge with above case)
+                case OuchServerMessages.Canceled:
+                    print("The server canceled order", response['order_token'])
                 case _:
                     print(response.header)
             await asyncio.sleep(0)
@@ -185,21 +199,23 @@ class Client():
             None if order contains improper arguments
             Else return OuchClientMessages.EnterOrder
         """
-        res = self._valid_order_input(quantity, price, direction, self._cur_order_id)
+        res = self._valid_order_input(quantity, price, direction)
         if not res:
             return None
 
         quantity, price, direction, order_token = res
+        # Client can only buy what they can afford
         if direction == 'B' and self._can_afford(price, quantity):
-            self._update_account(-price, quantity, direction)
+            self.balance -= price * quantity
+        # Client can only sell at most amount of their owned_shares
         elif direction == 'S' and quantity <= self.owned_shares:
-            self._update_account(price, -quantity, direction)
+            self.owned_shares -= quantity
         else:
             return None
-        
+        order_token=str(uuid.uuid4().hex).encode('ascii')
 
         order_request = OuchClientMessages.EnterOrder(
-            order_token=f'{order_token:014d}'.encode('ascii'),
+            order_token=order_token,
             buy_sell_indicator=b'B' if direction == 'B' else b'S',
             shares=quantity,
             stock=b'AMAZGOOG',
@@ -216,30 +232,41 @@ class Client():
         )
 
         # update local orders
-        self.orders[f'{order_token:014d}'] = (price, quantity)
-        self._cur_order_id += 1
+        self.orders[order_token] = (price, quantity)
         return order_request
 
-    def cancel_order(self, order_token, quantity_removed):
+    def cancel_order(self, order_token, quantity_remaining):
         """Convert user input into cancel order 
         Args:
             order_token: an int representing order id
-            quantity_removed: an int representing how many shares to remove from the order
+            quantity_remaining: an int representing how many shares should remain part of the order
         
         Returns:
             None if order contains improper arguments
             Else return OuchClientMessages.CancelOrder
+        Note:
+
         """
-        res = self._valid_order_input(order_token=order_token, quantity=quantity_removed)
+        if not self.orders:
+            print("No active order!")
+            return None
+        res = self._valid_order_input(order_token=order_token, quantity=quantity_remaining)
         if not res:
             return None
     
-        quantity_removed, price, direction, order_token = res
+        quantity_remaining, price, direction, order_token = res
+        count = 1
+        for order_id in self.orders:
+            if count == order_token:
+                order_token = order_id
+                break
+            count +=1 
+
         cancel_request = OuchClientMessages.CancelOrder(
-            order_token=f'{order_token:014d}'.encode('ascii'), 
-            shares=quantity_removed,
+            order_token=order_token, 
+            shares=quantity_remaining,
         )
-        
+        self.orders.pop(order_token)
         return cancel_request
 
 
@@ -263,9 +290,10 @@ class Client():
                 user_direction = input("Buy(B) or Sell(S): ")
                 await self.send(self.place_order(user_quantity, user_price, user_direction))
 
-            elif cmd == "C":
+            elif cmd == "C":             
+                self.print_orders()
                 user_order_token = input("ID of order to cancel: ")
-                user_shares_removed = input("How many shares to remove: ")
+                user_shares_removed = input("How many shares should remain?: ")
                 await self.send(self.cancel_order(user_order_token, user_shares_removed))
             else:
                 print(f"Invalid command {cmd}")

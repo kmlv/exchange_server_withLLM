@@ -15,7 +15,7 @@ class OuchFields(ProtocolFieldEnum):
         So if you want to add new fields, follow the aformentioned style.
     """
     msg_type = ('c', 'Identifies the type of this message')
-    order_token = ('14s', 'todo')
+    order_token = ('32s', 'todo')
     buy_sell_indicator = ('c', 'todo')
     shares = ('I', 'todo')
     stock = ('8s', 'todo')
