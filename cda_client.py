@@ -38,6 +38,11 @@ class Client():
         self.orders = dict()
         self.book_copy = cda_book.CDABook()
 
+    def display_account_info(self):
+        print("Account Infomation")
+        print(f"Balance: {self.balance}")
+        print(f"Owned Shares: {self.owned_shares}\n")
+    
     def __str__(self):
         return (f"Account Information\n"
                 f"Balance: {self.balance}\n"
@@ -233,6 +238,27 @@ class Client():
         self.orders[order_token] = (price, quantity, direction)
         return order_request
 
+    def process_order(self, shares, price, buy_sell_indicator):
+        """
+        Example usage: client.process_order(5, 2, "S") #shares, price, buy_sell_indicator
+        """
+        if buy_sell_indicator == "B":
+            if self.balance >= shares * price:
+                self.balance -= shares * price
+                self.owned_shares += shares
+                print("The server accepted the order.")
+            else:
+                print("Insufficient balance to place the order.")
+        elif buy_sell_indicator == "S":
+            if self.owned_shares >= shares:
+                self.balance += shares * price
+                self.owned_shares -= shares
+                print("The server accepted the order.")
+            else:
+                print("Insufficient shares to place the order.")
+        else:
+            print("Invalid buy/sell indicator.")
+
     def cancel_order(self, order_token, quantity_remaining):
         """Convert user input into cancel order 
         Args:
@@ -299,6 +325,7 @@ class Client():
                 print(f"Invalid command {cmd}")
             # sleeping will allow the client.recver() method to process
             await asyncio.sleep(0.5)
+    
         
 def main():
     log.basicConfig(level=log.INFO if not options.debug else log.DEBUG)
