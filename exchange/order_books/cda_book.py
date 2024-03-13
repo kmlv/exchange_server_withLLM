@@ -57,7 +57,6 @@ class CDABook:
 			log.info('-----------------------------------------------')
 			return [], None
 		else:
-			log.info("RAAAAAAAHHHHHHHH")
 			amount_canceled=0
 			current_volume=orders[price].order_q[id]
 			if volume==0: 										#fully cancel

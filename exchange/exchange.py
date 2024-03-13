@@ -154,11 +154,9 @@ class Exchange:
         Args:
             enter_order_message: OuchMessage.EnterOrder
             timestamp: int that represents time(in seconds) of when order was made
-            executed_quantity: 
+            executed_quantity: int specifying amount of shares to sell/buy
 
         """
-        # check if server has already processed this order by checking order id
-        # TODO: also check for uuid
         order_stored = self.order_store.store_order( 
             id = enter_order_message['order_token'], 
             message = enter_order_message, 

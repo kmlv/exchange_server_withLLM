@@ -1,8 +1,6 @@
 """
 Client class that communicates with a Continuous Double Auction exchange following the
-Ouch Message Protocol
-todo: Reconstruct on client side using built-in book class
-client attributes: balance, orders, etc.
+ITCH message Protocol
 """ 
 import sys
 import asyncio
@@ -28,13 +26,13 @@ p.add('--time_in_force', default=99999, type=int)
 options, args = p.parse_known_args()
 
 DEFAULT_BALANCE = 100
-
+DEFAULT_SHARES = 5
 class Client():
-    def __init__(self, balance=None):
+    def __init__(self, balance=None, starting_shares=None):
         self.reader = None
         self.writer = None
         self.balance = balance if balance else DEFAULT_BALANCE
-        self.owned_shares = 5
+        self.owned_shares = starting_shares if starting_shares else DEFAULT_SHARES
         self.account_info = {"balance": self.balance, "owned_shares" : self.owned_shares}
         self.id = str(uuid.uuid4().hex).encode('ascii')
         self.orders = dict()
@@ -57,19 +55,16 @@ class Client():
         return self.account_info
     
     def _update_account(self, cost_per_share, num_shares, direction):
-        """update the state of account
+        """update the state of account upon successful trade
         Args:
             cost_per_share: int specifying the value of 1 share
             num_shares: int specifying the quantity of shares
             direction: str specifying how to update the account
-        Note:
-            Client no longer has access to money related to Buy send order.\n
-            When the client sends a Sell order, they lose access to the number
-            of shares they want to sell.
         """
         if direction == 'B':
-            self.balance += (cost_per_share * num_shares)
-        self.owned_shares += num_shares
+            self.owned_shares += num_shares
+        else:
+            self.balance += (num_shares * cost_per_share)
 
     def _can_afford(self, cost_per_share, num_shares):
         """Can client create the order with their current balance?
@@ -131,14 +126,11 @@ class Client():
                 case OuchServerMessages.Rejected:
                     price, num_shares = self.orders[response['order_token'].decode()] 
                     self._update_account(-price, -num_shares)
-                # TODO: update client account if order was executed
                 case OuchServerMessages.Executed:
-                    print(self.orders)
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
                     order_id = response['order_token']
                     if order_id in self.orders:
-                        price, num_shares, direction = self.orders[order_id]
-                        print(price, num_shares, direction)
+                        self._update_account(*self.orders[order_id])
                         self.orders.pop(order_id)
                 # TODO: update client local_book 
                 case OuchServerMessages.Accepted:
@@ -251,6 +243,8 @@ class Client():
             None if order contains improper arguments
             Else return OuchClientMessages.CancelOrder
         Note:
+            Cancel all or part of an order. quantiy_remaining refers to the desired remaining shares to be executed: 
+            if it is 0, the order is fully cancelled, otherwise an order of quantity_remaining remains.
 
         """
         res = self._valid_order_input(order_token=order_token, quantity=quantity_remaining)

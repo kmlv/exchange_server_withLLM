@@ -1,6 +1,7 @@
 # https://nasdaqtrader.com/content/technicalsupport/specifications/TradingProducts/OUCH4.2.pdf
 from .protocol_message_primitives import *
-
+#https://www.borsaistanbul.com/files/bistech-itch-protocol-specification.pdf
+#https://nasdaqtrader.com/content/technicalsupport/specifications/TradingProducts/OUCH4.2.pdf
 class OuchFields(ProtocolFieldEnum):
     """Fields for OuchMessages
     Tuples have the meaning
