@@ -25,39 +25,41 @@ p.add('--debug', action='store_true')
 p.add('--time_in_force', default=99999, type=int)
 options, args = p.parse_known_args()
 
-DEFAULT_BALANCE = 100
-DEFAULT_SHARES = 5
+
 class Client():
-    def __init__(self, balance=None, starting_shares=None):
+    """A client that can communicate with a CDA
+
+    Attributes:
+        reader: StreamReader instance that listens to CDA
+        writer: StreamWriter instance that writes to CDA
+        balance: An integer representing the amount of money a client has to spend
+        owned_shares: An integer representing the amount of shares a client owns 
+        id: uuid that separates the client instance from others
+        orders: A dict describing the client's personal active orders
+            where keys are order IDs and values are tuples representing order information
+        book_copy: A CDABook() that the client tries to replicate from the CDA exchange
+    """
+    def __init__(self, balance=100, starting_shares=5):
         self.reader = None
         self.writer = None
-        self.balance = balance if balance else DEFAULT_BALANCE
-        self.owned_shares = starting_shares if starting_shares else DEFAULT_SHARES
-        self.account_info = {"balance": self.balance, "owned_shares" : self.owned_shares}
+        self.balance = balance
+        self.owned_shares = starting_shares
         self.id = str(uuid.uuid4().hex).encode('ascii')
         self.orders = dict()
         self.book_copy = cda_book.CDABook()
-
-    def display_account_info(self):
-        print("Account Infomation")
-        print(f"Balance: {self.balance}")
-        print(f"Owned Shares: {self.owned_shares}\n")
     
     def __str__(self):
         return (f"Account Information\n"
                 f"Balance: {self.balance}\n"
                 f"Owned_shares: {self.owned_shares}\n")
     
-    def print_orders(self):
+    def print_active_orders(self):
         """Display active client orders"""
         print(f'Your active orders')
         count = 1
         for order_id in self.orders:
             print(f'ID: {count}, {self.orders[order_id][1]} shares @ ${self.orders[order_id][0]}')
             count += 1
-
-    def account_information(self):
-        return self.account_info
     
     def _update_account(self, cost_per_share, num_shares, direction):
         """update the state of account upon successful trade
@@ -71,6 +73,32 @@ class Client():
         else:
             self.balance += (num_shares * cost_per_share)
 
+    def _update_active_orders(self, execution: OuchServerMessages.Executed):
+        """Update client account based on details of the original order and
+        the execution
+
+        Args:
+            execution: an OuchServerMessage that includes details of a trade
+        """
+        sold_shares = execution['executed_shares']
+        price_per_share = execution['execution_price']
+        order_id = execution['order_token']
+
+        # Get details of the original order from client
+        proposed_price, desired_shares, direction = self.orders[order_id]
+        print("sold at ", price_per_share, " but original price we had was: ", proposed_price)
+        self._update_account(price_per_share, sold_shares, direction)
+       
+        # Check that order was completely fulfilled
+        if sold_shares == desired_shares:
+            self.orders.pop(order_id)
+        else:
+            self.orders[order_id] = (
+                proposed_price,
+                desired_shares - sold_shares,
+                direction
+            )   
+    
     def _can_afford(self, cost_per_share, num_shares):
         """Can client create the order with their current balance?
         Args:
@@ -107,7 +135,6 @@ class Client():
         response_msg = message_type.from_bytes(payload, header=False)
         return response_msg, message_type
 
-    # TODO: update account based on Accept response from server
     async def recver(self):
         """Listener to all broadcasts sent from the exchange server"""
         if self.reader is None:
@@ -135,14 +162,22 @@ class Client():
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
                     order_id = response['order_token']
                     if order_id in self.orders:
-                        self._update_account(*self.orders[order_id])
-                        self.orders.pop(order_id)
+                        self._update_active_orders(response)
                 # TODO: update client local_book 
                 case OuchServerMessages.Accepted:
                     print("The server Accepted order ", response['order_token'])
                 # TODO: update client local_book(can merge with above case)
                 case OuchServerMessages.Canceled:
                     print("The server canceled order", response['order_token'])
+                    cancelled_order_id = response['order_token']
+                    if cancelled_order_id in self.orders:
+                        price, quantity, direction = self.orders[cancelled_order_id]
+                        if direction == 'B':
+                            direction = 'S'
+                        else:
+                            direction = 'B'
+                        self._update_account(price, quantity, direction)
+                        self.orders.pop(cancelled_order_id)
                 case _:
                     print(response.header)
             await asyncio.sleep(0)
@@ -289,7 +324,6 @@ class Client():
             order_token=order_token, 
             shares=quantity_remaining,
         )
-        self.orders.pop(order_token)
         return cancel_request
 
 
@@ -307,6 +341,7 @@ class Client():
         while True:
             print(self)
             cmd = input("Make a command order(O) or cancel(C): ")
+            await asyncio.sleep(0.5)
             if cmd == "O":
                 user_quantity = input("Enter number of shares: ")
                 user_price = input("Enter share price: ")
@@ -317,7 +352,7 @@ class Client():
                 if not self.orders:
                     print("No active orders!")
                     continue         
-                self.print_orders()
+                self.print_active_orders()
                 user_order_token = input("ID of order to cancel: ")
                 user_shares_removed = input("How many shares should remain?: ")
                 await self.send(self.cancel_order(user_order_token, user_shares_removed))
