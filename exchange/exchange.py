@@ -102,7 +102,9 @@ class Exchange:
                             order_token = order_token,
                             decrement_shares = amount_canceled,
                             reason = reason,
-                            midpoint_peg = original_enter_message['midpoint_peg'])
+                            midpoint_peg = original_enter_message['midpoint_peg'],
+                            price = original_enter_message['price'],
+                            buy_sell_indicator = original_enter_message['buy_sell_indicator'])
         m.meta = original_enter_message.meta
         return m
     

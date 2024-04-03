@@ -2,6 +2,7 @@
 Client class that communicates with a Continuous Double Auction exchange following the
 ITCH message Protocol
 """ 
+from re import M
 import sys
 import asyncio
 import binascii
@@ -154,20 +155,26 @@ class Client():
                 # the order book will update to buy {$1} sell {}, which means the new best bid is $1 and best ask is 0 
                 case OuchServerMessages.BestBidAndOffer:
                     print("new best buy offer: ", response)
-                # Order was rejected, refund the client
-                case OuchServerMessages.Rejected:
-                    price, num_shares = self.orders[response['order_token'].decode()] 
-                    self._update_account(-price, -num_shares)
                 case OuchServerMessages.Executed:
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
                     order_id = response['order_token']
                     if order_id in self.orders:
                         self._update_active_orders(response)
-                # TODO: update client local_book 
+                # update client local_book 
                 case OuchServerMessages.Accepted:
                     print("The server Accepted order ", response['order_token'])
-                # TODO: update client local_book(can merge with above case)
+                    time_in_force = response['time_in_force']
+                    enter_into_book = True if time_in_force > 0 else False
+                    enter_order_func = self.book_copy.enter_buy if response['buy_sell_indicator'] == b'B' else self.book_copy.enter_sell
+                    enter_order_func(
+                        response['order_token'],
+                        response['price'],
+                        response['shares'],
+                        enter_into_book
+                    )
+                # update client local_book
                 case OuchServerMessages.Canceled:
+                    #TODO: fix partial cancelled orders from giving a full refund
                     print("The server canceled order", response['order_token'])
                     cancelled_order_id = response['order_token']
                     if cancelled_order_id in self.orders:
@@ -178,6 +185,13 @@ class Client():
                             direction = 'B'
                         self._update_account(price, quantity, direction)
                         self.orders.pop(cancelled_order_id)
+
+                    self.book_copy.cancel_order(
+                        response['order_token'],
+                        response['price'],
+                        response['decrement_shares'],
+                        response['buy_sell_indicator']
+                    )
                 case _:
                     print(response.header)
             await asyncio.sleep(0)

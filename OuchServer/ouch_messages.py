@@ -172,7 +172,7 @@ class OuchServerMessages(LookupByHeaderBytesMixin, OuchMessageTypeSpec,
         )
     Canceled = ('{timestamp}:{order_token}:-{decrement_shares}({reason})',
             {'msg_type': b'C'},
-            ['timestamp', 'order_token', 'decrement_shares', 'reason', 'midpoint_peg']
+            ['timestamp', 'order_token', 'decrement_shares', 'reason', 'midpoint_peg', 'price', 'buy_sell_indicator']
         )
     # unused
     AIQCanceled = ('{timestamp}:{order_token}:-{decrement_shares}({reason})',
