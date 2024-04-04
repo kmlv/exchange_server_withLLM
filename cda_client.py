@@ -174,17 +174,21 @@ class Client():
                     )
                 # update client local_book
                 case OuchServerMessages.Canceled:
-                    #TODO: fix partial cancelled orders from giving a full refund
                     print("The server canceled order", response['order_token'])
                     cancelled_order_id = response['order_token']
                     if cancelled_order_id in self.orders:
                         price, quantity, direction = self.orders[cancelled_order_id]
+                        # Update order based on remaining shares
+                        self.orders[cancelled_order_id] = (price, response['decrement_shares'], direction)
                         if direction == 'B':
                             direction = 'S'
                         else:
                             direction = 'B'
-                        self._update_account(price, quantity, direction)
-                        self.orders.pop(cancelled_order_id)
+                      
+                        self._update_account(price, response['decrement_shares'], direction)
+                        # Remove order if all shares were canceled
+                        if quantity == response['decrement_shares']:
+                            self.orders.pop(cancelled_order_id)
 
                     self.book_copy.cancel_order(
                         response['order_token'],
