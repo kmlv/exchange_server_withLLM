@@ -79,6 +79,10 @@ class Exchange:
         return m
 
     def cancel_order_from_enter_order(self, enter_order_message, reason = b'U'):
+        """Create CancelOrder on behalf of client when order exceeds time_in_force
+        Args:
+            enter_order_message: Original OuchClientMessages.Order that is used to compose CancelOrder
+        """
         m = OuchClientMessages.CancelOrder(
             order_token = enter_order_message['order_token'],
             shares = 0
@@ -178,7 +182,8 @@ class Exchange:
         else:
             time_in_force = enter_order_message['time_in_force']
             enter_into_book = True if time_in_force > 0 else False    
-            if time_in_force > 0 and time_in_force < 99998:     #schedule a cancellation at some point in the future
+            #schedule a cancellation at some point in the future
+            if time_in_force > 0 and time_in_force < 99998:     
                 cancel_order_message = self.cancel_order_from_enter_order( enter_order_message )
                 self.loop.call_later(time_in_force, partial(self.cancel_order_atomic, cancel_order_message, timestamp))
             
@@ -208,21 +213,29 @@ class Exchange:
                 self.outgoing_broadcast_messages.append(bbo_message)
 
     def cancel_order_atomic(self, cancel_order_message, timestamp, reason=b'U'):
-        #if cancel_order_message['order_token'] not in self.order_store.orders.get():
-        if self.order_store.orders.get(cancel_order_message['order_token']) is None:
+        """Cancel an order
+        Args:
+            cancel_order_message: OuchClientMessages.CancelOrder containing order information needed to cancel
+            timestamp: time, in seconds, that order was cancelled
+        """
+        store_entry = self.order_store.orders.get(cancel_order_message['order_token'])
+        if store_entry is None:
             log.info(f"No such order to cancel, ignored. Token to cancel: {cancel_order_message['order_token']}")
         else:
-            store_entry = self.order_store.orders[cancel_order_message['order_token']]
             original_enter_message = store_entry.original_enter_message
             cancelled_orders, new_bbo = self.order_book.cancel_order(
                 id = cancel_order_message['order_token'],
                 price = store_entry.first_message['price'],
                 volume = cancel_order_message['shares'],
                 buy_sell_indicator = store_entry.original_enter_message['buy_sell_indicator'])
+            # Remove order entry if all shares were cancelled
+            if cancel_order_message['shares'] == 0:
+                 self.order_store.orders.pop(cancel_order_message['order_token'], None)
+            # Create and broadcast cancel message(s)
             cancel_messages = [ self.order_cancelled_from_cancel(original_enter_message, timestamp, amount_canceled, reason,order_token= cancel_order_message['order_token'])
                         for (id, amount_canceled) in cancelled_orders ]
-
             self.outgoing_broadcast_messages.extend(cancel_messages) 
+            print(len(self.outgoing_broadcast_messages))
             log.info("Resulting book: %s", self.order_book)
             if new_bbo:
                 bbo_message = self.best_quote_update(cancel_order_message, new_bbo, timestamp)

@@ -17,6 +17,7 @@ from openai import OpenAI
 import uuid
 from exchange.order_books import cda_book
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
+from gpt_bot.gpt_interpreter import GPTInterpreter
 
 p = configargparse.ArgParser()
 p.add('--port', default=12345)
@@ -48,6 +49,7 @@ class Client():
         self.id = str(uuid.uuid4().hex).encode('ascii')
         self.orders = dict()
         self.book_copy = cda_book.CDABook()
+        # self.strategy_interpretor = GPTInterpreter()
     
     def __str__(self):
         return (f"Account Information\n"
@@ -179,7 +181,7 @@ class Client():
                     if cancelled_order_id in self.orders:
                         price, quantity, direction = self.orders[cancelled_order_id]
                         # Update order based on remaining shares
-                        self.orders[cancelled_order_id] = (price, response['decrement_shares'], direction)
+                        self.orders[cancelled_order_id] = (price, quantity - response['decrement_shares'], direction)
                         if direction == 'B':
                             direction = 'S'
                         else:
@@ -276,7 +278,7 @@ class Client():
             shares=quantity,
             stock=b'AMAZGOOG',
             price=price,
-            time_in_force=options.time_in_force,
+            time_in_force=100,#options.time_in_force,
             firm=bytes(self.id),
             display=b'N',
             capacity=b'O',

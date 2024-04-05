@@ -8,7 +8,7 @@ class OrderStore:
 	'''
 
 	def __init__(self):
-		self.orders = {}
+		self.orders = dict()
 
 	def __str__(self):
 		return """  
@@ -31,12 +31,11 @@ class OrderStore:
 
 		Returns true if successful in storing it; false if unsuccesful because the order token is already used.
 		'''
-		client_id = message["firm"]
-		if id in self.orders and client_id == (self.orders[id]).get_owner_id():
+		if id in self.orders:
 			log.info('Ignoring store_order command: id %s already in the order store', id)
 			return False
 		else:
-			self.orders[id] = OrderStoreEntry(message, original_enter_message = original_enter_message, owner_id = client_id, executed_quantity = executed_quantity)
+			self.orders[id] = OrderStoreEntry(message, original_enter_message = original_enter_message, executed_quantity = executed_quantity)
 			return self.orders[id]
 
 	def add_to_order(self, id, message):
@@ -56,18 +55,13 @@ class OrderStore:
 		self.orders.clear()
 		log.info('orderstore after clear: %s' % str(self.orders))
 
-
 class OrderStoreEntry:
-	def __init__(self, message,  executed_quantity, owner_id, original_enter_message = None):
+	def __init__(self, message,  executed_quantity, original_enter_message = None):
 		self.history = []
 		self.executed_quantity = executed_quantity
 		self.first_message = message
 		self.original_enter_message = original_enter_message if original_enter_message is not None else message
 		self.history.append(message)
-		self.owner_id = owner_id
 
 	def add_to_order(self, message):
 		self.history.append(message)
-
-	def get_owner_id(self):
-		return self.owner_id
