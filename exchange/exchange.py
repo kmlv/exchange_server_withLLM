@@ -228,6 +228,9 @@ class Exchange:
                 price = store_entry.first_message['price'],
                 volume = cancel_order_message['shares'],
                 buy_sell_indicator = store_entry.original_enter_message['buy_sell_indicator'])
+            # Order was traded or canceled before it expired
+            if not cancelled_orders and not new_bbo:
+                return
             # Remove order entry if all shares were cancelled
             if cancel_order_message['shares'] == 0:
                  self.order_store.orders.pop(cancel_order_message['order_token'], None)
@@ -235,11 +238,13 @@ class Exchange:
             cancel_messages = [ self.order_cancelled_from_cancel(original_enter_message, timestamp, amount_canceled, reason,order_token= cancel_order_message['order_token'])
                         for (id, amount_canceled) in cancelled_orders ]
             self.outgoing_broadcast_messages.extend(cancel_messages) 
-            print(len(self.outgoing_broadcast_messages))
             log.info("Resulting book: %s", self.order_book)
             if new_bbo:
                 bbo_message = self.best_quote_update(cancel_order_message, new_bbo, timestamp)
                 self.outgoing_broadcast_messages.append(bbo_message)
+            # Broadcast cancel message(s)
+            loop = asyncio.get_event_loop()
+            loop.call_soon_threadsafe(loop.create_task, self.send_outgoing_broadcast_messages())
 
       # """
         # NASDAQ may respond to the Replace Order Message in several ways:
@@ -352,7 +357,7 @@ class Exchange:
         """Send Server OuchMessage to all connected clients"""
         while len(self.outgoing_broadcast_messages)>0:
             m = self.outgoing_broadcast_messages.popleft()
-            log.info(f"BROADCASTING: {m}")
+            # log.info(f"BROADCASTING: {m}")
             await self.message_broadcast(m)
             
 
@@ -372,7 +377,7 @@ class Exchange:
         if message.message_type in self.handlers:
             timestamp = nanoseconds_since_midnight()
             self.handlers[message.message_type](message, timestamp)
-            await self.send_outgoing_messages()
+            #await self.send_outgoing_messages()
             await self.send_outgoing_broadcast_messages()
         else:
             log.error("Unknown message type %s", message.message_type)

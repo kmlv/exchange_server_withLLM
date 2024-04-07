@@ -93,14 +93,10 @@ class ProtocolMessageServer(object):
             
     async def send_server_response(self, server_msg):
         client_token = server_msg.meta
-        # print(f"client toekn {client_token}")
         try:
             client_writer = self.clients[client_token].writer
         except KeyError:
             return
-        # print(f"Server msg raw: {server_msg}, {type(server_msg)}")
-        # print(f"Server msg in bytes {bytes(server_msg)}")
-        #client_writer.write(bytes(str(server_msg).encode('ascii')))
         client_writer.write(bytes(server_msg))
         await client_writer.drain()
 

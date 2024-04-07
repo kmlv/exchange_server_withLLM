@@ -89,7 +89,6 @@ class Client():
 
         # Get details of the original order from client
         proposed_price, desired_shares, direction = self.orders[order_id]
-        print("sold at ", price_per_share, " but original price we had was: ", proposed_price)
         self._update_account(price_per_share, sold_shares, direction)
        
         # Check that order was completely fulfilled
@@ -203,13 +202,14 @@ class Client():
             await asyncio.sleep(0)
         
 
-    def _valid_order_input(self, quantity=None, price=None, direction=None, order_token=None):
+    def _valid_order_input(self, quantity=None, price=None, direction=None, order_token=None, time_in_force=None):
         """Determine if valid parameters were entered
         Args:
             quantity: an expected int 
             price: an expected int 
-            direction an expected str
-            order_token an expected int
+            direction: an expected str
+            order_token: an expected int
+            time_in_force: an expected int
         Returns:
             False, if args are invalid
             tuple containing args in their respective formats
@@ -233,8 +233,13 @@ class Client():
                 order_token = int(order_token)
                 if order_token < 1:
                     return False
+            
+            if time_in_force is not None:
+                time_in_force = int(time_in_force)
+                if time_in_force < 1 or time_in_force > 99998:
+                    return False
 
-            return (quantity, price, direction, order_token)
+            return (quantity, price, direction, order_token, time_in_force)
         except ValueError:
             return False
 
@@ -246,28 +251,33 @@ class Client():
         self.writer.write(bytes(request))
         await self.writer.drain()
 
-    def place_order(self, quantity, price, direction):
+    def place_order(self, quantity, price, direction, time_in_force=None):
         """Make an Ouch Limit order
         Args:
             quantity: an int representing number of shares for the order
             price: an int representing price to buy shares at
             direction: str that specifies whether the order is a BUY or SELL
+            time_in_force: int that specifies duration(in seconds) that order should last
 
         Returns:
             None if order contains improper arguments
             Else return OuchClientMessages.EnterOrder
+        Note:
+            if no time_in_force is specified, order will act like a Market Order instead of Limit Order
         """
-        res = self._valid_order_input(quantity, price, direction)
+        res = self._valid_order_input(quantity=quantity, price=price, direction=direction, time_in_force=time_in_force)
         if not res:
             return None
 
-        quantity, price, direction, order_token = res
+        quantity, price, direction, order_token, time_in_force = res
         # Client can only buy what they can afford
         if direction == 'B' and self._can_afford(price, quantity):
             self.balance -= price * quantity
         # Client can only sell at most amount of their owned_shares
         elif direction == 'S' and quantity <= self.owned_shares:
             self.owned_shares -= quantity
+        elif not time_in_force:
+            return None
         else:
             return None
         order_token=str(uuid.uuid4().hex).encode('ascii')
@@ -278,7 +288,7 @@ class Client():
             shares=quantity,
             stock=b'AMAZGOOG',
             price=price,
-            time_in_force=100,#options.time_in_force,
+            time_in_force=time_in_force if time_in_force else options.time_in_force,
             firm=bytes(self.id),
             display=b'N',
             capacity=b'O',
@@ -324,7 +334,7 @@ class Client():
             None if order contains improper arguments
             Else return OuchClientMessages.CancelOrder
         Note:
-            Cancel all or part of an order. quantiy_remaining refers to the desired remaining shares to be executed: 
+            Cancel all or part of an order. quantity_remaining refers to the desired remaining shares to be executed: 
             if it is 0, the order is fully cancelled, otherwise an order of quantity_remaining remains.
 
         """
@@ -366,7 +376,8 @@ class Client():
                 user_quantity = input("Enter number of shares: ")
                 user_price = input("Enter share price: ")
                 user_direction = input("Buy(B) or Sell(S): ")
-                await self.send(self.place_order(user_quantity, user_price, user_direction))
+                user_time_in_force = input("Order Lifetime: ")
+                await self.send(self.place_order(user_quantity, user_price, user_direction, user_time_in_force))
 
             elif cmd == "C":
                 if not self.orders:

@@ -1,6 +1,6 @@
 
 Getting Started
-==========
+=================
 NOTE: Currently, the project supports python 3.10.9: https://www.python.org/downloads/release/python-3109/
 
 
@@ -26,3 +26,7 @@ Run the CDA client
 ::
 
     python ./cda_client
+
+Acknowledgements
+=================
+This project is based on the previous work from https://github.com/Leeps-Lab/exchange_server
