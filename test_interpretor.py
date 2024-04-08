@@ -17,7 +17,7 @@ def test_gpt():
     msg6 = "Sell 5 shares for 4 dollars"
     msg7 = "I'm considering selling 50 shares at a price of $30 or higher."
     msg8 = "SELL 6 SHARES OF MY STOCK FOR three bucks"
-    msg9 = "Sell 1 stock for 1 dollar"
+    msg9 = "Sell 1 stock for $1 each that lasts for 60 seconds"
    
     msgs = [msg1, msg2, msg3, msg4, msg5, msg6, msg7, msg8, msg9]
     correct_params = [{"quantity": 10, "price": 2, "direction": "B"},
@@ -28,7 +28,7 @@ def test_gpt():
                         {"quantity": 5, "price": 4, "direction": "S"},
                         {"quantity": 50, "price": 30, "direction": "S"},
                         {"quantity": 6, "price": 3, "direction": "S"},
-                        {"quantity": 1, "price": 1, "direction": "S"}]
+                        {"quantity": 1, "price": 1, "direction": "S", 'time_in_force': 60}]
                       
     correct = 0
     incorrect = 0
