@@ -20,11 +20,15 @@ _TOOLS = [
                 "properties": {
                     "quantity": {
                         "type": "integer",
-                        "description": "Amount of shares the user wants to buy or sell" 
+                        "description": "Amount of shares the user wants to buy or sell. This is \
+                        specified using a number, along with an optional unit (e.g., shares, stocks)." 
                     },
                     "price": {
                         "type": "integer",
-                        "description": "The price the user is willing to buy or sell at"
+                        "description": "The price the user is willing to buy or sell at. \
+                        This can be specified using a number, along with an optional currency \
+                        symbol (e.g., $, £, €). Common variations for dollars include 'dollars' \
+                        and 'bucks'."
                     },
                     "direction":{
                         "type": "string",
@@ -118,7 +122,7 @@ class GPTInterpreter:
                 print(f"Function Name: {function_name}, Args: {args}")
                 print(f"Output: {output}\n")
         #print(functions_called)
-        # print(function_list_result, args)
+        # gprint(function_list_result, args)
         return function_list_result, args
 
 
