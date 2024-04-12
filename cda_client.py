@@ -391,7 +391,8 @@ class Client():
                 print(f"Invalid command {cmd}")
             # sleeping will allow the client.recver() method to process
             await asyncio.sleep(0.5)
-    
+    def bingus(self, input_str):
+        return input_str    
         
 def main():
     log.basicConfig(level=log.INFO if not options.debug else log.DEBUG)

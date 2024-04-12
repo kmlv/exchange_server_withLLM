@@ -80,11 +80,16 @@ def script_runner(code_str):
     with open("help.py", "a") as file:
         for line in code_str:
             file.write(line)
+        # Add execution code
+        idk = ["\nif __name__ == '__main__':\n",
+               "    active_strategy()"
+               ]
+        file.writelines(idk)
+        
     
 
-# Get prompt from user
+# # Get prompt from user
 response = query_engine.query("write a Python function called active_strategy() that will " + input('Enter prompt: '))
 script_runner(str(response))
-
-a = subprocess.call(['python', 'help.py'])
-print(a)
+with open('output.txt', 'w') as file:
+    a = subprocess.run(['python', '.\help.py'], text=True, stdout=file)
