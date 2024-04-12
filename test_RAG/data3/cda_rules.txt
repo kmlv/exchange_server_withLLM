@@ -1,0 +1,35 @@
+A Continuous Double Auction (CDA) is a type of trading mechanism used in financial markets, such as stock exchanges and electronic trading platforms. 
+With the following key rules:
+
+Continuous Trading: trading occurs continuously throughout the trading session, rather than being divided into discrete trading periods.
+
+Buy and Sell Orders: Participants can submit both buy and sell orders at any time during the trading session. They have the following properties:
+
+    - Buy orders represent the desire to purchase a security at a specified price or lower, while sell orders represent the desire to sell a security at a specified price or higher.
+
+    - Price and Quantity: Each order specifies both a price and a quantity. The price represents the maximum (for buy orders) or minimum (for sell orders) that the trader is willing to accept. 
+      The quantity represents the number of shares or units the trader wishes to buy or sell.
+
+Matching/Trading: The trading system continuously matches buy and sell orders based on their prices. 
+    - Trades occur when:
+        - a buy order's price is equal to or greater than a sell order's price or
+        - when a sell order's price is equal to or less than a buy order's price.
+
+Priority Rules: In case of multiple buy or sell orders at the same price, priority rules determine the order in which they are matched. 
+These rules can vary but often follow a time priority, where the order entered into the system first gets matched first.
+
+Immediate Execution: Orders are executed immediately upon finding a match, assuming there are matching orders available in the market. These types of orders are also known as Market Orders.
+
+Transparency: CDA systems often provide transparency by displaying real-time information about current buy and sell orders, including their prices and quantities.
+
+Flexibility: Participants can cancel their orders at any time before they are matched. This allows traders to react to new information or changing market conditions.
+
+Orders are sent to the address and port: 127.0.0.1:12345
+
+Usable Python functions:
+
+CDA_order is a python function that will send an order given the number of shares, price per share, and direction('B' or 'S')
+def CDA_order(shares: int, price: int, direction: str):
+    send('127.0.0.1:12345, direction, shares, price)
+
+
