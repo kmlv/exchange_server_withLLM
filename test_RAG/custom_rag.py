@@ -77,9 +77,14 @@ query_engine = query_engine.RetrieverQueryEngine(
 
 def script_runner(code_str):
     print("Running Script..", code_str)
+    code_str = code_str.split('\n')
+    if 'python' in code_str[0]:
+        code_str[0] = ''
+        code_str[-1] = ''
+    
     with open("help.py", "a") as file:
         for line in code_str:
-            file.write(line)
+            file.write(line + '\n')
         # Add execution code
         idk = ["\nif __name__ == '__main__':\n",
                "    active_strategy()"
