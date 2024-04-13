@@ -397,7 +397,8 @@ class Client():
 def main():
     log.basicConfig(level=log.INFO if not options.debug else log.DEBUG)
     log.debug(options)
-
+    server_addr = sys.argv[1]
+    print(server_addr, flush=True)
     # creates a client and connects to our server
     client = Client()
     loop = asyncio.new_event_loop()
