@@ -14,8 +14,8 @@ from exchange.iex_exchange import IEXExchange
 from exchange.order_books.book_logging import BookLogger
 
 p = configargparse.getArgParser()
-p.add('--port', default=12345)
-p.add('--host', default='127.0.0.1', help="Address to bind to / listen on")
+p.add('--port', default=8090)
+p.add('--host', default='0.0.0.0', help="Address to bind to / listen on")
 p.add('--debug', action='store_true')
 p.add('--logfile', default=None, type=str)
 p.add('--inputlogfile', default=None, type=str)
