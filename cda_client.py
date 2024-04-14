@@ -18,7 +18,8 @@ import uuid
 from exchange.order_books import cda_book
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
 from gpt_bot.gpt_interpreter import GPTInterpreter
-
+from flask import Flask
+import threading
 p = configargparse.ArgParser()
 p.add('--port', default=8090)
 p.add('--host', default='127.0.0.1', help="Address of server")
@@ -26,6 +27,7 @@ p.add('--delay', default=0, type=float, help="Delay in seconds between sending m
 p.add('--debug', action='store_true')
 p.add('--time_in_force', default=99999, type=int)
 options, args = p.parse_known_args()
+
 
 
 class Client():
@@ -50,6 +52,7 @@ class Client():
         self.orders = dict()
         self.book_copy = cda_book.CDABook()
         # self.strategy_interpretor = GPTInterpreter()
+        
     
     def __str__(self):
         return (f"Account Information\n"
@@ -244,6 +247,7 @@ class Client():
             return False
 
     async def send(self, request):
+        print("Sending ", request)
         """Send Ouch message to server"""
         if not request:
             print("Invalid order")
@@ -252,6 +256,7 @@ class Client():
         await self.writer.drain()
 
     def place_order(self, quantity, price, direction, time_in_force=None):
+        print("FML")
         """Make an Ouch Limit order
         Args:
             quantity: an int representing number of shares for the order
@@ -392,9 +397,11 @@ class Client():
             # sleeping will allow the client.recver() method to process
             await asyncio.sleep(0.5)
     def bingus(self, input_str):
-        return input_str    
-        
-def main():
+        return input_str   
+
+
+#----------------------------DEBUG------------------------
+async def main():
     log.basicConfig(level=log.INFO if not options.debug else log.DEBUG)
     log.debug(options)
     
@@ -402,16 +409,11 @@ def main():
     # print(server_addr, flush=True)
     # creates a client and connects to our server
     client = Client()
-    loop = asyncio.new_event_loop()
-    asyncio.ensure_future(client.sender(), loop=loop)
-    asyncio.ensure_future(client.recver(), loop=loop)
-    
 
-    try:
-        loop.run_forever()       
-    finally:
-        loop.close()
-
+    # loop = asyncio.new_event_loop()
+    # asyncio.ensure_future(client.sender(), loop=loop)
+    # asyncio.ensure_future(client.recver(), loop=loop)
+    await asyncio.gather(client.sender(), client.recver())
 
 if __name__ == '__main__':   
-    main()
+    asyncio.run(main())

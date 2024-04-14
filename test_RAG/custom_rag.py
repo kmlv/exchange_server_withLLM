@@ -82,7 +82,7 @@ def script_runner(code_str):
         code_str[0] = ''
         code_str[-1] = ''
     
-    with open("help.py", "a") as file:
+    with open("test_RAG/help.py", "a") as file:
         for line in code_str:
             file.write(line + '\n')
         # Add execution code
@@ -96,5 +96,5 @@ def script_runner(code_str):
 # # Get prompt from user
 response = query_engine.query("write a Python function called active_strategy() that will " + input('Enter prompt: '))
 script_runner(str(response))
-with open('output.txt', 'w') as file:
-    a = subprocess.run(['python', '.\help.py'], text=True, stdout=file)
+# with open('output.txt', 'w') as file:
+a = subprocess.run(['python', 'test_RAG/help.py'], text=True)
