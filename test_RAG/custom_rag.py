@@ -96,5 +96,4 @@ def script_runner(code_str):
 # # Get prompt from user
 response = query_engine.query("write a Python function called active_strategy() that will " + input('Enter prompt: '))
 script_runner(str(response))
-# with open('output.txt', 'w') as file:
 a = subprocess.run(['python', 'test_RAG/help.py'], text=True)

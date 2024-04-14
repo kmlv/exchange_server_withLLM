@@ -66,7 +66,13 @@ class Client():
         for order_id in self.orders:
             print(f'ID: {count}, {self.orders[order_id][1]} shares @ ${self.orders[order_id][0]}')
             count += 1
+        
+    def account_info(self):
+        return {"balance" : self.balance,"orders" : self.orders, "owned_shares" : self.owned_shares}
     
+    def order_book(self):
+        return {"book": self.book_copy}
+
     def _update_account(self, cost_per_share, num_shares, direction):
         """update the state of account upon successful trade
         Args:
@@ -105,6 +111,7 @@ class Client():
             )   
     
     def _can_afford(self, cost_per_share, num_shares):
+        print(cost_per_share, type(cost_per_share), num_shares, type(num_shares))
         """Can client create the order with their current balance?
         Args:
             cost_per_share: an int representing the price per share
@@ -256,7 +263,6 @@ class Client():
         await self.writer.drain()
 
     def place_order(self, quantity, price, direction, time_in_force=None):
-        print("FML")
         """Make an Ouch Limit order
         Args:
             quantity: an int representing number of shares for the order
@@ -285,6 +291,7 @@ class Client():
             return None
         else:
             return None
+        # Generate unique token
         order_token=str(uuid.uuid4().hex).encode('ascii')
 
         order_request = OuchClientMessages.EnterOrder(
