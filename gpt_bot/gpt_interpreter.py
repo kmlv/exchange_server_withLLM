@@ -51,7 +51,7 @@ _TOOLS = [
         "type": "function",
         "function": {
             "name": "cancel_order",
-            "description": "Cancels one the user's exisiting order",
+            "description": "Cancels one the user's existing order",
             "parameters": {
                 "type": "object",
                 "properties": {

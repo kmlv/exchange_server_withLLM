@@ -18,7 +18,7 @@ from .ouch_messages import OuchClientMessages, OuchServerMessages
 DEFAULT_TIMEZONE = pytz.timezone('US/Pacific')
 
 p = configargparse.ArgParser()
-p.add('--port', default=12345)
+p.add('--port', default=8090)
 p.add('--host', default='127.0.0.1', help="Address to bind to / listen on")
 options, args = p.parse_known_args()
 

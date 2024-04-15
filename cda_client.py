@@ -20,7 +20,7 @@ from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
 from gpt_bot.gpt_interpreter import GPTInterpreter
 
 p = configargparse.ArgParser()
-p.add('--port', default=12345)
+p.add('--port', default=8090)
 p.add('--host', default='127.0.0.1', help="Address of server")
 p.add('--delay', default=0, type=float, help="Delay in seconds between sending messages")
 p.add('--debug', action='store_true')
@@ -391,12 +391,15 @@ class Client():
                 print(f"Invalid command {cmd}")
             # sleeping will allow the client.recver() method to process
             await asyncio.sleep(0.5)
-    
+    def bingus(self, input_str):
+        return input_str    
         
 def main():
     log.basicConfig(level=log.INFO if not options.debug else log.DEBUG)
     log.debug(options)
-
+    
+    # server_addr = sys.argv[1]
+    # print(server_addr, flush=True)
     # creates a client and connects to our server
     client = Client()
     loop = asyncio.new_event_loop()

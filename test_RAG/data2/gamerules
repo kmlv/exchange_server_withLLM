@@ -1,0 +1,7 @@
+Rock Paper Scissors Game Rules:
+Rule 1: Two players participate in this game, in adversarial roles, in rounds.
+Rule 2: A player must pick one of the three options: Rock, Paper, or Scissors.
+Rule 3: Rock beats Scissors, Scissors beats Paper, and Paper beats Rock.
+Rule 4: If both players select the same option, they draw.
+Rule 5: The player who wins is the one that selects an option that beats the other player's chosen option.
+Rule 6: Neither player knows what option the other will choose choosing their own option.
