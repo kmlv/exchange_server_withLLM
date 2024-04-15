@@ -82,7 +82,27 @@ def script_runner(code_str):
         code_str[0] = ''
         code_str[-1] = ''
     
+    
+    # read
+    with open("test_RAG/help.py", 'r+') as file:
+        lines = file.readlines()
+        # move file pointer to the beginning of a file
+        file.seek(0)
+        # truncate the file
+        file.truncate()
+
+        # start writing lines
+        # iterate line and line number
+        for number, line in enumerate(lines):
+            
+            if number <= 7:
+                file.write(line)
+            else:
+                break
+
+    
     with open("test_RAG/help.py", "a") as file:
+
         for line in code_str:
             file.write(line + '\n')
         # Add execution code
