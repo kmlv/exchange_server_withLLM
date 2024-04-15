@@ -36,7 +36,11 @@ _TOOLS = [
                         "description": "Determines if it is a bull or sell order. \
                                         B represents a buy order, S represents a \
                                         sell order"
-                    }
+                    },
+                    "time_in_force": {
+                        "type": "integer",
+                        "description": "int that specifies duration(in seconds) that order should last"
+                    },
                     
                 },
                 "required": ["quantity", "price", "direction"]
