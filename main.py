@@ -15,13 +15,12 @@ def sync_to_async(sync_fn):
         asyncio.run(client.send(sync_fn))
     else:
         loop.run_until_complete(client.send(sync_fn))
-    #time.sleep(1)
 
 @app.route('/')
 def home():
     return client.__str__()
 
-@app.route('/place_order')
+@app.route('/place_order', methods=["POST"])
 def hello():
    
     # Parse order info
@@ -33,6 +32,7 @@ def hello():
     # send order based on request 
     # https://discuss.python.org/t/calling-coroutines-from-sync-code/23027 thanks Sebastian :)
     sync_to_async(client.place_order(order_quantity, order_price, order_direction, order_time))
+
     print(client)
     return 'ok'
 
@@ -50,7 +50,7 @@ def info():
 async def main():
     t = threading.Thread(target=app.run)
     t.start()
-    await asyncio.gather(client.sender(), client.recver())
+    await asyncio.gather(client.recver())
 
 if __name__ == '__main__':   
     asyncio.run(main())

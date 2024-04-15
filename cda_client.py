@@ -43,7 +43,7 @@ class Client():
             where keys are order IDs and values are tuples representing order information
         book_copy: A CDABook() that the client tries to replicate from the CDA exchange
     """
-    def __init__(self, balance=100, starting_shares=5):
+    def __init__(self, balance=750, starting_shares=50):
         self.reader = None
         self.writer = None
         self.balance = balance
@@ -111,7 +111,6 @@ class Client():
             )   
     
     def _can_afford(self, cost_per_share, num_shares):
-        print(cost_per_share, type(cost_per_share), num_shares, type(num_shares))
         """Can client create the order with their current balance?
         Args:
             cost_per_share: an int representing the price per share
