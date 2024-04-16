@@ -17,6 +17,8 @@ from llama_index.core.retrievers import VectorIndexRetriever
 from llama_index.core.postprocessor import SimilarityPostprocessor
 import subprocess
 
+import sys
+
 # Step 1: Defining settings
 
 _GPT_MODEL = "gpt-3.5-turbo"
@@ -113,7 +115,17 @@ def script_runner(code_str):
         
     
 
-# # Get prompt from user
-response = query_engine.query("write a Python function called active_strategy() that will " + input('Enter prompt: '))
+
+prompt = ""
+
+
+if(len(sys.argv) > 1):
+    # ran the test script
+    prompt = sys.argv[1]
+else:
+    # normal input
+    prompt = input("Enter prompt: ")
+
+response = query_engine.query("Write a Python function called active_strategy() that will " + prompt)
 script_runner(str(response))
 a = subprocess.run(['python', 'test_RAG/help.py'], text=True)
