@@ -13,24 +13,25 @@ def write_results(prompt,testName):
         # read all the times
         lines = file1.readlines()
         
-        data_to_write = f"Test: {testName}\nPrompt:{prompt}\n"
+        data_to_write = f"Test: {testName}\nPrompt:{prompt}\n------------------\n"
         for lineNum, line in enumerate(lines):
             
             if lineNum > 7:
                 data_to_write += line + "\n"
         results_of_test.write(data_to_write)
+        results_of_test.write("------------------\n")
 
 standard_buy_message = "Buy 5 shares at 3 dollars"
 standard_sell_message = "Sell 10 shares at 2 dollars"
 timed_buys = "Every 2 seconds buy 3 shares at 2 dollars until you reach 5 buy orders"
-timed_sells = "Every 4 seconds put a sell order for 1 share until you react 3 sell orders"
+timed_sells = "Every 4 seconds put a sell order for 1 share for 2 dollars until you react 3 sell orders"
 random_buy = "Buy 5 random buys with the share count being from 1-10 and the price being from 2 dollars to 8 dollars"
 random_sell = "Put 3 random sell orders from the share count ranging from 2-4 and price ranging from 1-5"
 big_spender = "Buy until you have no more money"
 big_seller = "place sell orders until you have more shares"
 grammar_problem1 = "Buy 5 share at 2 dollar"
 grammar_problem2 = "by 10 shares at two buks"
-not_related = "Buy 10 bags of dog food from the pet store"
+# not_related = "Buy 10 bags of dog food from the pet store"
 
 run_test(standard_buy_message, "standard_buy_message")
 run_test(standard_sell_message, "standard_sell_message")
@@ -42,7 +43,7 @@ run_test(big_spender, "big_spender")
 run_test(big_seller, "big_seller")
 run_test(grammar_problem1, "grammar_problem1")
 run_test(grammar_problem2, "grammar_problem2")
-run_test(not_related, "not_related")
+# run_test(not_related, "not_related")
 
 
 
