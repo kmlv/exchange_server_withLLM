@@ -1,5 +1,6 @@
 from openai import OpenAI
 import json
+import asyncio
 
 #Free method to get historical information from Yahoo! Finance https://pypi.org/project/yfinance/
 """
@@ -73,15 +74,16 @@ class GPTInterpreter:
     and general guidelines from a user.
     """
     
-    def __init__(self, market_rules = "none"):
+    def __init__(self, client, market_rules = "none"):
         """Creates an Interpreter with basic rules of the market
 
         Args:
             market_rules: The general guidelines on how orders are made, traded, and canceled
         """
         self.interpretor = OpenAI()
+        self.client = client
     
-    def perform_market_action(self, message, client):
+    def perform_market_action(self, message):
         """
         Takes in a message from the user which is interpreted by the 
         LLM in order to call the correct function. 
@@ -104,8 +106,8 @@ class GPTInterpreter:
         functions_called = response_message.tool_calls
 
         available_functions = {
-            "place_order": client.place_order,
-            "cancel_order": client.cancel_order,
+            "place_order": self.client.place_order,
+            "cancel_order": self.client.cancel_order,
         }
         # testing purposes
         function_list_result = []
@@ -117,12 +119,18 @@ class GPTInterpreter:
                 function_list_result.append(function_name)
                 function_to_call = available_functions[function_name]
                 args = json.loads(_function.function.arguments)
-                output = function_to_call(**args)
-                #
+                
+                # sends the order to the exchange server
+                try:
+                    loop = asyncio.get_running_loop()
+                except RuntimeError:
+                    asyncio.run(self.client.send(function_to_call(**args)))
+                else:
+                    loop.run_until_complete(self.client.send(function_to_call(**args)))
                 print(f"Function Name: {function_name}, Args: {args}")
-                print(f"Output: {output}\n")
+                # print(f"Output: {output}\n")
         #print(functions_called)
-        # gprint(function_list_result, args)
+        #gprint(function_list_result, args)
         return function_list_result, args
 
 
