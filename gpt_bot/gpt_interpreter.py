@@ -65,6 +65,40 @@ _TOOLS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "handle_conditionals",
+            "description": "A function that will handle conditional statments from the user\
+                            ",
+            "parameters":{
+                "type": "object",
+                "properties": {
+                    "condition": {
+                        "type": "string",
+                        "enum": ["shares, balance"],
+                        "description": "condition represents the type of \
+                                        condition we are checking. balance \
+                                        represents if we meet a certain money \
+                                        threshold. Shares represents if we meet \
+                                        the threshold for amount of stocks"
+                    },
+                    "comparison_type":{
+                        "type": "string",
+                        "enum": ["greater", "lesser", "equal"],
+                        "description": "checking if we want our value to be less than,\
+                                        greater than, or equal to our client's data."
+                    },
+                    "value_to_compare": {
+                        "type": "integer",
+                        "description": "The value that we will compare to our \
+                                        client's data and sees if it fufills our \
+                                        condition given a comparison"
+                    }
+                }
+            },
+        },
+    },
 
 ]
 
@@ -74,7 +108,7 @@ class GPTInterpreter:
     and general guidelines from a user.
     """
     
-    def __init__(self, client, market_rules = "none"):
+    def __init__(self, client, market_rules = "none", test = False):
         """Creates an Interpreter with basic rules of the market
 
         Args:
@@ -82,6 +116,7 @@ class GPTInterpreter:
         """
         self.interpretor = OpenAI()
         self.client = client
+        self.test = test
     
     def perform_market_action(self, message):
         """
@@ -108,26 +143,45 @@ class GPTInterpreter:
         available_functions = {
             "place_order": self.client.place_order,
             "cancel_order": self.client.cancel_order,
+            "handle_conditionals": self.client.handle_conditionals,
         }
+        
         # testing purposes
         function_list_result = []
+        condition = True
+        
         if functions_called:
 
             for _function in functions_called:
-                
+
                 function_name = _function.function.name
                 function_list_result.append(function_name)
                 function_to_call = available_functions[function_name]
                 args = json.loads(_function.function.arguments)
-                
-                # sends the order to the exchange server
-                try:
-                    loop = asyncio.get_running_loop()
-                except RuntimeError:
-                    asyncio.run(self.client.send(function_to_call(**args)))
+
+                if(not condition):
+                    condition = True
+                    continue
+
+                # conditions
+                if(function_name == "handle_conditionals"):
+                    condition = function_to_call(**args)
+                    continue
+
+                if not self.test:
+                    # sends the order to the exchange server
+                    try:
+                        loop = asyncio.get_running_loop()
+                    except RuntimeError:
+                        asyncio.run(self.client.send(function_to_call(**args)))
+                    else:
+                        loop.run_until_complete(self.client.send(function_to_call(**args)))
+                    print(f"Function Name: {function_name}, Args: {args}")
                 else:
-                    loop.run_until_complete(self.client.send(function_to_call(**args)))
-                print(f"Function Name: {function_name}, Args: {args}")
+                    function_to_call(**args)
+
+
+
                 # print(f"Output: {output}\n")
         #print(functions_called)
         #gprint(function_list_result, args)

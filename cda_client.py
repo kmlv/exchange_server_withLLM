@@ -404,6 +404,50 @@ class Client():
             await asyncio.sleep(0.5)
     def bingus(self, input_str):
         return input_str   
+    
+
+    #------------------------Conditionals-----------------
+# self.balance = balance
+#         self.owned_shares = starting_shares
+    def handle_conditionals(self, condition, comparison_type, value_to_compare = None):
+        """
+        Function that handles conditional statment and call the correct 
+        funciton given the condition name
+
+        Args:
+            condition: The condition we will need to meet. [shares, balance]
+            comparison_type: less than or greater than. ["greater, lesser, equal"]
+            value_to_compare: value that will be compared to
+
+        Returns:
+            True: condition is met
+            False: condition is not met
+        """
+        if condition == "stock":
+            return self._handle_shares(comparison_type, value_to_compare)
+        
+        return self._handle_money(comparison_type, value_to_compare)
+    
+    def _handle_money(self, comparison_type, money):
+
+        if comparison_type == "greater":
+            return self.balance > money
+        elif comparison_type == "lesser":
+            return self.balance < money
+        return self.balance == money
+        
+
+    def _handle_shares(self, comparison_type, shares):
+        if comparison_type == "greater":
+            return self.balance > shares
+        elif comparison_type == "lesser":
+            return self.balance < shares
+        return self.balance == shares
+        
+
+
+        
+
 
 
 #----------------------------DEBUG------------------------
