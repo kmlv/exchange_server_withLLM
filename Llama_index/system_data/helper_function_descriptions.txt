@@ -1,0 +1,9 @@
+Usable Python functions:
+
+CDA_order is a python function that will send an order given the number of shares, price per share, and direction('B' or 'S')
+def CDA_order(shares: int, price: int, direction: str):
+
+account_info is a python function that will retrieve the client's information as a dictionary containing the keys ["balance", "active_orders", "owned_assets"].
+Where balance is an integer, active_orders is a dictionary, and owned_assets is an integer
+def account_info()
+    return {"balance" : self.balance,"orders" : self.orders, "owned_shares" : self.owned_shares}

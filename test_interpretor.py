@@ -1,5 +1,5 @@
 from gpt_bot.gpt_interpreter import GPTInterpreter
-from cda_client import Client
+from market_client.client import Client
 #from flask import Flask, jsonify
 import logging
 

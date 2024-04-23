@@ -1,12 +1,21 @@
-from flask import Flask, request
-from cda_client import Client
+from flask import Flask, request, make_response, jsonify
+from market_client.client import Client
 import threading
 import asyncio
-import time
 app = Flask(__name__)
 
-client = Client()
+client = None
 
+
+async def start(input_client: Client):
+    global client
+    if not input_client or not isinstance(input_client, Client):
+        raise Exception(f"Cannot Start Non-Client object {input_client}")
+    client = input_client
+    print(client)
+    t = threading.Thread(target=app.run)
+    t.start()
+    await asyncio.gather(client.recver())
 
 def sync_to_async(sync_fn):
     try:
@@ -21,7 +30,7 @@ def home():
     return client.__str__()
 
 @app.route('/place_order', methods=["POST"])
-def hello():
+def place_order():
    
     # Parse order info
     order_info = request.json
@@ -44,13 +53,3 @@ def cancel(token):
 @app.route('/info')
 def info():
     return {"account" : client.account_info(), "book": client.account_info, "history" : client.account_info}
-
-
-# Start client
-async def main():
-    t = threading.Thread(target=app.run)
-    t.start()
-    await asyncio.gather(client.recver())
-
-if __name__ == '__main__':   
-    asyncio.run(main())

@@ -23,7 +23,7 @@ import platform
 # Step 1: Defining settings
 
 _GPT_MODEL = "gpt-3.5-turbo"
-_DATA_FOLDER = "./test_RAG/system_data"
+_DATA_FOLDER = "./Llama_index/system_data"
 
 
 # Define settings of LLM
@@ -91,7 +91,7 @@ def script_runner(code_str):
     
     
     # read
-    with open("test_RAG/help.py", 'r+') as file:
+    with open("./Llama_index/active_strategy.py", 'r+') as file:
         lines = file.readlines()
         # move file pointer to the beginning of a file
         file.seek(0)
@@ -108,7 +108,7 @@ def script_runner(code_str):
                 break
 
     
-    with open("test_RAG/help.py", "a") as file:
+    with open("./Llama_index/active_strategy.py", "a") as file:
 
         for line in code_str:
             file.write(line + '\n')
@@ -133,4 +133,4 @@ else:
 
 response = query_engine.query("Write a Python function called active_strategy() that will " + prompt + ". DO NOT INCLUDE A DESCRIPTION OF THE CODE OR ANYTHING THAT IS NOT THE CODE ITSELF!")
 script_runner(str(response))
-a = subprocess.run(['python' if (platform.system() == 'Windows') else 'python3', 'test_RAG/help.py'], text=True)
+a = subprocess.run(['python' if (platform.system() == 'Windows') else 'python3', './Llama_index/active_strategy.py'], text=True)
