@@ -104,7 +104,7 @@ def is_conditional(statement):
     prompt = f"Determine if the following statement is conditional:\n\n{statement}\n\nIs this statement conditional? (Yes/No)"
     
     # Call OpenAI's API
-    client = OpenAI(api_key='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')
+    client = OpenAI()
 
     messages = [
         {
@@ -132,7 +132,7 @@ def isolate_condition(statement):
     prompt = f"rewrite the following conditional statment,' \n\n{statement}\n\n ', into '(the condition itself), (and the rest of the statment)' separated by a comma"
     
     # Call OpenAI's API
-    client = OpenAI(api_key='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')
+    client = OpenAI()
 
     messages = [
         {
@@ -166,7 +166,7 @@ class GPTInterpreter:
         Args:
             market_rules: The general guidelines on how orders are made, traded, and canceled
         """
-        self.interpretor = OpenAI(api_key='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')
+        self.interpretor = OpenAI()
     
 
 
