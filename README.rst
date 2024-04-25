@@ -37,14 +37,14 @@ Run Llama_index(Interpretor)
 
 Development information
 ==========================
-Folder: /Llama_index
-Contains llama_rag.py which currently, asks for prompts and generates code based on them.
-Contains /system_data which is where we store descriptions of functions
-Contains /helper_functions which is where the executable helper functions are stored
+**Folder: /Llama_index**
+ - Contains ``llama_rag.py`` which currently, asks for prompts and generates code based on them.
+ - Contains ``/system_data`` which is where we store descriptions of functions
+ - Contains ``/helper_functions`` which is where the executable helper functions are stored
 
-Folder: /market_client
-Contains client.py which is the client class used in flask_client.py
-Contains flask_client.py that connects a client to the market and with generated strategies
+**Folder: /market_client**
+ - Contains ``client.py`` which is the client class used in flask_client.py
+ - Contains ``flask_client.py`` that connects a client to the market and with generated strategies
 
 
 
