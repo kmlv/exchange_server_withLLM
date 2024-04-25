@@ -18,14 +18,14 @@ Run the CDA exchange
 
 ::
 
-    python ./run_exchange_server
+    python ./run_market_client.py
 
 
 Run the CDA client
 
 ::
 
-    python ./cda_client
+    python ./run_market_client.py
 
 Acknowledgements
 =================

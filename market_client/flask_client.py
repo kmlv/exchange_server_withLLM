@@ -16,7 +16,7 @@ async def start(input_client: Client):
     t = threading.Thread(target=app.run)
     t.start()
     await asyncio.gather(client.recver())
-
+    
 def sync_to_async(sync_fn):
     try:
         loop = asyncio.get_running_loop()

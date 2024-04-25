@@ -10,16 +10,9 @@ from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
 import asyncio.streams
 import configargparse
 import logging as log
-# import binascii
-from random import randrange, randint
-import itertools
-from openai import OpenAI
 import uuid
 from exchange.order_books import cda_book
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
-from gpt_bot.gpt_interpreter import GPTInterpreter
-from flask import Flask
-import threading
 p = configargparse.ArgParser()
 p.add('--port', default=8090)
 p.add('--host', default='127.0.0.1', help="Address of server")
@@ -43,7 +36,7 @@ class Client():
             where keys are order IDs and values are tuples representing order information
         book_copy: A CDABook() that the client tries to replicate from the CDA exchange
     """
-    def __init__(self, balance=750, starting_shares=50):
+    def __init__(self, balance=100, starting_shares=5):
         self.reader = None
         self.writer = None
         self.balance = balance
@@ -401,9 +394,7 @@ class Client():
             else:
                 print(f"Invalid command {cmd}")
             # sleeping will allow the client.recver() method to process
-            await asyncio.sleep(0.5)
-    def bingus(self, input_str):
-        return input_str   
+            await asyncio.sleep(0.5)  
 
 
 #----------------------------DEBUG------------------------
