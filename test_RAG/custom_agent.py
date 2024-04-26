@@ -24,7 +24,7 @@ engine = index.as_query_engine(llm=llm)
 query_engine_tool = QueryEngineTool(
     query_engine=engine,
     metadata=ToolMetadata(
-        name='FATPUCH_SQUIRREL',
+        name='RAG_ENGINE',
         description=(
             "Provides information about Continuous Double Auctions."
             "Provides Python Functions that can be called"

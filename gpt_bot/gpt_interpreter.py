@@ -180,7 +180,7 @@ class GPTInterpreter:
             message: The message
             client: Client class
         """
-        from cda_client import Client
+        from market_client.client import Client
 
 # TWEAKING CODE GENERATION BASED ON IS_CONDITIONAL
 ### 

@@ -24,12 +24,5 @@ Transparency: CDA systems often provide transparency by displaying real-time inf
 
 Flexibility: Participants can cancel their orders at any time before they are matched. This allows traders to react to new information or changing market conditions.
 
-Orders are sent to the address and port: 127.0.0.1:12345
-
-Usable Python functions:
-
-CDA_order is a python function that will send an order given the number of shares, price per share, and direction('B' or 'S')
-def CDA_order(shares: int, price: int, direction: str):
-    send('127.0.0.1:12345, direction, shares, price)
 
 

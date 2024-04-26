@@ -10,15 +10,9 @@ from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
 import asyncio.streams
 import configargparse
 import logging as log
-# import binascii
-from random import randrange, randint
-import itertools
-from openai import OpenAI
 import uuid
 from exchange.order_books import cda_book
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
-from gpt_bot.gpt_interpreter import GPTInterpreter
-
 p = configargparse.ArgParser()
 p.add('--port', default=8090)
 p.add('--host', default='127.0.0.1', help="Address of server")
@@ -26,6 +20,7 @@ p.add('--delay', default=0, type=float, help="Delay in seconds between sending m
 p.add('--debug', action='store_true')
 p.add('--time_in_force', default=99999, type=int)
 options, args = p.parse_known_args()
+
 
 
 class Client():
@@ -50,6 +45,7 @@ class Client():
         self.orders = dict()
         self.book_copy = cda_book.CDABook()
         # self.strategy_interpretor = GPTInterpreter()
+        
     
     def __str__(self):
         return (f"Account Information\n"
@@ -63,7 +59,13 @@ class Client():
         for order_id in self.orders:
             print(f'ID: {count}, {self.orders[order_id][1]} shares @ ${self.orders[order_id][0]}')
             count += 1
+        
+    def account_info(self):
+        return {"balance" : self.balance,"orders" : self.orders, "owned_shares" : self.owned_shares}
     
+    def order_book(self):
+        return {"book": self.book_copy}
+
     def _update_account(self, cost_per_share, num_shares, direction):
         """update the state of account upon successful trade
         Args:
@@ -244,6 +246,7 @@ class Client():
             return False
 
     async def send(self, request):
+        print("Sending ", request)
         """Send Ouch message to server"""
         if not request:
             print("Invalid order")
@@ -280,6 +283,7 @@ class Client():
             return None
         else:
             return None
+        # Generate unique token
         order_token=str(uuid.uuid4().hex).encode('ascii')
 
         order_request = OuchClientMessages.EnterOrder(
@@ -390,11 +394,11 @@ class Client():
             else:
                 print(f"Invalid command {cmd}")
             # sleeping will allow the client.recver() method to process
-            await asyncio.sleep(0.5)
-    def bingus(self, input_str):
-        return input_str    
-        
-def main():
+            await asyncio.sleep(0.5)  
+
+
+#----------------------------DEBUG------------------------
+async def main():
     log.basicConfig(level=log.INFO if not options.debug else log.DEBUG)
     log.debug(options)
     
@@ -402,16 +406,11 @@ def main():
     # print(server_addr, flush=True)
     # creates a client and connects to our server
     client = Client()
-    loop = asyncio.new_event_loop()
-    asyncio.ensure_future(client.sender(), loop=loop)
-    asyncio.ensure_future(client.recver(), loop=loop)
-    
 
-    try:
-        loop.run_forever()       
-    finally:
-        loop.close()
-
+    # loop = asyncio.new_event_loop()
+    # asyncio.ensure_future(client.sender(), loop=loop)
+    # asyncio.ensure_future(client.recver(), loop=loop)
+    await asyncio.gather(client.sender(), client.recver())
 
 if __name__ == '__main__':   
-    main()
+    asyncio.run(main())
