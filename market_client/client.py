@@ -317,27 +317,6 @@ class Client():
         self.orders[order_token] = (price, quantity, direction)
         return order_request
 
-    def process_order(self, shares, price, buy_sell_indicator):
-        """
-        Example usage: client.process_order(5, 2, "S") #shares, price, buy_sell_indicator
-        """
-        if buy_sell_indicator == "B":
-            if self.balance >= shares * price:
-                self.balance -= shares * price
-                self.owned_shares += shares
-                print("The server accepted the order.")
-            else:
-                print("Insufficient balance to place the order.")
-        elif buy_sell_indicator == "S":
-            if self.owned_shares >= shares:
-                self.balance += shares * price
-                self.owned_shares -= shares
-                print("The server accepted the order.")
-            else:
-                print("Insufficient shares to place the order.")
-        else:
-            print("Invalid buy/sell indicator.")
-
     def cancel_order(self, order_token, quantity_remaining):
         """Convert user input into cancel order 
         Args:
@@ -355,14 +334,18 @@ class Client():
         res = self._valid_order_input(order_token=order_token, quantity=quantity_remaining)
         if not res:
             return None
-    
-        quantity_remaining, price, direction, order_token = res
-        count = 1
+        quantity_remaining, price, direction, order_token, time_in_force = res
+        count = 1  
+        # Try to match order_token with order_id
         for order_id in self.orders:
             if count == order_token:
                 order_token = order_id
                 break
             count +=1 
+
+        # Verify that order_token exists
+        if not isinstance(order_token, bytes):
+            return None
 
         cancel_request = OuchClientMessages.CancelOrder(
             order_token=order_token, 
