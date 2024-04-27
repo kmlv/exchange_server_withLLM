@@ -182,6 +182,7 @@ class CDABook:
 			self.asks[price].add_order(id, volume_to_fill)
 			bbo_update = self.update_ask()
 			entered_order = (id, price, volume_to_fill)
+
 		return (order_crosses, entered_order, bbo_update) 
 
 def test():

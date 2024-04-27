@@ -44,13 +44,16 @@ class Client():
         self.id = str(uuid.uuid4().hex).encode('ascii')
         self.orders = dict()
         self.book_copy = cda_book.CDABook()
+        self.order_history = []
         # self.strategy_interpretor = GPTInterpreter()
         
     
     def __str__(self):
         return (f"Account Information\n"
                 f"Balance: {self.balance}\n"
-                f"Owned_shares: {self.owned_shares}\n")
+                f"Owned_shares: {self.owned_shares}\n"
+                f"Orders: {self.orders}\n"
+                f"Order History: {self.order_history}\n")
     
     def print_active_orders(self):
         """Display active client orders"""
@@ -159,10 +162,14 @@ class Client():
                 case OuchServerMessages.BestBidAndOffer:
                     print("new best buy offer: ", response)
                 case OuchServerMessages.Executed:
+                    # Trade has been made
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
                     order_id = response['order_token']
                     if order_id in self.orders:
                         self._update_active_orders(response)
+                        self.order_history += self.orders[order_id]
+                        sorted_history = sorted(self.order_history, key=lambda d: d['timestamp'])
+                        self.order_history = sorted_history
                 # update client local_book 
                 case OuchServerMessages.Accepted:
                     print("The server Accepted order ", response['order_token'])
