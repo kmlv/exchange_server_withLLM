@@ -11,6 +11,7 @@ import asyncio.streams
 import configargparse
 import logging as log
 import uuid
+from operator import itemgetter
 from exchange.order_books import cda_book
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
 p = configargparse.ArgParser()
@@ -166,10 +167,10 @@ class Client():
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
                     order_id = response['order_token']
                     if order_id in self.orders:
-                        self._update_active_orders(response)
                         self.order_history += self.orders[order_id]
-                        sorted_history = sorted(self.order_history, key=lambda d: d['timestamp'])
-                        self.order_history = sorted_history
+                        #sorted_history = sorted(self.order_history, key=itemgetter('timestamp'))
+                        #self.order_history = sorted_history
+                        self._update_active_orders(response)
                 # update client local_book 
                 case OuchServerMessages.Accepted:
                     print("The server Accepted order ", response['order_token'])
