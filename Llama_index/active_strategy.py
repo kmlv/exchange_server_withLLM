@@ -7,8 +7,7 @@ from helper_functions.client_commands import *
 
 
 def active_strategy():
-    if today == "Thursday":
-        CDA_order(1000, 1, 'B')
+    CDA_order(1, 500, 'B')
 
 if __name__ == '__main__':
     active_strategy()

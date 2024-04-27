@@ -6,6 +6,8 @@ app = Flask(__name__)
 
 client = None
 
+def run_flask():
+    app.run(host="0.0.0.0", port=5001)
 
 async def start(input_client: Client):
     global client
@@ -13,9 +15,9 @@ async def start(input_client: Client):
         raise Exception(f"Cannot Start Non-Client object {input_client}")
     client = input_client
     print(client)
-    t = threading.Thread(target=app.run)
+    t = threading.Thread(target=run_flask)
     t.start()
-    await asyncio.gather(client.recver())
+   # await asyncio.gather(client.recver())
     
 def sync_to_async(sync_fn):
     try:
@@ -52,4 +54,4 @@ def cancel(token):
 
 @app.route('/info')
 def info():
-    return {"account" : client.account_info(), "book": client.account_info, "history" : client.account_info}
+    return "Not Implemented"

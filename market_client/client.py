@@ -36,7 +36,7 @@ class Client():
             where keys are order IDs and values are tuples representing order information
         book_copy: A CDABook() that the client tries to replicate from the CDA exchange
     """
-    def __init__(self, balance=100, starting_shares=5):
+    def __init__(self, balance=1000, starting_shares=50):
         self.reader = None
         self.writer = None
         self.balance = balance
@@ -396,7 +396,10 @@ class Client():
             # sleeping will allow the client.recver() method to process
             await asyncio.sleep(0.5)  
 
-
+    async def runner(self):
+         """run client internally
+         NOTE: This is used in dev_run_multiple_clients.py"""
+         await asyncio.gather(self.sender(), self.recver())
 #----------------------------DEBUG------------------------
 async def main():
     log.basicConfig(level=log.INFO if not options.debug else log.DEBUG)
