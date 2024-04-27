@@ -167,7 +167,9 @@ class Client():
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
                     order_id = response['order_token']
                     if order_id in self.orders:
-                        self.order_history += self.orders[order_id]
+                        transaction_data = {"price" : response['execution_price'], "quantity" : response["executed_shares"], "direction" : self.orders[order_id][2], "timestamp" : response['timestamp']}
+                        self.order_history.append(transaction_data)
+                        print(type(response['timestamp']), flush=True)
                         #sorted_history = sorted(self.order_history, key=itemgetter('timestamp'))
                         #self.order_history = sorted_history
                         self._update_active_orders(response)
