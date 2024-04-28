@@ -1,0 +1,22 @@
+LOG ENTRY:
+timestamp: 67278612205000
+book:
+  Spread: 5 - 2147483647
+  Bids:
+$5 Interest: 5, Orders: b'e59d3df32e5d4cda99ce624f4171a058': 5
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 67290973383000
+book:
+  Spread: 5 - 2147483647
+  Bids:
+$5 Interest: 1, Orders: b'e59d3df32e5d4cda99ce624f4171a058': 1
+
+  Asks:
+
+------------------------
+
