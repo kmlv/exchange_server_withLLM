@@ -13,6 +13,7 @@ from OuchServer.ouch_server import nanoseconds_since_midnight
 
 from exchange.order_store import OrderStore
 
+from exchange_logging.exchange_loggers import BookLogger, TransactionLogger
 
 class Exchange:
     def __init__(self, order_book, order_reply, loop, message_broadcast = None, book_log='book_log.txt', transaction_log='transaction_log.txt'):
@@ -42,39 +43,12 @@ class Exchange:
 
         # BOOK HISTORY LOG
         self.book_log_file = book_log
-        book_log_formatter = log.Formatter('LOG ENTRY:\ntimestamp: %(timestamp)s\nbook:\n%(message)s\n------------------------\n')
-        self.book_logger = self.configure_market_logger(self.book_log_file, "book_logger", book_log_formatter)
-        
+        self.book_logger = BookLogger(log_filepath=f"exchange/market_logs/{book_log}", logger_name="book_logger")
+
         # TRANSACTION HISTORY LOG
         self.transaction_log_file = transaction_log
-        transaction_log_formatter = log.Formatter('')
-        self.transaction_logger = self.configure_market_logger(self.transaction_log_file, "transaction_logger", transaction_log_formatter)
-
-        # self.book_logger.info('HI BOOK!')
-        # self.transaction_logger.info('HOWDY TRANSACTION!')
+        self.transaction_logger = TransactionLogger(log_filepath=f"exchange/market_logs/{transaction_log}", logger_name="transaction_logger")
     
-    # Creates and returns a new logger (used by Book Log & Transaction Log)
-    def configure_market_logger(self, log_filename, logger_name, formatter):
-        # create logger
-        new_logger = log.getLogger(logger_name)
-        new_logger.setLevel(log.INFO)
-        # create console handler and set level to debug
-        new_logger_fh = log.FileHandler(filename=f"exchange/market_logs/{log_filename}", mode='w')
-        new_logger_fh.setLevel(log.INFO)
-        # add formatter to ch
-        new_log_formatter = formatter
-        new_logger_fh.setFormatter(new_log_formatter)
-        # add ch to logger
-        new_logger.addHandler(new_logger_fh)
-        return new_logger
-    
-    # Call this whenever the order book gets updated, and therefore should add an entry to the Book Log
-    def update_book_log(self):
-        self.book_logger.info(self.order_book, extra={"timestamp" : nanoseconds_since_midnight()})        
-    
-    # Call this whenever a transaction takes place in the exchange, and therefore should be entered into the Transaction Log
-    def update_transaction_log(self, transaction):
-        self.transaction_logger.info(transaction)
 
     def system_start_atomic(self, system_event_message, timestamp):  
         self.order_store.clear_order_store()
@@ -387,12 +361,14 @@ class Exchange:
             m = self.outgoing_broadcast_messages.popleft()
             # log.info(f"BROADCASTING: {m}")
             if m.message_type == OuchServerMessages.Executed:
-                self.update_transaction_log(m)
+                # self.update_transaction_log(m)
+                self.transaction_logger.update_log(transaction=m)
             await self.message_broadcast(m)
         
         # Add entry to Book Log
         # if m == OuchServerMessages.Accepted:
-        self.update_book_log()
+        # self.update_book_log()
+        self.book_logger.update_log(book=self.order_book, timestamp=nanoseconds_since_midnight())
 
     async def send_outgoing_messages(self):
         """Send Server OuchMessage directly to sender"""

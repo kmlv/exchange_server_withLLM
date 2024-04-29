@@ -18,7 +18,7 @@ Run the CDA exchange
 
 ::
 
-    python ./run_market_client.py
+    python ./run_market_server.py
 
 
 Run the CDA client
