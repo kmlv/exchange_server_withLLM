@@ -9,6 +9,8 @@ Questions:
 -Will we need the market to have rounds? Stocks have open, high, low, and close
 """ 
 
+
+
 _GPT_MODEL = "gpt-3.5-turbo"
 _TOOLS = [
     {
@@ -37,7 +39,11 @@ _TOOLS = [
                         "description": "Determines if it is a bull or sell order. \
                                         B represents a buy order, S represents a \
                                         sell order"
-                    }
+                    },
+                    "time_in_force": {
+                        "type": "integer",
+                        "description": "int that specifies duration(in seconds) that order should last"
+                    },
                     
                 },
                 "required": ["quantity", "price", "direction"]
@@ -68,39 +74,86 @@ _TOOLS = [
     {
         "type": "function",
         "function": {
-            "name": "handle_conditionals",
-            "description": "A function that will handle conditional statments from the user\
-                            ",
-            "parameters":{
+            "name": "can_afford",
+            "description": "determines true or false if the user can afford to make a buy order.\
+                returns a boolean that specifies whether the client has the funds to make a buy num_shares at cost_per_share",
+            "parameters": {
                 "type": "object",
                 "properties": {
-                    "condition": {
-                        "type": "string",
-                        "enum": ["shares, balance"],
-                        "description": "condition represents the type of \
-                                        condition we are checking. balance \
-                                        represents if we meet a certain money \
-                                        threshold. Shares represents if we meet \
-                                        the threshold for amount of stocks"
-                    },
-                    "comparison_type":{
-                        "type": "string",
-                        "enum": ["greater", "lesser", "equal"],
-                        "description": "checking if we want our value to be less than,\
-                                        greater than, or equal to our client's data."
-                    },
-                    "value_to_compare": {
+                    "cost_per_share": {
                         "type": "integer",
-                        "description": "The value that we will compare to our \
-                                        client's data and sees if it fufills our \
-                                        condition given a comparison"
-                    }
-                }
-            },
-        },
+                        "description": "an int representing the price per share" 
+                    },
+                    "num_shares": {
+                        "type": "integer",
+                        "description": "an int representing the quantity of shares to buy"
+                    },
+                    
+                },
+                "required": ["quantity", "price", "direction"]
+            }
+        }
     },
 
 ]
+
+#######################################################################
+# ISOLATING THE CONDITION TO BE EVALUTATED
+
+def is_conditional(statement):
+    # Construct the prompt
+    prompt = f"Determine if the following statement is conditional:\n\n{statement}\n\nIs this statement conditional? (Yes/No)"
+    
+    # Call OpenAI's API
+    client = OpenAI()
+
+    messages = [
+        {
+            "role": "assistant",
+            "content": prompt,
+        }
+    ]
+
+    response = client.chat.completions.create(
+        model = "gpt-3.5-turbo-0125",
+        messages = messages,
+        max_tokens=50,
+        stop=["\n"]
+    )
+    # Parse the response
+    if response.choices[0].message.content.strip().lower() == "yes":
+        return True
+    else:
+        print("not conditional")
+        return False
+    
+# ISOLATING THE CONDITION TO BE EVALUTATED
+def isolate_condition(statement):
+    # Regular expression pattern to match condition
+    prompt = f"rewrite the following conditional statment,' \n\n{statement}\n\n ', into '(the condition itself), (and the rest of the statment)' separated by a comma"
+    
+    # Call OpenAI's API
+    client = OpenAI()
+
+    messages = [
+        {
+            "role": "assistant",
+            "content": prompt,
+        }
+    ]
+
+    response = client.chat.completions.create(
+        model = "gpt-3.5-turbo-0125",
+        messages = messages,
+        max_tokens=50,
+        stop=["\n"]
+    )
+    
+    # If condition found, return it
+    return response.choices[0].message.content
+
+#######################################################################
+    
 
 class GPTInterpreter:
     """
@@ -118,7 +171,10 @@ class GPTInterpreter:
         self.client = client
         self.test = test
     
-    def perform_market_action(self, message):
+
+
+
+    def perform_market_action(self, message, client):
         """
         Takes in a message from the user which is interpreted by the 
         LLM in order to call the correct function. 
@@ -127,8 +183,31 @@ class GPTInterpreter:
             message: The message
             client: Client class
         """
-        from cda_client import Client
+        from market_client.client import Client
 
+# TWEAKING CODE GENERATION BASED ON IS_CONDITIONAL
+### 
+        if is_conditional(message):
+            if isolate_condition(message) != None:
+                if isolate_condition(message):
+                    
+                    split_cond = isolate_condition(message).split(',')
+                    print(split_cond)
+                    messages = [
+                        {
+                            "role": "user",
+                            "content": f"write me code that {split_cond[1]} if {split_cond[0]} returns 'True'"
+                        }
+                    ]
+                    
+                else: 
+                    messages = [
+                        {
+                            "role": "user",
+                            "content": message,
+                        }
+                    ]
+###
         input = [{"role": "user", "content": message}]
         response = self.interpretor.chat.completions.create(
             model = _GPT_MODEL,
@@ -141,9 +220,9 @@ class GPTInterpreter:
         functions_called = response_message.tool_calls
 
         available_functions = {
-            "place_order": self.client.place_order,
-            "cancel_order": self.client.cancel_order,
-            "handle_conditionals": self.client.handle_conditionals,
+            "place_order": client.place_order,
+            "cancel_order": client.cancel_order,
+            "can_afford": client._can_afford,
         }
         
         # testing purposes

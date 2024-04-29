@@ -1,5 +1,5 @@
 from gpt_bot.gpt_interpreter import GPTInterpreter
-from cda_client import Client
+from market_client.client import Client
 #from flask import Flask, jsonify
 import logging
 import time
@@ -35,6 +35,13 @@ def test_gpt():
                         {"quantity": 50, "price": 30, "direction": "S"},
                         {"quantity": 6, "price": 3, "direction": "S"},
                         {"quantity": 1, "price": 1, "direction": "S", 'time_in_force': 60}]
+
+    # msg1 = "I want to buy 10 shares of stock for 2 dollars if I can afford it."
+    # # msg2 = "I want to sell 5 shares of my stock for 1 dollar"
+   
+    # msgs = [msg1]
+    # correct_params = [{"quantity": 10, "price": 2, "direction": "B"},
+    # ]
                       
     correct = 0
     incorrect = 0

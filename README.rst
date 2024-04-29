@@ -18,14 +18,52 @@ Run the CDA exchange
 
 ::
 
-    python ./run_exchange_server
+    python ./run_market_server.py
 
 
 Run the CDA client
 
 ::
 
-    python ./cda_client
+    python ./run_market_client.py
+
+
+Run Llama_index(Interpretor)
+
+::
+
+    python ./Llama_index/llama_rag.py
+
+NOTE
+========================
+To run the system without prompting and flask
+
+Run the CDA exchange
+
+::
+
+    python ./run_market_server.py
+
+Create a client where you send orders from the terminal(each client requires own terminal)
+
+::
+    
+    python ./run_market_client.py -m dev
+
+
+
+
+Development information
+==========================
+**Folder: /Llama_index**
+ - Contains ``llama_rag.py`` which currently, asks for prompts and generates code based on them.
+ - Contains ``/system_data`` which is where we store descriptions of functions
+ - Contains ``/helper_functions`` which is where the executable helper functions are stored
+
+**Folder: /market_client**
+ - Contains ``client.py`` which is the client class used in flask_client.py
+ - Contains ``flask_client.py`` that connects a client to the market and with generated strategies
+
 
 Acknowledgements
 =================

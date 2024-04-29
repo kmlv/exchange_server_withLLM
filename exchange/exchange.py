@@ -13,18 +13,10 @@ from OuchServer.ouch_server import nanoseconds_since_midnight
 
 from exchange.order_store import OrderStore
 
-###
-# TODOs:
-##  - how should status be changing in order store?
-##  - how should messages be sent?
-##      can we just do the current communication channel approach?
-##      
-##      
-
-
+from exchange_logging.exchange_loggers import BookLogger, TransactionLogger
 
 class Exchange:
-    def __init__(self, order_book, order_reply, loop, message_broadcast = None):
+    def __init__(self, order_book, order_reply, loop, message_broadcast = None, book_log='book_log.txt', transaction_log='transaction_log.txt'):
         '''
         order_book - the book!
         order_reply - post office reply function, takes in 
@@ -48,6 +40,15 @@ class Exchange:
             OuchClientMessages.CancelOrder: self.cancel_order_atomic,
             OuchClientMessages.SystemStart: self.system_start_atomic,
             OuchClientMessages.ModifyOrder: None}
+
+        # BOOK HISTORY LOG
+        self.book_log_file = book_log
+        self.book_logger = BookLogger(log_filepath=f"exchange/market_logs/{book_log}", logger_name="book_logger")
+
+        # TRANSACTION HISTORY LOG
+        self.transaction_log_file = transaction_log
+        self.transaction_logger = TransactionLogger(log_filepath=f"exchange/market_logs/{transaction_log}", logger_name="transaction_logger")
+    
 
     def system_start_atomic(self, system_event_message, timestamp):  
         self.order_store.clear_order_store()
@@ -212,6 +213,7 @@ class Exchange:
                 bbo_message = self.best_quote_update(enter_order_message, new_bbo, timestamp)
                 self.outgoing_broadcast_messages.append(bbo_message)
 
+
     def cancel_order_atomic(self, cancel_order_message, timestamp, reason=b'U'):
         """Cancel an order
         Args:
@@ -358,8 +360,15 @@ class Exchange:
         while len(self.outgoing_broadcast_messages)>0:
             m = self.outgoing_broadcast_messages.popleft()
             # log.info(f"BROADCASTING: {m}")
+            if m.message_type == OuchServerMessages.Executed:
+                # self.update_transaction_log(m)
+                self.transaction_logger.update_log(transaction=m)
             await self.message_broadcast(m)
-            
+        
+        # Add entry to Book Log
+        # if m == OuchServerMessages.Accepted:
+        # self.update_book_log()
+        self.book_logger.update_log(book=self.order_book, timestamp=nanoseconds_since_midnight())
 
     async def send_outgoing_messages(self):
         """Send Server OuchMessage directly to sender"""
@@ -377,7 +386,6 @@ class Exchange:
         if message.message_type in self.handlers:
             timestamp = nanoseconds_since_midnight()
             self.handlers[message.message_type](message, timestamp)
-            #await self.send_outgoing_messages()
             await self.send_outgoing_broadcast_messages()
         else:
             log.error("Unknown message type %s", message.message_type)
