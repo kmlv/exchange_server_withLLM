@@ -72,8 +72,8 @@ class Client():
             print(f'ID: {count}, {self.orders[order_id][1]} shares @ ${self.orders[order_id][0]}')
             count += 1
         
-    def account_info(self):
-        return {"balance" : self.balance,"orders" : self.orders, "owned_shares" : self.owned_shares}
+    def account_info(self): # WIP - orders = self.orders
+        return {"id" : self.id.decode(), "balance" : self.balance, "orders" : None, "owned_shares" : self.owned_shares}
     
     def order_book(self):
         return {"book": self.book_copy}
@@ -153,7 +153,7 @@ class Client():
 
     async def recver(self):
         """Listener to all broadcasts sent from the exchange server"""
-        if self.reader is None:
+        if self.reader is None or self.writer is None:
             reader, writer = await asyncio.streams.open_connection(
             options.host, 
             options.port)
@@ -281,6 +281,12 @@ class Client():
     async def send(self, request):
         print("Sending ", request)
         """Send Ouch message to server"""
+        if self.reader is None or self.writer is None:
+            reader, writer = await asyncio.streams.open_connection(
+            options.host, 
+            options.port)
+            self.reader = reader
+            self.writer = writer
         if not request:
             print("Invalid order")
             return

@@ -54,4 +54,4 @@ def cancel(token):
 
 @app.route('/info')
 def info():
-    return {"account" : client.account_info(), "book": client.account_info, "history" : client.account_info, "order_history" : client.order_history}
+    return {"account" : client.account_info(), "order_history" : client.order_history} # WIP - make  "book" : client.book_copy json-friendy function

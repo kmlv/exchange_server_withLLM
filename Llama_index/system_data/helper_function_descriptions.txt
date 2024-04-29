@@ -3,10 +3,10 @@ Usable Python functions:
 CDA_order is a python function that will send an order given the number of shares, price per share, and direction('B' or 'S')
 def CDA_order(shares: int, price: int, direction: str):
 
-account_info is a python function that will retrieve the client's information as a dictionary containing the keys ["balance", "active_orders", "owned_assets"].
-Where balance is an integer, active_orders is a dictionary, and owned_assets is an integer.
+account_info is a python function that will retrieve the client's information as a dictionary containing the keys ["id", "balance", "active_orders", "owned_assets"].
+Where id is a string, balance is an integer, active_orders is a dictionary, and owned_assets is an integer.
 def account_info()
-    return {"balance" : self.balance,"orders" : self.orders, "owned_shares" : self.owned_shares}
+    return {"id" : self.id, "balance" : self.balance,"orders" : self.orders, "owned_shares" : self.owned_shares}
 
 best_offer is a python function that will return the market price of a stock at the time it was called. This is also
 known as the best buy or best sell offer. The best offers are represented as a dictionary with the keys ["best_buy", "best_sell] 

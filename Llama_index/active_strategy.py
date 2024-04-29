@@ -7,7 +7,9 @@ from helper_functions.client_commands import *
 
 
 def active_strategy():
-    CDA_order(1, 500, 'B')
+    while account_info()["balance"] >= 950:
+        CDA_order(1, 5, 'B')
+    print(account_info()["id"])
 
 if __name__ == '__main__':
     active_strategy()
