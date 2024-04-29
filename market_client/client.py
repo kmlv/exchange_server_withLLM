@@ -14,6 +14,9 @@ import uuid
 from operator import itemgetter
 from exchange.order_books import cda_book
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
+
+from exchange_logging.exchange_loggers import BookLogger, TransactionLogger
+
 p = configargparse.ArgParser()
 p.add('--port', default=8090)
 p.add('--host', default='127.0.0.1', help="Address of server")
@@ -46,6 +49,11 @@ class Client():
         self.orders = dict()
         self.book_copy = cda_book.CDABook()
         self.order_history = []
+
+        # WIP - Market History Logging
+        self.book_logger = BookLogger(log_filepath=f"market_client/market_logs/book_log_{self.id.decode()}.txt", logger_name="book_logger")
+        self.transaction_logger = TransactionLogger(f"market_client/market_logs/transaction_log_{self.id.decode()}.txt", logger_name="transaction_logger")
+        
         # self.strategy_interpretor = GPTInterpreter()
         
     
@@ -164,6 +172,9 @@ class Client():
                     print("new best buy offer: ", response)
                 case OuchServerMessages.Executed:
                     # Trade has been made
+                    # WIPv
+                    transaction_str = f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}"
+                    # WIP^
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
                     order_id = response['order_token']
                     if order_id in self.orders:
@@ -173,6 +184,11 @@ class Client():
                         #sorted_history = sorted(self.order_history, key=itemgetter('timestamp'))
                         #self.order_history = sorted_history
                         self._update_active_orders(response)
+                    
+                    # WIP - update Book Log & Transaction Log
+                    self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
+                    self.transaction_logger.update_log(transaction=transaction_str)
+
                 # update client local_book 
                 case OuchServerMessages.Accepted:
                     print("The server Accepted order ", response['order_token'])
@@ -185,6 +201,9 @@ class Client():
                         response['shares'],
                         enter_into_book
                     )
+                    # WIP - update Book Log
+                    self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
+
                 # update client local_book
                 case OuchServerMessages.Canceled:
                     print("The server canceled order", response['order_token'])
@@ -209,6 +228,10 @@ class Client():
                         response['decrement_shares'],
                         response['buy_sell_indicator']
                     )
+
+                    # WIP - update Book Log
+                    self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
+
                 case _:
                     print(response.header)
             await asyncio.sleep(0)
