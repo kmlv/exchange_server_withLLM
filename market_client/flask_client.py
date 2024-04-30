@@ -1,3 +1,4 @@
+from Llama_index.llama_rag import gen_script
 from flask import Flask, request, make_response, jsonify
 from market_client.client import Client
 import threading
@@ -30,6 +31,15 @@ def sync_to_async(sync_fn):
 @app.route('/')
 def home():
     return client.__str__()
+
+@app.route('/prompt', methods=["POST"])
+def prompt():
+    data = request.get_json()
+    prompt = data['prompt']
+
+    gen_script(prompt)
+
+    return "ok"
 
 @app.route('/place_order', methods=["POST"])
 def place_order():
@@ -65,8 +75,10 @@ def get_client_orders():
     orders = account_data.get("orders")
     
     orders_list = []
+    
     for order_num, order_data in orders.items():
-        orders_list.append({"order_num": order_num, "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
+        print({"order_num": order_num, "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
+        orders_list.append({"order_num": order_num.decode(), "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
 
     return jsonify({"orders": orders_list})
 
