@@ -2,7 +2,9 @@ from flask import Flask, request, make_response, jsonify
 from market_client.client import Client
 import threading
 import asyncio
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
 
 client = None
 
@@ -53,3 +55,20 @@ def cancel(token):
 @app.route('/info')
 def info():
     return {"account" : client.account_info(), "book": client.account_info, "history" : client.account_info}
+
+@app.route('/client_orders', methods=["GET"])
+def get_client_orders():
+    # return {"balance" : self.balance,"orders" : self.orders, "owned_shares" : self.owned_shares}
+    account_data = client.account_info()
+    # balance = account_data.get("balance")
+    # shares = account_data.get("owned_shares")
+    orders = account_data.get("orders")
+    
+    orders_list = []
+    for order_num, order_data in orders.items():
+        orders_list.append({"order_num": order_num, "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
+
+    return jsonify({"orders": orders_list})
+
+if __name__ == '__main__':
+    app.run()

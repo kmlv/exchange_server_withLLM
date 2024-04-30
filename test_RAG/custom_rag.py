@@ -23,7 +23,7 @@ import platform
 # Step 1: Defining settings
 
 _GPT_MODEL = "gpt-3.5-turbo"
-_DATA_FOLDER = "./test_RAG/system_data"
+_DATA_FOLDER = "./test_RAG/data2"
 
 
 # Define settings of LLM
