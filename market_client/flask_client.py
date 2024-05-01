@@ -70,8 +70,8 @@ def info():
 def get_client_orders():
     # return {"balance" : self.balance,"orders" : self.orders, "owned_shares" : self.owned_shares}
     account_data = client.account_info()
-    # balance = account_data.get("balance")
-    # shares = account_data.get("owned_shares")
+    balance = account_data.get("balance")
+    shares = account_data.get("owned_shares")
     orders = account_data.get("orders")
     
     orders_list = []
@@ -80,7 +80,7 @@ def get_client_orders():
         print({"order_num": order_num, "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
         orders_list.append({"order_num": order_num.decode(), "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
 
-    return jsonify({"orders": orders_list})
+    return jsonify({"balance": balance, "shares": shares, "orders": orders_list})
 
 if __name__ == '__main__':
     app.run()

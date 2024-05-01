@@ -4,6 +4,8 @@ import Order_Cards from "../../Components/Orders/Order_Cards";
 
 const Client_orders = () => {
   const [orders, setOrders] = useState([]);
+  const [balance, setBalance] = useState(0);
+  const [shares, setShares] = useState(0);
 
   // Fetch orders from the API endpoint
   const fetchOrders = async () => {
@@ -13,7 +15,10 @@ const Client_orders = () => {
         throw new Error("Failed to fetch orders");
       }
       const data = await response.json();
-      return data.orders; // Assuming the API response has an "orders" field containing the list of orders
+
+      console.log(data.balance);
+      console.log(data.shares);
+      return data; // Assuming the API response has an "orders" field containing the list of orders
     } catch (error) {
       console.error("Error fetching orders:", error);
       return [];
@@ -23,7 +28,9 @@ const Client_orders = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       fetchOrders().then((newOrders) => {
-        setOrders(newOrders);
+        setOrders(newOrders.orders);
+        setBalance(newOrders.balance);
+        setShares(newOrders.shares);
       });
     }, 10000); // Update every second (adjust as needed)
 
@@ -31,18 +38,20 @@ const Client_orders = () => {
   }, []); // Empty dependency array means run once on mount
 
   return (
-    <div className="orders-tracker">
-      <h2>Orders Tracker</h2>
-      {orders.map((order) => (
-        <Order_Cards
-          key={order.order_num} // Use a unique key for each order card
-          order_num={order.order_num}
-          price={order.price}
-          quantity={order.quantity}
-          direction={order.direction}
-        />
-      ))}
-    </div>
+    <>
+      <div>Balance: {balance}</div>
+      <div>Shares: {shares}</div>
+      <div className="orders-tracker">
+        <h2>Orders Tracker</h2>
+        {orders.map((order) => (
+          <Order_Cards
+            price={order.price}
+            quantity={order.quantity}
+            direction={order.direction}
+          />
+        ))}
+      </div>
+    </>
   );
 };
 
