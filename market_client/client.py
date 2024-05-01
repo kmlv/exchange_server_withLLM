@@ -225,7 +225,7 @@ class Client():
                     self.book_copy.cancel_order(
                         response['order_token'],
                         response['price'],
-                        response['decrement_shares'],
+                        quantity - response['decrement_shares'],
                         response['buy_sell_indicator']
                     )
 

@@ -1,8 +1,10 @@
-import sys
+"""
+Continuous Double Auction Server that handles clients' 
+buy/sell and cancel orders
+"""
 import asyncio
 import configargparse
 import logging as log
-from functools import partial
 from OuchServer.ouch_server import ProtocolMessageServer
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
 from exchange.order_books.cda_book import CDABook
@@ -11,7 +13,6 @@ from exchange.order_books.iex_book import IEXBook
 from exchange.exchange import Exchange
 from exchange.fba_exchange import FBAExchange
 from exchange.iex_exchange import IEXExchange
-from exchange.order_books.book_logging import BookLogger
 
 p = configargparse.getArgParser()
 p.add('--port', default=8090)

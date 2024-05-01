@@ -7,7 +7,7 @@ from helper_functions.client_commands import *
 
 
 def active_strategy():
-    CDA_order(40, 7, 'B')
+    CDA_order(30, 3, 'B')
 
 if __name__ == '__main__':
     active_strategy()
