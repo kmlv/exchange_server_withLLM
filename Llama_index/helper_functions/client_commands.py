@@ -10,16 +10,16 @@ _CLIENT_ADDR = "localhost"
 _CLIENT_PORT = "5001"
 
 def account_info():
-    response = requests.request("GET", "http://{_CLIENT_ADDR}:{_CLIENT_PORT}/info", json=dict())
+    response = requests.request("GET", f"http://{_CLIENT_ADDR}:{_CLIENT_PORT}/info", json=dict())
     print("JASON RESPONSE: ", response.json())
     return response.json()["account"]
 
 def get_order_book():
-    response = requests.request("GET", "http://{_CLIENT_ADDR}:{_CLIENT_PORT}/info", json=dict())
+    response = requests.request("GET", f"http://{_CLIENT_ADDR}:{_CLIENT_PORT}/info", json=dict())
     return response.json()["book"]
 
 def get_order_history():
-    response = requests.request("GET", "http://{_CLIENT_ADDR}:{_CLIENT_PORT}/info", json=dict())
+    response = requests.request("GET", f"http://{_CLIENT_ADDR}:{_CLIENT_PORT}/info", json=dict())
     return response.json()["order_history"]
 
 def get_market_history_logfiles():
