@@ -17,7 +17,7 @@ async def start(input_client: Client):
     print(client)
     t = threading.Thread(target=run_flask)
     t.start()
-   # await asyncio.gather(client.recver())
+    await asyncio.gather(client.recver())
     
 def sync_to_async(sync_fn):
     try:
