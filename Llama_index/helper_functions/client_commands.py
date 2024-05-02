@@ -11,7 +11,6 @@ _CLIENT_PORT = "5001"
 
 def account_info():
     response = requests.request("GET", f"http://{_CLIENT_ADDR}:{_CLIENT_PORT}/info", json=dict())
-    print("JASON RESPONSE: ", response.json())
     return response.json()["account"]
 
 def get_order_book():

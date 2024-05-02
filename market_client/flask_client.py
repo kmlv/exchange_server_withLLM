@@ -60,12 +60,16 @@ def place_order():
     order_price = int(order_info.get("price"))
     order_direction = order_info.get("direction")
     order_time = int(order_info.get("time"))
+
+    # print("REQUEST.JSON: ", request.json)
+
     # send order based on request 
     # https://discuss.python.org/t/calling-coroutines-from-sync-code/23027 thanks Sebastian :)
-    send_to_market(client.place_order(order_quantity, order_price, order_direction, order_time))
-
-    print(client)
-    return 'ok'
+    ouch_order_request = client.place_order(order_quantity, order_price, order_direction, order_time)
+    send_to_market(ouch_order_request)
+    placed_order_token = ouch_order_request['order_token'].decode()
+    # print(client)
+    return {"order_token" : placed_order_token}
 
 @app.route('/cancel/<token>')
 def cancel(token):
