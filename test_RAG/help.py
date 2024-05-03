@@ -6,9 +6,11 @@ def CDA_order(shares: int, price: int, direction: str):
     resp = requests.request("POST", "http://localhost:5000/place_order", json=data)
 
 def active_strategy():
-    while True:
-        CDA_order(2, 19, 'S')
-        time.sleep(10)
+def active_strategy():
+    buy_stocks = 2
+    cost_per_stock = 1
+    total_cost = buy_stocks * cost_per_stock
+    return total_cost
 
 if __name__ == '__main__':
     active_strategy()

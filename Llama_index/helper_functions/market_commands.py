@@ -12,9 +12,11 @@ _CLIENT_PORT = "5001"
 def CDA_order(shares: int, price: int, direction: str):
     data = {"quantity" : shares, "price" : price, "direction" : direction, "time": 10}
     print("Placing order: ", direction, shares, "@", price, time.time(), flush=True)
+
     resp = requests.request("POST", f"http://{_CLIENT_ADDR}:{_CLIENT_PORT}/place_order", json=data)
     placed_order_token = resp.json()['order_token']
     return placed_order_token
+
 
 def CDA_order_cancel(token: int):
     print("Cancelling order: ", token, time.time(), flush=True)

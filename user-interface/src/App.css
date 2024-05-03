@@ -1,0 +1,12 @@
+.Title{
+    display: flex;
+    justify-items: center;
+    
+}
+
+.Title header{
+  font-size: 2em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 1em;
+}

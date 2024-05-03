@@ -1,3 +1,6 @@
+
+from Llama_index.llama_rag import gen_script
+
 """
 Flask app that acts as a middle-man between generated scripts
 and a market exchange. Generated scripts call functions to this app
@@ -7,12 +10,13 @@ which will then perform operations on a Client class object to:
 3) retrieve client orders
 4) retrieve limit order book
 """
-
 from flask import Flask, request, make_response, jsonify
 from market_client.client import Client
 import threading
 import asyncio
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
 
 client = None
 
@@ -51,6 +55,15 @@ def send_to_market(request):
 def home():
     return client.__str__()
 
+@app.route('/prompt', methods=["POST"])
+def prompt():
+    data = request.get_json()
+    prompt = data['prompt']
+
+    gen_script(prompt)
+
+    return "ok"
+
 @app.route('/place_order', methods=["POST"])
 def place_order():
    
@@ -78,4 +91,25 @@ def cancel(token):
 
 @app.route('/info')
 def info():
-    return {"account" : client.account_info(), "order_history" : client.order_history} # WIP - need current order book too
+  
+    return {"account" : client.account_info(), "order_history" : client.order_history}
+
+@app.route('/client_orders', methods=["GET"])
+def get_client_orders():
+    # return {"balance" : self.balance,"orders" : self.orders, "owned_shares" : self.owned_shares}
+    account_data = client.account_info()
+    balance = account_data.get("balance")
+    shares = account_data.get("owned_shares")
+    orders = account_data.get("orders")
+    
+    orders_list = []
+    
+    for order_num, order_data in orders.items():
+        print({"order_num": order_num, "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
+        orders_list.append({"order_num": order_num.decode(), "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
+
+    return jsonify({"balance": balance, "shares": shares, "orders": orders_list})
+
+if __name__ == '__main__':
+    app.run()
+
