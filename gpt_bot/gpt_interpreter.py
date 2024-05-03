@@ -1,5 +1,6 @@
 from openai import OpenAI
 import json
+import asyncio
 
 #Free method to get historical information from Yahoo! Finance https://pypi.org/project/yfinance/
 """
@@ -160,13 +161,15 @@ class GPTInterpreter:
     and general guidelines from a user.
     """
     
-    def __init__(self, market_rules = "none"):
+    def __init__(self, client, market_rules = "none", test = False):
         """Creates an Interpreter with basic rules of the market
 
         Args:
             market_rules: The general guidelines on how orders are made, traded, and canceled
         """
         self.interpretor = OpenAI()
+        self.client = client
+        self.test = test
     
 
 
@@ -221,22 +224,46 @@ class GPTInterpreter:
             "cancel_order": client.cancel_order,
             "can_afford": client._can_afford,
         }
+        
         # testing purposes
         function_list_result = []
+        condition = True
+        
         if functions_called:
 
             for _function in functions_called:
-                
+
                 function_name = _function.function.name
                 function_list_result.append(function_name)
                 function_to_call = available_functions[function_name]
                 args = json.loads(_function.function.arguments)
-                output = function_to_call(**args)
-                #
-                print(f"Function Name: {function_name}, Args: {args}")
-                print(f"Output: {output}\n")
+
+                if(not condition):
+                    condition = True
+                    continue
+
+                # conditions
+                if(function_name == "handle_conditionals"):
+                    condition = function_to_call(**args)
+                    continue
+
+                if not self.test:
+                    # sends the order to the exchange server
+                    try:
+                        loop = asyncio.get_running_loop()
+                    except RuntimeError:
+                        asyncio.run(self.client.send(function_to_call(**args)))
+                    else:
+                        loop.run_until_complete(self.client.send(function_to_call(**args)))
+                    print(f"Function Name: {function_name}, Args: {args}")
+                else:
+                    function_to_call(**args)
+
+
+
+                # print(f"Output: {output}\n")
         #print(functions_called)
-        # gprint(function_list_result, args)
+        #gprint(function_list_result, args)
         return function_list_result, args
 
 

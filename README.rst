@@ -18,7 +18,7 @@ Run the CDA exchange
 
 ::
 
-    python ./run_market_client.py
+    python ./run_market_server.py
 
 
 Run the CDA client
@@ -32,7 +32,25 @@ Run Llama_index(Interpretor)
 
 ::
 
-    python ./Llama_index/llama_rag
+    python ./Llama_index/llama_rag.py
+
+NOTE
+========================
+To run the system without prompting and flask
+
+Run the CDA exchange
+
+::
+
+    python ./run_market_server.py
+
+Create a client where you send orders from the terminal(each client requires own terminal)
+
+::
+    
+    python ./run_market_client.py -m dev
+
+
 
 
 Development information
@@ -45,7 +63,6 @@ Development information
 **Folder: /market_client**
  - Contains ``client.py`` which is the client class used in flask_client.py
  - Contains ``flask_client.py`` that connects a client to the market and with generated strategies
-
 
 
 Acknowledgements

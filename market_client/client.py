@@ -11,8 +11,12 @@ import asyncio.streams
 import configargparse
 import logging as log
 import uuid
+from operator import itemgetter
 from exchange.order_books import cda_book
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
+
+from exchange_logging.exchange_loggers import BookLogger, TransactionLogger
+
 p = configargparse.ArgParser()
 p.add('--port', default=8090)
 p.add('--host', default='127.0.0.1', help="Address of server")
@@ -36,7 +40,7 @@ class Client():
             where keys are order IDs and values are tuples representing order information
         book_copy: A CDABook() that the client tries to replicate from the CDA exchange
     """
-    def __init__(self, balance=100, starting_shares=5):
+    def __init__(self, balance=1000, starting_shares=50):
         self.reader = None
         self.writer = None
         self.balance = balance
@@ -44,13 +48,21 @@ class Client():
         self.id = str(uuid.uuid4().hex).encode('ascii')
         self.orders = dict()
         self.book_copy = cda_book.CDABook()
+        self.order_history = []
+
+        # WIP - Market History Logging
+        self.book_logger = BookLogger(log_filepath=f"market_client/market_logs/book_log_{self.id.decode()}.txt", logger_name="book_logger")
+        self.transaction_logger = TransactionLogger(f"market_client/market_logs/transaction_log_{self.id.decode()}.txt", logger_name="transaction_logger")
+        
         # self.strategy_interpretor = GPTInterpreter()
         
     
     def __str__(self):
         return (f"Account Information\n"
                 f"Balance: {self.balance}\n"
-                f"Owned_shares: {self.owned_shares}\n")
+                f"Owned_shares: {self.owned_shares}\n"
+                f"Orders: {self.orders}\n"
+                f"Order History: {self.order_history}\n")
     
     def print_active_orders(self):
         """Display active client orders"""
@@ -60,8 +72,8 @@ class Client():
             print(f'ID: {count}, {self.orders[order_id][1]} shares @ ${self.orders[order_id][0]}')
             count += 1
         
-    def account_info(self):
-        return {"balance" : self.balance,"orders" : self.orders, "owned_shares" : self.owned_shares}
+    def account_info(self): # WIP - orders = self.orders
+        return {"id" : self.id.decode(), "balance" : self.balance, "orders" : None, "owned_shares" : self.owned_shares}
     
     def order_book(self):
         return {"book": self.book_copy}
@@ -141,7 +153,7 @@ class Client():
 
     async def recver(self):
         """Listener to all broadcasts sent from the exchange server"""
-        if self.reader is None:
+        if self.reader is None or self.writer is None:
             reader, writer = await asyncio.streams.open_connection(
             options.host, 
             options.port)
@@ -159,10 +171,24 @@ class Client():
                 case OuchServerMessages.BestBidAndOffer:
                     print("new best buy offer: ", response)
                 case OuchServerMessages.Executed:
+                    # Trade has been made
+                    # WIPv
+                    transaction_str = f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}"
+                    # WIP^
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
                     order_id = response['order_token']
                     if order_id in self.orders:
+                        transaction_data = {"price" : response['execution_price'], "quantity" : response["executed_shares"], "direction" : self.orders[order_id][2], "timestamp" : response['timestamp']}
+                        self.order_history.append(transaction_data)
+                        print(type(response['timestamp']), flush=True)
+                        #sorted_history = sorted(self.order_history, key=itemgetter('timestamp'))
+                        #self.order_history = sorted_history
                         self._update_active_orders(response)
+                    
+                    # WIP - update Book Log & Transaction Log
+                    self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
+                    self.transaction_logger.update_log(transaction=transaction_str)
+
                 # update client local_book 
                 case OuchServerMessages.Accepted:
                     print("The server Accepted order ", response['order_token'])
@@ -175,6 +201,9 @@ class Client():
                         response['shares'],
                         enter_into_book
                     )
+                    # WIP - update Book Log
+                    self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
+
                 # update client local_book
                 case OuchServerMessages.Canceled:
                     print("The server canceled order", response['order_token'])
@@ -196,9 +225,13 @@ class Client():
                     self.book_copy.cancel_order(
                         response['order_token'],
                         response['price'],
-                        response['decrement_shares'],
+                        quantity - response['decrement_shares'],
                         response['buy_sell_indicator']
                     )
+
+                    # WIP - update Book Log
+                    self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
+
                 case _:
                     print(response.header)
             await asyncio.sleep(0)
@@ -248,6 +281,12 @@ class Client():
     async def send(self, request):
         print("Sending ", request)
         """Send Ouch message to server"""
+        if self.reader is None or self.writer is None:
+            reader, writer = await asyncio.streams.open_connection(
+            options.host, 
+            options.port)
+            self.reader = reader
+            self.writer = writer
         if not request:
             print("Invalid order")
             return
@@ -307,27 +346,6 @@ class Client():
         self.orders[order_token] = (price, quantity, direction)
         return order_request
 
-    def process_order(self, shares, price, buy_sell_indicator):
-        """
-        Example usage: client.process_order(5, 2, "S") #shares, price, buy_sell_indicator
-        """
-        if buy_sell_indicator == "B":
-            if self.balance >= shares * price:
-                self.balance -= shares * price
-                self.owned_shares += shares
-                print("The server accepted the order.")
-            else:
-                print("Insufficient balance to place the order.")
-        elif buy_sell_indicator == "S":
-            if self.owned_shares >= shares:
-                self.balance += shares * price
-                self.owned_shares -= shares
-                print("The server accepted the order.")
-            else:
-                print("Insufficient shares to place the order.")
-        else:
-            print("Invalid buy/sell indicator.")
-
     def cancel_order(self, order_token, quantity_remaining):
         """Convert user input into cancel order 
         Args:
@@ -345,14 +363,18 @@ class Client():
         res = self._valid_order_input(order_token=order_token, quantity=quantity_remaining)
         if not res:
             return None
-    
-        quantity_remaining, price, direction, order_token = res
-        count = 1
+        quantity_remaining, price, direction, order_token, time_in_force = res
+        count = 1  
+        # Try to match order_token with order_id
         for order_id in self.orders:
             if count == order_token:
                 order_token = order_id
                 break
             count +=1 
+
+        # Verify that order_token exists
+        if not isinstance(order_token, bytes):
+            return None
 
         cancel_request = OuchClientMessages.CancelOrder(
             order_token=order_token, 
@@ -396,7 +418,10 @@ class Client():
             # sleeping will allow the client.recver() method to process
             await asyncio.sleep(0.5)  
 
-
+    async def runner(self):
+         """run client internally
+         NOTE: This is used in dev_run_multiple_clients.py"""
+         await asyncio.gather(self.sender(), self.recver())
 #----------------------------DEBUG------------------------
 async def main():
     log.basicConfig(level=log.INFO if not options.debug else log.DEBUG)

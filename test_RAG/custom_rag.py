@@ -131,6 +131,9 @@ else:
     # normal input
     prompt = input("Enter prompt: ")
 
-response = query_engine.query("Write a Python function called active_strategy() that will " + prompt + ". DO NOT INCLUDE A DESCRIPTION OF THE CODE OR ANYTHING THAT IS NOT THE CODE ITSELF!")
+response = query_engine.query("Write a Python function called active_strategy() that will code the following: " + prompt + 
+                              ".Ensure the function includes any necessary conditional statements, such as 'if', 'elif', or 'else'," + 
+                              "or calculations as needed to achieve the task or answer the question." 
+                              + "DO NOT INCLUDE A DESCRIPTION OF THE CODE OR ANYTHING THAT IS NOT THE CODE ITSELF!")
 script_runner(str(response))
 a = subprocess.run(['python' if (platform.system() == 'Windows') else 'python3', 'test_RAG/help.py'], text=True)

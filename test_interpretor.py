@@ -2,10 +2,11 @@ from gpt_bot.gpt_interpreter import GPTInterpreter
 from market_client.client import Client
 #from flask import Flask, jsonify
 import logging
+import time
 
 
 client = Client()
-gpt = GPTInterpreter()
+gpt = GPTInterpreter(client,test = True)
 
 
 def test_gpt():
@@ -15,9 +16,14 @@ def test_gpt():
     msg4 = "buy 6 shares of stock for 3 dollars"
     msg5 = "put a sell order of 2 shares of stock for 1 dollar"
     msg6 = "Sell 5 shares for 4 dollars"
-    msg7 = "I'm considering selling 50 shares at a price of $30 or higher."
+    msg7 = "SELL 50 shares for 30 dollars or higer"
     msg8 = "SELL 6 SHARES OF MY STOCK FOR three bucks"
     msg9 = "Sell 1 stock for $1 each that lasts for 60 seconds"
+
+    condition_msg1 = "Buy 5 shares if I have more than 6 dollars"
+    condition_msg2 = "buy 2 shares if I have more than 2 shares"
+    
+    c_msgs =[condition_msg1, condition_msg2]
    
     msgs = [msg1, msg2, msg3, msg4, msg5, msg6, msg7, msg8, msg9]
     correct_params = [{"quantity": 10, "price": 2, "direction": "B"},
@@ -44,65 +50,31 @@ def test_gpt():
         correct_price = param["price"]
         correct_direction = param["direction"]
 
-        function, resulting_params = gpt.perform_market_action(msg, client)
+        function, resulting_params = gpt.perform_market_action(msg)
         if function == ["place_order"]:
             if resulting_params["quantity"] == correct_quantity and resulting_params["price"] == correct_price and resulting_params["direction"] == correct_direction:
                 correct += 1
             else:
                 incorrect += 1
+        else:
+            incorrect += 1
+        print(f"function called: {function} with parameters {resulting_params}")
 
-    # set info logging level
-    logging.basicConfig(level=logging.INFO)
-    logging.info(f"   \033[92mCorrect: {correct}, \033[91mIncorrect: {incorrect}")
-            
-    # try:
-    #         assert gpt.perform_market_action(msg2, client) == ["place_order"]
-    #         results.append("Msg2 Pass")  # Store the result if assertion passes
-    # except AssertionError:
-    #         results.append("Msg2 Fail")
-
-    # try:
-    #         assert gpt.perform_market_action(msg3, client) == ["place_order"]
-    #         results.append(f"Msg3 Pass")  # Store the result if assertion passes
-    # except AssertionError:
-    #         results.append("Msg3 Fail")
-    # try:
-    #         assert gpt.perform_market_action(msg4, client) == ["place_order"]
-    #         results.append(f"Msg4 Pass")  # Store the result if assertion passes
-    # except AssertionError:
-    #         results.append("Msg4 Fail")
-    # try:
-    #         assert gpt.perform_market_action(msg5, client) == ["place_order"]
-    #         results.append(f"Msg4 Pass")  # Store the result if assertion passes
-    # except AssertionError:
-    #         results.append("Msg4 Fail")
-    # try:
-    #         assert gpt.perform_market_action(msg6, client) == ["place_order"]
-    #         results.append(f"Msg5 Pass")  # Store the result if assertion passes
-    # except AssertionError:
-    #         results.append("Msg5 Fail")
-    # try:
-    #         assert gpt.perform_market_action(msg7, client) == ["place_order"]
-    #         results.append(f"Msg6 Pass")  # Store the result if assertion passes
-    # except AssertionError:
-    #         results.append("Msg6 Fail")
-    # try:
-    #         assert gpt.perform_market_action(msg8, client) == ["place_order"]
-    #         results.append(f"Msg7 Pass")  # Store the result if assertion passes
-    # except AssertionError:
-    #         results.append("Msg7 Fail")
-    # try:
-    #         assert gpt.perform_market_action(msg9, client) == ["place_order"]
-    #         results.append(f"Msg8 Pass")  # Store the result if assertion passes
-    # except AssertionError:
-    #         results.append("Msg8 Fail")
-    # try:
-    #         assert gpt.perform_market_action(msg1, client) == ["place_order"]
-    #         results.append(f"Msg9 Pass")  # Store the result if assertion passes
-    # except AssertionError:
-    #         results.append("Msg9 Fail")
     
-
-
+    # set info logging level
+    # logging.basicConfig(level=logging.INFO)
+    # logging.info(f"   \033[92mCorrect: {correct}, \033[91mIncorrect: {incorrect}")
+    print(f"   \033[92mCorrect: {correct}, \033[91mIncorrect: {incorrect}")
+    for msg in c_msgs:
+        function, resulting_params = gpt.perform_market_action(msg)
+        
+        print(f"\033[97m function called: {function} with parameters {resulting_params}")
+    
 if __name__ == "__main__":
+    start_time = time.time()
     test_gpt()
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+
+    # Print the elapsed time
+    print("\033[95m Elapsed time:", elapsed_time, "seconds")

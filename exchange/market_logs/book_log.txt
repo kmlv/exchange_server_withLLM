@@ -1,0 +1,22 @@
+LOG ENTRY:
+timestamp: 77222282821000
+book:
+  Spread: 3 - 2147483647
+  Bids:
+$3 Interest: 30, Orders: b'0625909878e44d1e85ae89b9f16e6112': 30
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 77232292030000
+book:
+  Spread: 0 - 2147483647
+  Bids:
+
+
+  Asks:
+
+------------------------
+
