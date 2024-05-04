@@ -2,7 +2,7 @@ import logging as log
 
 class BookLogger():
     def __init__(self, log_filepath, logger_name):
-        book_log_formatter = log.Formatter('LOG ENTRY:\ntimestamp: %(timestamp)s\nbook:\n%(message)s\n------------------------\n')
+        book_log_formatter = log.Formatter('Book Log Entry:\ntimestamp: %(timestamp)s\n%(message)s\nEnd of Entry\n------------------------')
         #create logger
         self.logger = log.getLogger(logger_name)
         self.logger.setLevel(log.INFO)

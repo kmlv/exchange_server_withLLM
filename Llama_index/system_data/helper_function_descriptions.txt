@@ -13,6 +13,10 @@ Where id is a string, balance is an integer, active_orders is a dictionary, and 
 def account_info()
     return {"id" : self.id, "balance" : self.balance,"orders" : self.orders, "owned_shares" : self.owned_shares}
 
+
+get_order_book is a python function that will retrieve the latest copy of the order book, as a dictionary.
+
+
 best_offer is a python function that will return the market price of a stock at the time it was called. This is also
 known as the best buy or best sell offer. The best offers are represented as a dictionary with the keys ["best_buy", "best_sell] 
 def best_offer:

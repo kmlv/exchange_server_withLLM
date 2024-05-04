@@ -25,6 +25,7 @@ class Exchange:
                 context
             and does whatever we need to get that info back to order sender                             
         '''
+        self.start_time = nanoseconds_since_midnight()
         self.order_store = OrderStore()
         self.order_book = order_book
         self.order_reply = order_reply
@@ -48,7 +49,9 @@ class Exchange:
         # TRANSACTION HISTORY LOG
         self.transaction_log_file = transaction_log
         self.transaction_logger = TransactionLogger(log_filepath=f"exchange/market_logs/{transaction_log}", logger_name="transaction_logger")
-    
+
+    def system_time_since_start(self, in_seconds=False):
+        return (nanoseconds_since_midnight() - self.start_time) / (10**(9 if in_seconds else 0))
 
     def system_start_atomic(self, system_event_message, timestamp):  
         self.order_store.clear_order_store()
@@ -366,9 +369,7 @@ class Exchange:
             await self.message_broadcast(m)
         
         # Add entry to Book Log
-        # if m == OuchServerMessages.Accepted:
-        # self.update_book_log()
-        self.book_logger.update_log(book=self.order_book, timestamp=nanoseconds_since_midnight())
+        self.book_logger.update_log(book=self.order_book, timestamp=self.system_time_since_start(True))
 
     async def send_outgoing_messages(self):
         """Send Server OuchMessage directly to sender"""

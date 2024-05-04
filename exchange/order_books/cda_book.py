@@ -23,11 +23,10 @@ class CDABook:
 			volume_at_best_ask=0, next_bid=MIN_BID, next_ask=MAX_ASK)
 
 	def __str__(self):
-		return """  Spread: {} - {}
-  Bids:
+		return """Spread: {} - {}
+Bids:
 {}
-
-  Asks:
+Asks:
 {}""".format(self.bid, self.ask, self.bids, self.asks)
 
 	# def reset_book(self):						#jason
