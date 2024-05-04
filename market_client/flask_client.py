@@ -1,5 +1,5 @@
 
-from Llama_index.llama_rag import gen_script
+from Llama_index.llama_rag import LlamaRag
 
 """
 Flask app that acts as a middle-man between generated scripts
@@ -18,7 +18,9 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+
 client = None
+interpetor = LlamaRag()
 
 def run_flask():
     """Start flask app"""
@@ -31,6 +33,7 @@ async def start(input_client: Client):
     if not input_client or not isinstance(input_client, Client):
         raise Exception(f"Cannot Start Non-Client object {input_client}")
     client = input_client
+    interpetor.configure_query_engine()
     print(client)
     # Run flask endpoint in separate thread to prevent it from blocking 
     # asyncio tcp connection to market
@@ -59,8 +62,8 @@ def home():
 def prompt():
     data = request.get_json()
     prompt = data['prompt']
-
-    gen_script(prompt)
+    
+    interpetor.execute_query(prompt)
 
     return "ok"
 
@@ -73,8 +76,6 @@ def place_order():
     order_price = int(order_info.get("price"))
     order_direction = order_info.get("direction")
     order_time = int(order_info.get("time"))
-
-    # print("REQUEST.JSON: ", request.json)
 
     # send order based on request 
     # https://discuss.python.org/t/calling-coroutines-from-sync-code/23027 thanks Sebastian :)

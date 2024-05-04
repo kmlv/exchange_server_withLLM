@@ -3,3 +3,4 @@ pytz
 llama-index
 openai
 flask
+flask-cors

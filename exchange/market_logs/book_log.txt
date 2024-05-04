@@ -1,16 +1,1600 @@
 LOG ENTRY:
-timestamp: 77222282821000
+timestamp: 77757044216000
 book:
-  Spread: 3 - 2147483647
+  Spread: 4 - 2147483647
   Bids:
-$3 Interest: 30, Orders: b'0625909878e44d1e85ae89b9f16e6112': 30
+$4 Interest: 100, Orders: b'af52d076d12047978386b52233797405': 100
 
   Asks:
 
 ------------------------
 
 LOG ENTRY:
-timestamp: 77232292030000
+timestamp: 77767057338000
+book:
+  Spread: 0 - 2147483647
+  Bids:
+
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 77917110824000
+book:
+  Spread: 0 - 1000
+  Bids:
+
+
+  Asks:
+$1000 Interest: 1, Orders: b'55a894e33ccc485888156b1c7c300e1a': 1
+------------------------
+
+LOG ENTRY:
+timestamp: 77927119224000
+book:
+  Spread: 0 - 2147483647
+  Bids:
+
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78023388933000
+book:
+  Spread: 40 - 2147483647
+  Bids:
+$40 Interest: 3, Orders: b'6eca8d87c79e47ea8db648a8ac39f445': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78033405355000
+book:
+  Spread: 0 - 2147483647
+  Bids:
+
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78317868304000
+book:
+  Spread: 5 - 2147483647
+  Bids:
+$5 Interest: 30, Orders: b'b2a705dc50964f6cbb508d6c886d40ae': 30
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78327860443000
+book:
+  Spread: 0 - 2147483647
+  Bids:
+
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78465476906000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'269d34f02d9f4079a123fca07263feca': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78475494556000
+book:
+  Spread: 0 - 2147483647
+  Bids:
+
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78523222313000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'9db7ded94a774dc28328cc7470379916': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78527325057000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'9db7ded94a774dc28328cc7470379916': 3, b'1ce44e79f199495e8b050ad631c02476': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78531457297000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'9db7ded94a774dc28328cc7470379916': 3, b'1ce44e79f199495e8b050ad631c02476': 3, b'6547a64548474e15ae6fc78ecfc935d8': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78533237190000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'1ce44e79f199495e8b050ad631c02476': 3, b'6547a64548474e15ae6fc78ecfc935d8': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78535592181000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'1ce44e79f199495e8b050ad631c02476': 3, b'6547a64548474e15ae6fc78ecfc935d8': 3, b'd8b77c70f7694e9995a23c419a45f217': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78537345560000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'6547a64548474e15ae6fc78ecfc935d8': 3, b'd8b77c70f7694e9995a23c419a45f217': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78539700142000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'6547a64548474e15ae6fc78ecfc935d8': 3, b'd8b77c70f7694e9995a23c419a45f217': 3, b'18248412ae2d4c75930d4140402a1d6c': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78541465090000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'd8b77c70f7694e9995a23c419a45f217': 3, b'18248412ae2d4c75930d4140402a1d6c': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78543810734000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'd8b77c70f7694e9995a23c419a45f217': 3, b'18248412ae2d4c75930d4140402a1d6c': 3, b'a7ddd182505147dfa3c49dd6a58f0970': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78545607664000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'18248412ae2d4c75930d4140402a1d6c': 3, b'a7ddd182505147dfa3c49dd6a58f0970': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78547940991000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'18248412ae2d4c75930d4140402a1d6c': 3, b'a7ddd182505147dfa3c49dd6a58f0970': 3, b'902f81864dc34bf8b44c255b88987cde': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78549707345000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'a7ddd182505147dfa3c49dd6a58f0970': 3, b'902f81864dc34bf8b44c255b88987cde': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78552048533000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'a7ddd182505147dfa3c49dd6a58f0970': 3, b'902f81864dc34bf8b44c255b88987cde': 3, b'968aea91a83946b8b849aef83dab5a74': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78553820874000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'902f81864dc34bf8b44c255b88987cde': 3, b'968aea91a83946b8b849aef83dab5a74': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78556134319000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'902f81864dc34bf8b44c255b88987cde': 3, b'968aea91a83946b8b849aef83dab5a74': 3, b'7dc64f18f8ce4b0797574e33639b97a7': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78557937914000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'968aea91a83946b8b849aef83dab5a74': 3, b'7dc64f18f8ce4b0797574e33639b97a7': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78560229981000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'968aea91a83946b8b849aef83dab5a74': 3, b'7dc64f18f8ce4b0797574e33639b97a7': 3, b'8dfbee1fea0648cb897309ad30a8eb70': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78562054537000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'7dc64f18f8ce4b0797574e33639b97a7': 3, b'8dfbee1fea0648cb897309ad30a8eb70': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78564319280000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'7dc64f18f8ce4b0797574e33639b97a7': 3, b'8dfbee1fea0648cb897309ad30a8eb70': 3, b'8d3d46f5cbed4b509ab05177a720291b': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78566141402000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'8dfbee1fea0648cb897309ad30a8eb70': 3, b'8d3d46f5cbed4b509ab05177a720291b': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78568435142000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'8dfbee1fea0648cb897309ad30a8eb70': 3, b'8d3d46f5cbed4b509ab05177a720291b': 3, b'3da259623d3940219730b712b74118b9': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78570255635000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'8d3d46f5cbed4b509ab05177a720291b': 3, b'3da259623d3940219730b712b74118b9': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78572542395000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'8d3d46f5cbed4b509ab05177a720291b': 3, b'3da259623d3940219730b712b74118b9': 3, b'0c9c4789a5c94bddb36a6c51567922b2': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78574312442000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'3da259623d3940219730b712b74118b9': 3, b'0c9c4789a5c94bddb36a6c51567922b2': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78576634068000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'3da259623d3940219730b712b74118b9': 3, b'0c9c4789a5c94bddb36a6c51567922b2': 3, b'999dd8bd95e149e98f8c3bd754449b4f': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78578440050000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'0c9c4789a5c94bddb36a6c51567922b2': 3, b'999dd8bd95e149e98f8c3bd754449b4f': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78580745262000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'0c9c4789a5c94bddb36a6c51567922b2': 3, b'999dd8bd95e149e98f8c3bd754449b4f': 3, b'b4e3a3c17fab4c75adb7111f0247b4f6': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78582551456000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'999dd8bd95e149e98f8c3bd754449b4f': 3, b'b4e3a3c17fab4c75adb7111f0247b4f6': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78584848212000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'999dd8bd95e149e98f8c3bd754449b4f': 3, b'b4e3a3c17fab4c75adb7111f0247b4f6': 3, b'237c4d7df96546fb984642c678829c5c': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78586642968000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'b4e3a3c17fab4c75adb7111f0247b4f6': 3, b'237c4d7df96546fb984642c678829c5c': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78588954933000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'b4e3a3c17fab4c75adb7111f0247b4f6': 3, b'237c4d7df96546fb984642c678829c5c': 3, b'0d588f0e0c25432a89547ec2439bfce5': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78590769810000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'237c4d7df96546fb984642c678829c5c': 3, b'0d588f0e0c25432a89547ec2439bfce5': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78593033938000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'237c4d7df96546fb984642c678829c5c': 3, b'0d588f0e0c25432a89547ec2439bfce5': 3, b'ed35d4b57e9a466f9511912b1d69a43d': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78594846135000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'0d588f0e0c25432a89547ec2439bfce5': 3, b'ed35d4b57e9a466f9511912b1d69a43d': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78597157759000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'0d588f0e0c25432a89547ec2439bfce5': 3, b'ed35d4b57e9a466f9511912b1d69a43d': 3, b'0a9f4532730a49fda15bebd6f921d064': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78598956983000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'ed35d4b57e9a466f9511912b1d69a43d': 3, b'0a9f4532730a49fda15bebd6f921d064': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78601304857000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'ed35d4b57e9a466f9511912b1d69a43d': 3, b'0a9f4532730a49fda15bebd6f921d064': 3, b'813348941f5648c8bb91bfafb214d30b': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78603036534000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'0a9f4532730a49fda15bebd6f921d064': 3, b'813348941f5648c8bb91bfafb214d30b': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78605424869000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'0a9f4532730a49fda15bebd6f921d064': 3, b'813348941f5648c8bb91bfafb214d30b': 3, b'709da68fe4dc4874a2aa55538fde7a7b': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78607163958000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'813348941f5648c8bb91bfafb214d30b': 3, b'709da68fe4dc4874a2aa55538fde7a7b': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78609564551000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'813348941f5648c8bb91bfafb214d30b': 3, b'709da68fe4dc4874a2aa55538fde7a7b': 3, b'71e28707517d4e19825fdec7b4cb64b2': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78611316607000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'709da68fe4dc4874a2aa55538fde7a7b': 3, b'71e28707517d4e19825fdec7b4cb64b2': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78613697843000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'709da68fe4dc4874a2aa55538fde7a7b': 3, b'71e28707517d4e19825fdec7b4cb64b2': 3, b'16b9390fad614cfb8b4c527fb4e0255a': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78615436631000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'71e28707517d4e19825fdec7b4cb64b2': 3, b'16b9390fad614cfb8b4c527fb4e0255a': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78617832693000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'71e28707517d4e19825fdec7b4cb64b2': 3, b'16b9390fad614cfb8b4c527fb4e0255a': 3, b'7ffd851963f34c8da8e84b193ba0eaf7': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78619566451000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'16b9390fad614cfb8b4c527fb4e0255a': 3, b'7ffd851963f34c8da8e84b193ba0eaf7': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78621937409000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'16b9390fad614cfb8b4c527fb4e0255a': 3, b'7ffd851963f34c8da8e84b193ba0eaf7': 3, b'218fb65865214b0392648e70c862325c': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78623726783000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'7ffd851963f34c8da8e84b193ba0eaf7': 3, b'218fb65865214b0392648e70c862325c': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78626051704000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'7ffd851963f34c8da8e84b193ba0eaf7': 3, b'218fb65865214b0392648e70c862325c': 3, b'a97061b9ba5842e0918728b765d3ac67': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78627823748000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'218fb65865214b0392648e70c862325c': 3, b'a97061b9ba5842e0918728b765d3ac67': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78630165368000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'218fb65865214b0392648e70c862325c': 3, b'a97061b9ba5842e0918728b765d3ac67': 3, b'd25076ca4e624fd1b27de3a8460c9adb': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78631945124000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'a97061b9ba5842e0918728b765d3ac67': 3, b'd25076ca4e624fd1b27de3a8460c9adb': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78634285906000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'a97061b9ba5842e0918728b765d3ac67': 3, b'd25076ca4e624fd1b27de3a8460c9adb': 3, b'4fce14b463364b37ab31f5390f8bee80': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78636052914000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'd25076ca4e624fd1b27de3a8460c9adb': 3, b'4fce14b463364b37ab31f5390f8bee80': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78638393686000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'd25076ca4e624fd1b27de3a8460c9adb': 3, b'4fce14b463364b37ab31f5390f8bee80': 3, b'9596f2af80434b8c828bf38bc5ff7ce2': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78640181600000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'4fce14b463364b37ab31f5390f8bee80': 3, b'9596f2af80434b8c828bf38bc5ff7ce2': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78642502370000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'4fce14b463364b37ab31f5390f8bee80': 3, b'9596f2af80434b8c828bf38bc5ff7ce2': 3, b'959a8eabcccd4850a89f5ad25bca8557': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78644287561000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'9596f2af80434b8c828bf38bc5ff7ce2': 3, b'959a8eabcccd4850a89f5ad25bca8557': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78646591600000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'9596f2af80434b8c828bf38bc5ff7ce2': 3, b'959a8eabcccd4850a89f5ad25bca8557': 3, b'22482b130a084409913cbb0a9b4dae3b': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78648401393000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'959a8eabcccd4850a89f5ad25bca8557': 3, b'22482b130a084409913cbb0a9b4dae3b': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78649154860000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'959a8eabcccd4850a89f5ad25bca8557': 3, b'22482b130a084409913cbb0a9b4dae3b': 3, b'590b22015d2e4f0897d29afc405638a3': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78650681704000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 12, Orders: b'959a8eabcccd4850a89f5ad25bca8557': 3, b'22482b130a084409913cbb0a9b4dae3b': 3, b'590b22015d2e4f0897d29afc405638a3': 3, b'fbd0dbf6e4f04bce8ce2b9450435ff59': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78652508400000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'22482b130a084409913cbb0a9b4dae3b': 3, b'590b22015d2e4f0897d29afc405638a3': 3, b'fbd0dbf6e4f04bce8ce2b9450435ff59': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78654786812000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 12, Orders: b'22482b130a084409913cbb0a9b4dae3b': 3, b'590b22015d2e4f0897d29afc405638a3': 3, b'fbd0dbf6e4f04bce8ce2b9450435ff59': 3, b'8673ec66389748dfb06213b5664d6a1f': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78656604591000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'590b22015d2e4f0897d29afc405638a3': 3, b'fbd0dbf6e4f04bce8ce2b9450435ff59': 3, b'8673ec66389748dfb06213b5664d6a1f': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78658907329000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 12, Orders: b'590b22015d2e4f0897d29afc405638a3': 3, b'fbd0dbf6e4f04bce8ce2b9450435ff59': 3, b'8673ec66389748dfb06213b5664d6a1f': 3, b'56296e71926f480c95fd0ad84b9ac64f': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78659169215000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'fbd0dbf6e4f04bce8ce2b9450435ff59': 3, b'8673ec66389748dfb06213b5664d6a1f': 3, b'56296e71926f480c95fd0ad84b9ac64f': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78660696961000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'8673ec66389748dfb06213b5664d6a1f': 3, b'56296e71926f480c95fd0ad84b9ac64f': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78663000925000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'8673ec66389748dfb06213b5664d6a1f': 3, b'56296e71926f480c95fd0ad84b9ac64f': 3, b'1f55d5b9c4a9470b830a57d80cc157aa': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78664798975000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'56296e71926f480c95fd0ad84b9ac64f': 3, b'1f55d5b9c4a9470b830a57d80cc157aa': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78667128357000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'56296e71926f480c95fd0ad84b9ac64f': 3, b'1f55d5b9c4a9470b830a57d80cc157aa': 3, b'1919df1b05bc40e989f64c60fa207e6a': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78668906448000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'1f55d5b9c4a9470b830a57d80cc157aa': 3, b'1919df1b05bc40e989f64c60fa207e6a': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78671267743000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'1f55d5b9c4a9470b830a57d80cc157aa': 3, b'1919df1b05bc40e989f64c60fa207e6a': 3, b'86cc4a602a11467295b8063f1d814a63': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78673021216000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'1919df1b05bc40e989f64c60fa207e6a': 3, b'86cc4a602a11467295b8063f1d814a63': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78675354128000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'1919df1b05bc40e989f64c60fa207e6a': 3, b'86cc4a602a11467295b8063f1d814a63': 3, b'11620a6878fa46e98237a04c77540d99': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78677137635000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'86cc4a602a11467295b8063f1d814a63': 3, b'11620a6878fa46e98237a04c77540d99': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78679462685000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'86cc4a602a11467295b8063f1d814a63': 3, b'11620a6878fa46e98237a04c77540d99': 3, b'9cd5c556f97b442a8f6444ef6d8b07c8': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78681270264000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'11620a6878fa46e98237a04c77540d99': 3, b'9cd5c556f97b442a8f6444ef6d8b07c8': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78683545284000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'11620a6878fa46e98237a04c77540d99': 3, b'9cd5c556f97b442a8f6444ef6d8b07c8': 3, b'1f3dc7109ba443d682ef7f2e003f63c5': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78685360792000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'9cd5c556f97b442a8f6444ef6d8b07c8': 3, b'1f3dc7109ba443d682ef7f2e003f63c5': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78687649387000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'9cd5c556f97b442a8f6444ef6d8b07c8': 3, b'1f3dc7109ba443d682ef7f2e003f63c5': 3, b'f798e38bf82744f598c26a2a354c5fa5': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78689480060000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'1f3dc7109ba443d682ef7f2e003f63c5': 3, b'f798e38bf82744f598c26a2a354c5fa5': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78691753426000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'1f3dc7109ba443d682ef7f2e003f63c5': 3, b'f798e38bf82744f598c26a2a354c5fa5': 3, b'bfe0547387fa48758aee92d14e38c565': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78693541003000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'f798e38bf82744f598c26a2a354c5fa5': 3, b'bfe0547387fa48758aee92d14e38c565': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78695863905000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'f798e38bf82744f598c26a2a354c5fa5': 3, b'bfe0547387fa48758aee92d14e38c565': 3, b'afb9a9aa25a740aea8b73f2370d6336a': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78697662993000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'bfe0547387fa48758aee92d14e38c565': 3, b'afb9a9aa25a740aea8b73f2370d6336a': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78699952307000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'bfe0547387fa48758aee92d14e38c565': 3, b'afb9a9aa25a740aea8b73f2370d6336a': 3, b'8f1ba6532fa941f0805f82a778309902': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78701761301000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'afb9a9aa25a740aea8b73f2370d6336a': 3, b'8f1ba6532fa941f0805f82a778309902': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78704051234000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'afb9a9aa25a740aea8b73f2370d6336a': 3, b'8f1ba6532fa941f0805f82a778309902': 3, b'91ec2aa7b9a94781951bfa239594369b': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78705866281000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'8f1ba6532fa941f0805f82a778309902': 3, b'91ec2aa7b9a94781951bfa239594369b': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78708172666000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'8f1ba6532fa941f0805f82a778309902': 3, b'91ec2aa7b9a94781951bfa239594369b': 3, b'c97e79f538bc4e0082c848ab46ab3be9': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78709959392000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'91ec2aa7b9a94781951bfa239594369b': 3, b'c97e79f538bc4e0082c848ab46ab3be9': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78712296832000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 9, Orders: b'91ec2aa7b9a94781951bfa239594369b': 3, b'c97e79f538bc4e0082c848ab46ab3be9': 3, b'a603989720944ceab29386b89de67ddd': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78714054999000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'c97e79f538bc4e0082c848ab46ab3be9': 3, b'a603989720944ceab29386b89de67ddd': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78718182557000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'a603989720944ceab29386b89de67ddd': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78722302495000
+book:
+  Spread: 0 - 2147483647
+  Bids:
+
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78821987835000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'd981dc52c14344f1987e692cfa661e5f': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78829044205000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'd981dc52c14344f1987e692cfa661e5f': 3, b'f978765475d64a84b0832b0130ff28f9': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78831991670000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'f978765475d64a84b0832b0130ff28f9': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78836126712000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'f978765475d64a84b0832b0130ff28f9': 3, b'7e8ac7881f1143678cffb438f00a7a10': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78839051857000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'7e8ac7881f1143678cffb438f00a7a10': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78843204964000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'7e8ac7881f1143678cffb438f00a7a10': 3, b'bc1f758ed0f74a94ab3c1a97db1f2331': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78846135526000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'bc1f758ed0f74a94ab3c1a97db1f2331': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78850273578000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'bc1f758ed0f74a94ab3c1a97db1f2331': 3, b'8481da7201c949bb83338c6ee8f56c53': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78853201733000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'8481da7201c949bb83338c6ee8f56c53': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78857348928000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'8481da7201c949bb83338c6ee8f56c53': 3, b'1a545fa5da7d4e15a938efa90711a517': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78860288321000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'1a545fa5da7d4e15a938efa90711a517': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78864427607000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'1a545fa5da7d4e15a938efa90711a517': 3, b'bcd93a81f60340459d13e7d56c5eba79': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78867357541000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'bcd93a81f60340459d13e7d56c5eba79': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78871493704000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'bcd93a81f60340459d13e7d56c5eba79': 3, b'774dbe98ed754801be80b6e24cf95e34': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78874422412000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'774dbe98ed754801be80b6e24cf95e34': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78878561817000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'774dbe98ed754801be80b6e24cf95e34': 3, b'f2630d1824cc4677802ab32c7229aca3': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78881515220000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'f2630d1824cc4677802ab32c7229aca3': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78885641567000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'f2630d1824cc4677802ab32c7229aca3': 3, b'183eca1cc2634a1c87efee9a93726de4': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78888565274000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'183eca1cc2634a1c87efee9a93726de4': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78892700628000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'183eca1cc2634a1c87efee9a93726de4': 3, b'bba85375b2004ca1b5d2b4a6cfe48b31': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78895651413000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'bba85375b2004ca1b5d2b4a6cfe48b31': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78899771227000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'bba85375b2004ca1b5d2b4a6cfe48b31': 3, b'0abc4fe97d4d45ca92fac412946a5bab': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78902710086000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'0abc4fe97d4d45ca92fac412946a5bab': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78906844495000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'0abc4fe97d4d45ca92fac412946a5bab': 3, b'8036e459fdbf4cda86ad754f39c0089c': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78909764732000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'8036e459fdbf4cda86ad754f39c0089c': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78913922194000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'8036e459fdbf4cda86ad754f39c0089c': 3, b'61b77194838245d0bac3354ea9b24a46': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78916854279000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'61b77194838245d0bac3354ea9b24a46': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78920999558000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'61b77194838245d0bac3354ea9b24a46': 3, b'd04a21002d9948ecba6a9171b3a7051f': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78923927460000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'd04a21002d9948ecba6a9171b3a7051f': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78928065665000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'd04a21002d9948ecba6a9171b3a7051f': 3, b'719728cc7fa5483c85c8cddddc7b5250': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78930993485000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'719728cc7fa5483c85c8cddddc7b5250': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78935125435000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'719728cc7fa5483c85c8cddddc7b5250': 3, b'874c18a6138a4e3d897a5454b063fb34': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78938067280000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'874c18a6138a4e3d897a5454b063fb34': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78942190896000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 6, Orders: b'874c18a6138a4e3d897a5454b063fb34': 3, b'0dff12ff3d964b639cf9c036410e9415': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78945123756000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 3, Orders: b'0dff12ff3d964b639cf9c036410e9415': 3
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 78952192653000
+book:
+  Spread: 0 - 2147483647
+  Bids:
+
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 79098714167000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 30, Orders: b'98f948ecf9dd4d959add66367ec5cba7': 30
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 79104778036000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 60, Orders: b'98f948ecf9dd4d959add66367ec5cba7': 30, b'3d35d5861e5547879f721971cb77eb9b': 30
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 79108727918000
+book:
+  Spread: 9 - 2147483647
+  Bids:
+$9 Interest: 30, Orders: b'3d35d5861e5547879f721971cb77eb9b': 30
+
+  Asks:
+
+------------------------
+
+LOG ENTRY:
+timestamp: 79114796036000
 book:
   Spread: 0 - 2147483647
   Bids:
