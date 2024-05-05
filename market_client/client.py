@@ -73,7 +73,7 @@ class Client():
             count += 1
         
     def account_info(self): # WIP - orders = self.orders
-        return {"id" : self.id.decode(), "balance" : self.balance, "orders" : 0, "owned_shares" : self.owned_shares}
+        return {"id" : self.id.decode(), "balance" : self.balance, "orders" : self.orders, "owned_shares" : self.owned_shares}
     
     def order_book(self):
         return {"book": self.book_copy}
