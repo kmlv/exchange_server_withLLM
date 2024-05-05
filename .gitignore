@@ -216,3 +216,5 @@ pip-log.txt
 env
 exchange/market_logs/book_log.txt
 exchange/market_logs/transaction_log.txt
+market_client/market_logs/book_log.txt
+market_client/market_logs/transaction_log.txt

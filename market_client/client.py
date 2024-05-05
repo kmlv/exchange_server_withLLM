@@ -50,9 +50,9 @@ class Client():
         self.book_copy = cda_book.CDABook()
         self.order_history = []
 
-        # WIP - Market History Logging
-        self.book_logger = BookLogger(log_filepath=f"market_client/market_logs/book_log_{self.id.decode()}.txt", logger_name="book_logger")
-        self.transaction_logger = TransactionLogger(f"market_client/market_logs/transaction_log_{self.id.decode()}.txt", logger_name="transaction_logger")
+        # Market History Logging
+        self.book_logger = BookLogger(log_filepath=f"market_client/market_logs/book_log.txt", logger_name="book_logger")
+        self.transaction_logger = TransactionLogger(f"market_client/market_logs/transaction_log.txt", logger_name="transaction_logger")
         
         # self.strategy_interpretor = GPTInterpreter()
         
@@ -72,7 +72,7 @@ class Client():
             print(f'ID: {count}, {self.orders[order_id][1]} shares @ ${self.orders[order_id][0]}')
             count += 1
         
-    def account_info(self): # WIP - orders = self.orders
+    def account_info(self):
         return {"id" : self.id.decode(), "balance" : self.balance, "orders" : self.orders, "owned_shares" : self.owned_shares}
     
     def order_book(self):
@@ -172,9 +172,7 @@ class Client():
                     print("new best buy offer: ", response)
                 case OuchServerMessages.Executed:
                     # Trade has been made
-                    # WIPv
                     transaction_str = f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}"
-                    # WIP^
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
                     order_id = response['order_token']
                     if order_id in self.orders:
@@ -185,7 +183,7 @@ class Client():
                         #self.order_history = sorted_history
                         self._update_active_orders(response)
                     
-                    # WIP - update Book Log & Transaction Log
+                    # Update Book Log & Transaction Log
                     self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
                     self.transaction_logger.update_log(transaction=transaction_str)
 
@@ -201,7 +199,7 @@ class Client():
                         response['shares'],
                         enter_into_book
                     )
-                    # WIP - update Book Log
+                    # Update Book Log
                     self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
 
                 # update client local_book
@@ -229,7 +227,7 @@ class Client():
                         response['buy_sell_indicator']
                     )
 
-                    # WIP - update Book Log
+                    # Update Book Log
                     self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
 
                 case _:

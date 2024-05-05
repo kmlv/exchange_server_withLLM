@@ -23,7 +23,7 @@ def get_client_order_history():
 def get_market_history():
     client_id = account_info()["id"]
     market_data = list()
-    with open(f"market_client/market_logs/book_log_{client_id}.txt", mode="r") as f:
+    with open(f"market_client/market_logs/book_log.txt", mode="r") as f:
         for line in f:
             entry = json.loads(line)
 
@@ -34,6 +34,6 @@ def get_market_history():
 #TODO: transaction history is currently unused
 def get_market_history_logfiles():
     client_id = account_info()["id"]
-    book_log_file = open(f"market_client/market_logs/book_log_{client_id.decode()}.txt", mode="r")
-    transaction_log_file = open(f"market_client/market_logs/transaction_log_{client_id.decode()}.txt", mode="r")
+    book_log_file = open(f"market_client/market_logs/book_log.txt", mode="r")
+    transaction_log_file = open(f"market_client/market_logs/transaction_log.txt", mode="r")
     return book_log_file, transaction_log_file
