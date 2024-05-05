@@ -16,9 +16,9 @@ def account_info():
     response = requests.request("GET", f"http://{_CLIENT_ADDR}:{_CLIENT_PORT}/info", json=dict())
     return response.json()["account"]
 
-def get_order_book():
+def get_client_order_history():
     response = requests.request("GET", f"http://{_CLIENT_ADDR}:{_CLIENT_PORT}/info", json=dict())
-    return response.json()["book"]
+    return response.json()["order_history"]
 
 def get_market_history():
     client_id = account_info()["id"]
@@ -31,11 +31,7 @@ def get_market_history():
     market_data.reverse()
     return market_data
 
-    
-def get_order_history():
-    response = requests.request("GET", f"http://{_CLIENT_ADDR}:{_CLIENT_PORT}/info", json=dict())
-    return response.json()["order_history"]
-
+#TODO: transaction history is currently unused
 def get_market_history_logfiles():
     client_id = account_info()["id"]
     book_log_file = open(f"market_client/market_logs/book_log_{client_id.decode()}.txt", mode="r")
