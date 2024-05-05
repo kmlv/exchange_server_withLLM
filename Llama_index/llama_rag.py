@@ -120,7 +120,7 @@ class LlamaRag:
         response = self.query_engine.query("Write a Python function named active_strategy() that implements the following: \n" + prompt + 
                                 " \n\n DO NOT INCLUDE A DESCRIPTION OF THE CODE OR ANYTHING THAT IS NOT THE CODE ITSELF! \n" +
                                 " Include any necessary conditional statements ('if', 'elif', 'else') or calculations needed to accomplish the task or answer the question. \n" +
-                                " If the generated code doesn't include a CDA_order function, the active_strategy() function should print: '\n\n Sorry, I was not able to implement your order. please rephrase your prompt and try again.\n\n' and exit")
+                                " If the generated code doesn't include a CDA_order function, the active_strategy() function should print: '\n\n Sorry, I was not able to implement your strategy. please rephrase your prompt and try again.\n\n' and exit")
 
         self._run_script(str(response))
 

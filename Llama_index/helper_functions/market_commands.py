@@ -6,16 +6,20 @@ NOTE: if you add any additional functions here you must add a description
 """
 import time
 import requests
+import json
 _CLIENT_ADDR = "localhost"
 _CLIENT_PORT = "5001"
 
 def CDA_order(shares: int, price: int, direction: str):
-    data = {"quantity" : shares, "price" : price, "direction" : direction, "time": 10}
+    data = {"quantity" : shares, "price" : price, "direction" : direction, "time": 100}
     print("Placing order: ", direction, shares, "@", price, time.time(), flush=True)
 
-    resp = requests.request("POST", f"http://{_CLIENT_ADDR}:{_CLIENT_PORT}/place_order", json=data)
-    placed_order_token = resp.json()['order_token']
-    return placed_order_token
+    try: 
+        resp = requests.request("POST", f"http://{_CLIENT_ADDR}:{_CLIENT_PORT}/place_order", json=data)
+        placed_order_token = resp.json()['order_token']
+        return placed_order_token
+    except (json.decoder.JSONDecodeError, KeyError):
+        return None
 
 
 def CDA_order_cancel(token: int):

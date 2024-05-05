@@ -80,10 +80,11 @@ def place_order():
     # send order based on request 
     # https://discuss.python.org/t/calling-coroutines-from-sync-code/23027 thanks Sebastian :)
     ouch_order_request = client.place_order(order_quantity, order_price, order_direction, order_time)
-    send_to_market(ouch_order_request)
-    placed_order_token = ouch_order_request['order_token'].decode()
-    # print(client)
-    return {"order_token" : placed_order_token}
+    if ouch_order_request:
+        send_to_market(ouch_order_request)
+        placed_order_token = ouch_order_request['order_token'].decode()
+        return {"order_token" : placed_order_token}
+    return make_response(jsonify(error="Order Failed"),400)
 
 @app.route('/cancel/<token>')
 def cancel(token):

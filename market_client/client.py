@@ -14,7 +14,7 @@ import uuid
 from operator import itemgetter
 from exchange.order_books import cda_book
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
-
+import json
 from exchange_logging.exchange_loggers import BookLogger, TransactionLogger
 
 p = configargparse.ArgParser()
@@ -73,7 +73,7 @@ class Client():
             count += 1
         
     def account_info(self): # WIP - orders = self.orders
-        return {"id" : self.id.decode(), "balance" : self.balance, "orders" : self.orders, "owned_shares" : self.owned_shares}
+        return {"id" : self.id.decode(), "balance" : self.balance, "orders" : 0, "owned_shares" : self.owned_shares}
     
     def order_book(self):
         return {"book": self.book_copy}
@@ -415,6 +415,7 @@ class Client():
                 await self.send(self.cancel_order(user_order_token, user_shares_removed))
             else:
                 print(f"Invalid command {cmd}")
+
             # sleeping will allow the client.recver() method to process
             await asyncio.sleep(0.5)  
 

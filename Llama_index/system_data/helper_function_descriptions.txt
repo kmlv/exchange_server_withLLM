@@ -17,3 +17,17 @@ best_offer is a python function that will return the market price of a stock at 
 known as the best buy or best sell offer. The best offers are represented as a dictionary with the keys ["best_buy", "best_sell] 
 def best_offer:
     return {"best_buy": 4, "best_sell": 9}
+
+get_market_history is a python function that will retrieve the market history, including the most recent history, as a list of dictionaries. 
+The most recent market data will be located at the 0th index; whereas, the oldest market data can be accessed at the largest largest index or the -1 index. 
+Each dictionaries at each indice of the data contains the keys ["timestamp", "bids", "asks"]. Where timestamp is a string, bids is a dictionary of buy orders, and asks is a dictionary of sell orders. 
+An example of bids looks like: "bids": [{"price": 13, "quantity": 120}, {"price": 5, "quantity": 64}, {"price": 3, "quantity": 594}] where each entry is sorted by price
+in descending order. 
+An example of asks looks like: "asks": [{"price": 9, "quantity": 13}, {"price": 39, "quantity": 99}, {"price": 94, "quantity": 85}] where each entry is sorted by price
+in ascending order. 
+Here is an example of how to call the function and what the general structure looks like.
+def get_market_history():
+    return [{'timestamp': 51287183613000, 'book': {'bids': [{'price': 7, 'quantity': 120}], 'asks': []}}, 
+            {'timestamp': 51279084953000, 'book': {'bids': [{'price': 7, 'quantity': 90}], 'asks': [{"price": 9, "quantity": 13}]}}, 
+            {'timestamp': 51270996375000, 'book': {'bids': [{'price': 7, 'quantity': 60}], 'asks': [{"price": 9, "quantity": 13}, {"price": 39, "quantity": 99}]}}, 
+            {'timestamp': 51262883790000, 'book': {'bids': [{'price': 7, 'quantity': 30}], 'asks': [{"price": 9, "quantity": 13}, {"price": 39, "quantity": 99}, {"price": 94, "quantity": 85}]}}] 
