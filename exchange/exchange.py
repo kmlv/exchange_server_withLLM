@@ -369,6 +369,7 @@ class Exchange:
         # if m == OuchServerMessages.Accepted:
         # self.update_book_log()
         self.book_logger.update_log(book=self.order_book, timestamp=nanoseconds_since_midnight())
+        # print(self.order_book.as_dict())
 
     async def send_outgoing_messages(self):
         """Send Server OuchMessage directly to sender"""

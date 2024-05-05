@@ -31,6 +31,9 @@ class SortedIndexedDefaultList:
 
 	def __str__(self):
 		return ',\n'.join([str(i) for i in self.ascending_items()])
+	
+	def as_dict(self):
+		return [x.as_dict() for x in self.ascending_items()]
 
 	def insert(self, data):
 		id = self.index_func(data)

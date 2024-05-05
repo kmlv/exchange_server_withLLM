@@ -9,11 +9,18 @@ class BookPriceQ:
 		self.price = price
 	
 	def __str__(self):
-		return '${} Interest: {}, Orders: {}'.format(
-			self.price, self.interest, ', '.join(
-					['{}: {}'.format(id, volume) for (id, volume) 
-					 in self.order_q.items()]))
+		return '${} Interest: {}'.format(
+			self.price, self.interest)
+	
 
+		# return '${} Interest: {}, Orders: {}'.format(
+		# 	self.price, self.interest, ', '.join(
+		# 			['{}: {}'.format(id, volume) for (id, volume) 
+		# 			 in self.order_q.items()]))
+
+	def as_dict(self):
+		return {"price" : self.price, "quantity": self.interest}
+	
 	def add_order(self, order_id, volume):
 		self.interest += volume
 		self.order_q[order_id] = volume

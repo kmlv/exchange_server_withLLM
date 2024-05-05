@@ -4,6 +4,7 @@ import logging as log
 from exchange.order_books.book_price_q import BookPriceQ
 from exchange.order_books.list_elements import SortedIndexedDefaultList
 from collections import namedtuple
+from collections import defaultdict
 
 MIN_BID = 0
 MAX_ASK = 2147483647
@@ -29,6 +30,9 @@ class CDABook:
 
   Asks:
 {}""".format(self.bid, self.ask, self.bids, self.asks)
+	
+	def as_dict(self):
+		return {"bids": self.bids.as_dict(), "asks" : self.asks.as_dict()}
 
 	# def reset_book(self):						#jason
 	# 	log.info('Clearing All Entries from Order Book')

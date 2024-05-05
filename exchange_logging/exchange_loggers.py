@@ -2,7 +2,7 @@ import logging as log
 
 class BookLogger():
     def __init__(self, log_filepath, logger_name):
-        book_log_formatter = log.Formatter('LOG ENTRY:\ntimestamp: %(timestamp)s\nbook:\n%(message)s\n------------------------\n')
+        book_log_formatter = log.Formatter('{%(timestamp)s, book: {%(message)s}}')
         #create logger
         self.logger = log.getLogger(logger_name)
         self.logger.setLevel(log.INFO)
@@ -18,7 +18,7 @@ class BookLogger():
     
     # The server + clients should call this whenever the order book gets updated
     def update_log(self, book, timestamp):
-        self.logger.info(book, extra={"timestamp" : timestamp})        
+        self.logger.info(book.as_dict(), extra={"timestamp" : timestamp})        
 
 
 class TransactionLogger():
