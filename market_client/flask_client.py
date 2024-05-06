@@ -20,20 +20,22 @@ CORS(app)
 
 
 client = None
-interpetor = LlamaRag()
+interpretor = None
 
 def run_flask():
     """Start flask app"""
-    app.run(host="0.0.0.0", port=5001)
+    app.run(host="0.0.0.0", port=8090)
 
-async def start(input_client: Client):
+async def start(input_client: Client, openai_api_key):
     """Start client flask endpoint and connect to Market"""
     global client
+    global interpretor
     # verify client class object is getting started
     if not input_client or not isinstance(input_client, Client):
         raise Exception(f"Cannot Start Non-Client object {input_client}")
     client = input_client
-    interpetor.configure_query_engine()
+    interpretor = LlamaRag(openai_api_key)
+    interpretor.configure_query_engine()
     print(client)
     # Run flask endpoint in separate thread to prevent it from blocking 
     # asyncio tcp connection to market
@@ -63,7 +65,7 @@ def prompt():
     data = request.get_json()
     prompt = data['prompt']
     
-    interpetor.execute_query(prompt)
+    interpretor.execute_query(prompt)
 
     return "ok"
 

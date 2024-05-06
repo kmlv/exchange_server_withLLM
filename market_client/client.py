@@ -18,7 +18,7 @@ import json
 from exchange_logging.exchange_loggers import BookLogger, TransactionLogger
 
 p = configargparse.ArgParser()
-p.add('--port', default=8090)
+p.add('--port', default=9001)
 p.add('--host', default='127.0.0.1', help="Address of server")
 p.add('--delay', default=0, type=float, help="Delay in seconds between sending messages")
 p.add('--debug', action='store_true')
