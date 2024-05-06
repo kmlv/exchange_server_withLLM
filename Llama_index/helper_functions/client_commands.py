@@ -20,7 +20,10 @@ def get_client_order_history():
     response = requests.request("GET", f"http://{_CLIENT_ADDR}:{_CLIENT_PORT}/info", json=dict())
     return response.json()["order_history"]
 
-def get_market_history():
+# NOTE: Another method for getting transaction history can be made
+# After it is made we can make a single method called
+# get_market_history() that will return both book and transaction history
+def get_book_history():
     client_id = account_info()["id"]
     market_data = list()
     with open(f"market_client/market_logs/book_log_{client_id}.txt", mode="r") as f:
