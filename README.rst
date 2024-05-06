@@ -28,11 +28,12 @@ Run the CDA client
     python ./run_market_client.py
 
 
-Run Llama_index(Interpretor)
+Run the front end(Interpretor)
 
 ::
-
-    python ./Llama_index/llama_rag.py
+    cd user-interface
+    npm run dev
+    
 
 NOTE
 ========================
