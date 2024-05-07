@@ -39,8 +39,8 @@ async def start(input_client: Client, openai_api_key):
     print(client)
     # Run flask endpoint in separate thread to prevent it from blocking 
     # asyncio tcp connection to market
-    t = threading.Thread(target=run_flask)
-    t.start()
+    # t = threading.Thread(target=run_flask)
+    # t.start()
     await asyncio.gather(client.recver())
     
 def send_to_market(request):

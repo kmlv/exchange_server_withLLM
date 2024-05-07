@@ -15,8 +15,8 @@ from exchange.fba_exchange import FBAExchange
 from exchange.iex_exchange import IEXExchange
 
 p = configargparse.getArgParser()
-p.add('--port', default=9001)
-p.add('--host', default='127.0.0.1', help="Address to bind to / listen on")
+p.add('--port', default=8090)
+p.add('--host', default='0.0.0.0', help="Address to bind to / listen on")
 p.add('--debug', action='store_true')
 p.add('--logfile', default=None, type=str)
 p.add('--inputlogfile', default=None, type=str)
@@ -35,7 +35,7 @@ async def main():
         filename = options.logfile)
 
     loop = asyncio.get_event_loop()
-    server = ProtocolMessageServer(OuchClientMessages)
+    server = ProtocolMessageServer(OuchClientMessages, options.host, options.port)
     
     if options.mechanism == 'cda':        
         book = CDABook()

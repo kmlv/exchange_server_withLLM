@@ -18,8 +18,8 @@ import json
 from exchange_logging.exchange_loggers import BookLogger, TransactionLogger
 
 p = configargparse.ArgParser()
-p.add('--port', default=9001)
-p.add('--host', default='10.0.0.2', help="Address of server")
+# p.add('--port', default=8090)
+# p.add('--host', default='10.10.0.2', help="Address of server")
 p.add('--delay', default=0, type=float, help="Delay in seconds between sending messages")
 p.add('--debug', action='store_true')
 p.add('--time_in_force', default=99999, type=int)
@@ -27,7 +27,7 @@ options, args = p.parse_known_args()
 
 
 
-class Client():
+class Client:
     """A client that can communicate with a CDA
 
     Attributes:
@@ -40,7 +40,7 @@ class Client():
             where keys are order IDs and values are tuples representing order information
         book_copy: A CDABook() that the client tries to replicate from the CDA exchange
     """
-    def __init__(self, balance=1000, starting_shares=50):
+    def __init__(self, balance=1000, starting_shares=50, host="127.0.0.1", port=8090):
         self.reader = None
         self.writer = None
         self.balance = balance
@@ -49,6 +49,9 @@ class Client():
         self.orders = dict()
         self.book_copy = cda_book.CDABook()
         self.order_history = []
+
+        self.host = host
+        self.port = port
 
         # Market History Logging
         self.book_logger = BookLogger(log_filepath=f"market_client/market_logs/book_log.txt", logger_name="book_logger")
@@ -154,9 +157,10 @@ class Client():
     async def recver(self):
         """Listener to all broadcasts sent from the exchange server"""
         if self.reader is None or self.writer is None:
+            print("CONNECTING...", flush=True)
             reader, writer = await asyncio.streams.open_connection(
-            options.host, 
-            options.port)
+            self.host, 
+            self.port)
             self.reader = reader
             self.writer = writer
         while not self.reader.at_eof():
@@ -281,8 +285,8 @@ class Client():
         """Send Ouch message to server"""
         if self.reader is None or self.writer is None:
             reader, writer = await asyncio.streams.open_connection(
-            options.host, 
-            options.port)
+            self.host, 
+            self.port)
             self.reader = reader
             self.writer = writer
         if not request:
@@ -388,8 +392,8 @@ class Client():
         """
         if self.reader is None:
             reader, writer = await asyncio.streams.open_connection(
-            options.host, 
-            options.port)
+            self.host, 
+            self.port)
             self.reader = reader
             self.writer = writer
         while True:

@@ -11,6 +11,5 @@ Run server
 docker run -p 8082:8090 --net=projectnet --ip=10.10.0.2 --name=exchange project
 
 Run a client
-docker run -p 8083:8090 --net=projectnet --ip=10.10.0.3 -e SERVER_NAME='bingus' --name=alice project
 
 docker run -p 8083:8090 --net=projectnet --ip=10.10.0.3 -e SERVER_NAME='bingus' -e OPENAI_API_KEY=$OPENAI_API_KEY --name=alice project
