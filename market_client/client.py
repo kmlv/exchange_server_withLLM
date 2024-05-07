@@ -100,7 +100,7 @@ class Client():
         sold_shares = execution['executed_shares']
         price_per_share = execution['execution_price']
         order_id = execution['order_token']
-
+        order_id = order_id.decode()
         # Get details of the original order from client
         proposed_price, desired_shares, direction = self.orders[order_id]
         self._update_account(price_per_share, sold_shares, direction)
@@ -208,6 +208,7 @@ class Client():
                 case OuchServerMessages.Canceled:
                     print("The server canceled order", response['order_token'])
                     cancelled_order_id = response['order_token']
+                    cancelled_order_id = cancelled_order_id.decode()
                     if cancelled_order_id in self.orders:
                         price, quantity, direction = self.orders[cancelled_order_id]
                         # Update order based on remaining shares
@@ -343,7 +344,7 @@ class Client():
         )
 
         # update local orders
-        self.orders[order_token] = (price, quantity, direction)
+        self.orders[order_token.decode()] = (price, quantity, direction)
         return order_request
 
     def cancel_order(self, order_token, quantity_remaining):
