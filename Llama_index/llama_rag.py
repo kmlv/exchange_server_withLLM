@@ -113,11 +113,11 @@ class LlamaRag:
             self.stop_script()
             return
         
-        response = self.query_engine.query("Summarize what the token's shares and prices in the following code do in the market class :\n\n " 
+        response = self.query_engine.query("Please isolate the token's shares and prices in the following code, " +
+                                           "Summarize what it does in the market class" + 
+                                           "be sure to include any details like time delay:\n\n " 
                                            + code_chunk + 
-                                           "\n\n DONT MENTION TOKENS, and be EXTREMELY concise. Summary:"
-        )
-        response
+                                           "\n\n DONT MENTION TOKENS, and be EXTREMELY concise. Summary:")
 
         user_response = input("Is this what you would like to deploy? (yes/no): \n\n" + '\033[1m' + str(response) + "\033[0m\n\n").lower().strip()
 
