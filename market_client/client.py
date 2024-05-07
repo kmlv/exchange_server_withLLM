@@ -19,7 +19,7 @@ from exchange_logging.exchange_loggers import BookLogger, TransactionLogger
 
 p = configargparse.ArgParser()
 p.add('--port', default=9001)
-p.add('--host', default='127.0.0.1', help="Address of server")
+p.add('--host', default='10.0.0.2', help="Address of server")
 p.add('--delay', default=0, type=float, help="Delay in seconds between sending messages")
 p.add('--debug', action='store_true')
 p.add('--time_in_force', default=99999, type=int)
