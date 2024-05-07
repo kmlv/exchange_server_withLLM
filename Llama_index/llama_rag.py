@@ -12,6 +12,7 @@ from llama_index.core.postprocessor import SimilarityPostprocessor
 import subprocess
 import os
 import sys
+# from prompt_eng import get_confirmation
 
 import platform
 
@@ -103,6 +104,31 @@ class LlamaRag:
         # try to run the script that was written
         self.running_script = subprocess.Popen(['python' if (platform.system() == 'Windows') else 'python3', self._script_path], text=True)
 
+    def get_confirmation(self, code_chunk):
+        """User confirmation 
+        Addressing: Before active_strategy() calls CDA_client functions to make market orders, 
+        it must confirm with the user that it is making the right function call
+        """
+        if "stop" in code_chunk.lower(): # adjust error handling here for relevancy
+            self.stop_script()
+            return
+        
+        response = self.query_engine.query("Summarize what the token's shares and prices in the following code do in the market class :\n\n " 
+                                           + code_chunk + 
+                                           "\n\n DONT MENTION TOKENS, and be EXTREMELY concise. Summary:"
+        )
+        response
+
+        user_response = input("Is this what you would like to deploy? (yes/no): \n\n" + '\033[1m' + str(response) + "\033[0m\n\n").lower().strip()
+
+        # Check user response
+        if user_response == 'yes':
+            print("Ok, Deploying now...")
+            return True
+        else:
+            print("Aborting active strategy deployment.")
+            return False
+        
     def execute_query(self, prompt):
         """Generate and execute from a prompt\n
         Basic prompt overview
@@ -122,7 +148,8 @@ class LlamaRag:
                                 " Include any necessary conditional statements ('if', 'elif', 'else') or calculations needed to accomplish the task or answer the question. \n" +
                                 " If the generated code doesn't include a CDA_order function, the active_strategy() function should print: '\n\n Sorry, I was not able to implement your strategy. please rephrase your prompt and try again.\n\n' and exit")
 
-        self._run_script(str(response))
+        if self.get_confirmation(str(response)):
+            self._run_script(str(response))
 
     def stop_script(self):
         if self.running_script:
