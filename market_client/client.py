@@ -76,7 +76,7 @@ class Client():
         return {"id" : self.id.decode(), "balance" : self.balance, "orders" : self.orders, "owned_shares" : self.owned_shares}
     
     def order_book(self):
-        return {"book": self.book_copy}
+        return {"book": self.book_copy.as_json()}
 
     def _update_account(self, cost_per_share, num_shares, direction):
         """update the state of account upon successful trade
