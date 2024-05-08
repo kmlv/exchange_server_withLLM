@@ -15,6 +15,8 @@ from market_client.client import Client
 import threading
 import asyncio
 from flask_cors import CORS
+
+import logging
 app = Flask(__name__)
 CORS(app)
 
@@ -111,6 +113,18 @@ def get_client_orders():
         orders_list.append({"order_num": order_num.decode(), "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
 
     return jsonify({"balance": balance, "shares": shares, "orders": orders_list})
+
+@app.route('/order_book', methods=["GET"])
+def get_order_book():
+    '''
+    Returns order book
+        format: {'bids': [{'price': 5, 'quantity': 3}], 
+                 'asks': [{'price': 52, 'quantity': 8}]}
+    
+    '''
+    book = client.order_book().get("book")
+
+    return book
 
 if __name__ == '__main__':
     app.run()
