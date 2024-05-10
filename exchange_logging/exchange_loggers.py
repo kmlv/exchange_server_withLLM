@@ -1,7 +1,9 @@
 import logging as log
+import os
 
 class BookLogger():
     def __init__(self, log_filepath, logger_name):
+
         book_log_formatter = log.Formatter('{\"timestamp\": %(timestamp)s, \"book\": %(message)s}')
         #create logger
         self.logger = log.getLogger(logger_name)

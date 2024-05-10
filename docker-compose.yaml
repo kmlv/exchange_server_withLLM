@@ -2,7 +2,33 @@ version: '3'
 
 services:
   continuous_double_auction:
-    build: .
     image: project
+    build: .
     ports:
-      - '9001:9001'
+      - '8082:8090'
+    networks:
+      exchange:
+        ipv4_address: 10.10.0.2
+  client:
+    image: project
+    deploy:
+      replicas: 2
+    ports:
+      - '8083:8090'
+    environment:
+      - SERVER_NAME="exchange"
+      - OPENAI_API_KEY="hi"
+    depends_on:
+      - continuous_double_auction
+    networks:
+      exchange:
+        ipv4_address: 10.10.0.3
+
+networks:
+  exchange:
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.10.0.0/16"
+
+

@@ -209,9 +209,11 @@ class Client:
                 # update client local_book
                 case OuchServerMessages.Canceled:
                     print("The server canceled order", response['order_token'])
+                    quantity = 0
                     cancelled_order_id = response['order_token']
                     if cancelled_order_id in self.orders:
                         price, quantity, direction = self.orders[cancelled_order_id]
+                        print(quantity, flush=True)
                         # Update order based on remaining shares
                         self.orders[cancelled_order_id] = (price, quantity - response['decrement_shares'], direction)
                         if direction == 'B':
