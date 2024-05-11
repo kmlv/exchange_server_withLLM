@@ -15,7 +15,7 @@ from operator import itemgetter
 from exchange.order_books import cda_book
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
 import json
-from exchange_logging.exchange_loggers import BookLogger, TransactionLogger
+from exchange_logging.exchange_loggers import BookLogger, TransactionLogger, ClientStateLogger, ClientActionLogger
 
 p = configargparse.ArgParser()
 p.add('--port', default=8090)
@@ -50,13 +50,14 @@ class Client():
         self.book_copy = cda_book.CDABook()
         self.order_history = []
 
-        # WIP - Market History Logging
+        # Market History Logging
         self.book_logger = BookLogger(log_filepath=f"market_client/market_logs/book_log_{self.id.decode()}.txt", logger_name="book_logger")
         self.transaction_logger = TransactionLogger(f"market_client/market_logs/transaction_log_{self.id.decode()}.txt", logger_name="transaction_logger")
         
-        # self.strategy_interpretor = GPTInterpreter()
-        
-    
+        # Client Account History Logging
+        self.state_logger = ClientStateLogger(f"market_client/market_logs/state_log_{self.id.decode()}.txt", logger_name="state_logger")
+
+
     def __str__(self):
         return (f"Account Information\n"
                 f"Balance: {self.balance}\n"
@@ -72,23 +73,27 @@ class Client():
             print(f'ID: {count}, {self.orders[order_id][1]} shares @ ${self.orders[order_id][0]}')
             count += 1
         
-    def account_info(self): # WIP - orders = self.orders
+    def account_info(self):
         return {"id" : self.id.decode(), "balance" : self.balance, "orders" : self.orders, "owned_shares" : self.owned_shares}
     
     def order_book(self):
         return {"book": self.book_copy}
 
-    def _update_account(self, cost_per_share, num_shares, direction):
+    def _update_account(self, cost_per_share, num_shares, direction, timestamp):
         """update the state of account upon successful trade
         Args:
             cost_per_share: int specifying the value of 1 share
             num_shares: int specifying the quantity of shares
             direction: str specifying how to update the account
+            timestamp: int specifying the time of the update
         """
         if direction == 'B':
             self.owned_shares += num_shares
         else:
             self.balance += (num_shares * cost_per_share)
+        
+        # Update Client StateLog
+        self.state_logger.update_log(client_info = self.account_info(), timestamp=timestamp)
 
     def _update_active_orders(self, execution: OuchServerMessages.Executed):
         """Update client account based on details of the original order and
@@ -101,9 +106,10 @@ class Client():
         price_per_share = execution['execution_price']
         order_id = execution['order_token']
         order_id = order_id.decode()
+        timestamp = execution['timestamp']
         # Get details of the original order from client
         proposed_price, desired_shares, direction = self.orders[order_id]
-        self._update_account(price_per_share, sold_shares, direction)
+        self._update_account(price_per_share, sold_shares, direction, timestamp)
        
         # Check that order was completely fulfilled
         if sold_shares == desired_shares:
@@ -172,9 +178,7 @@ class Client():
                     print("new best buy offer: ", response)
                 case OuchServerMessages.Executed:
                     # Trade has been made
-                    # WIPv
-                    transaction_str = f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}"
-                    # WIP^
+
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
                     order_id = response['order_token']
                     if order_id in self.orders:
@@ -185,9 +189,9 @@ class Client():
                         #self.order_history = sorted_history
                         self._update_active_orders(response)
                     
-                    # WIP - update Book Log & Transaction Log
+                    # Update Book Log & Transaction Log
                     self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
-                    self.transaction_logger.update_log(transaction=transaction_str)
+                    self.transaction_logger.update_log(transaction=response)
 
                 # update client local_book 
                 case OuchServerMessages.Accepted:
@@ -201,7 +205,7 @@ class Client():
                         response['shares'],
                         enter_into_book
                     )
-                    # WIP - update Book Log
+                    # Update Book Log
                     self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
 
                 # update client local_book
@@ -218,7 +222,7 @@ class Client():
                         else:
                             direction = 'B'
                       
-                        self._update_account(price, response['decrement_shares'], direction)
+                        self._update_account(price, response['decrement_shares'], direction, response['timestamp'])
                         # Remove order if all shares were canceled
                         if quantity == response['decrement_shares']:
                             self.orders.pop(cancelled_order_id)
@@ -230,7 +234,7 @@ class Client():
                         response['buy_sell_indicator']
                     )
 
-                    # WIP - update Book Log
+                    # Update Book Log
                     self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
 
                 case _:
@@ -345,6 +349,7 @@ class Client():
 
         # update local orders
         self.orders[order_token.decode()] = (price, quantity, direction)
+
         return order_request
 
     def cancel_order(self, order_token, quantity_remaining):
@@ -377,6 +382,7 @@ class Client():
             order_token=order_token.encode("ASCII"), 
             shares=quantity_remaining,
         )
+
         return cancel_request
 
 

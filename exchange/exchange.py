@@ -13,10 +13,10 @@ from OuchServer.ouch_server import nanoseconds_since_midnight
 
 from exchange.order_store import OrderStore
 
-from exchange_logging.exchange_loggers import BookLogger, TransactionLogger
+from exchange_logging.exchange_loggers import BookLogger, TransactionLogger, ClientActionLogger, PLACE_LIMIT_ORDER_ACTION, CANCEL_LIMIT_ORDER_ACTION
 
 class Exchange:
-    def __init__(self, order_book, order_reply, loop, message_broadcast = None, book_log='book_log.txt', transaction_log='transaction_log.txt'):
+    def __init__(self, order_book, order_reply, loop, message_broadcast = None, book_log='book_log.txt', transaction_log='transaction_log.txt', action_log='action_log.txt'):
         '''
         order_book - the book!
         order_reply - post office reply function, takes in 
@@ -49,6 +49,10 @@ class Exchange:
         self.transaction_log_file = transaction_log
         self.transaction_logger = TransactionLogger(log_filepath=f"exchange/market_logs/{transaction_log}", logger_name="transaction_logger")
     
+        # CLIENT ACTION HISTORY LOG
+        self.action_log_file = action_log
+        self.action_logger = ClientActionLogger(f"exchange/market_logs/{action_log}", logger_name="action_logger")
+
 
     def system_start_atomic(self, system_event_message, timestamp):  
         self.order_store.clear_order_store()
@@ -212,6 +216,9 @@ class Exchange:
             if new_bbo:
                 bbo_message = self.best_quote_update(enter_order_message, new_bbo, timestamp)
                 self.outgoing_broadcast_messages.append(bbo_message)
+            
+            # Update Client Action Log
+            self.action_logger.update_log(action_type=PLACE_LIMIT_ORDER_ACTION, client_action_msg=enter_order_message, timestamp=timestamp)
 
 
     def cancel_order_atomic(self, cancel_order_message, timestamp, reason=b'U'):
@@ -244,6 +251,11 @@ class Exchange:
             if new_bbo:
                 bbo_message = self.best_quote_update(cancel_order_message, new_bbo, timestamp)
                 self.outgoing_broadcast_messages.append(bbo_message)
+            
+            # Update Client Action Log
+            client_action_data = cancel_order_message 
+            self.action_logger.update_log(action_type=CANCEL_LIMIT_ORDER_ACTION, client_action_msg=client_action_data, timestamp=timestamp)
+
             # Broadcast cancel message(s)
             loop = asyncio.get_event_loop()
             loop.call_soon_threadsafe(loop.create_task, self.send_outgoing_broadcast_messages())

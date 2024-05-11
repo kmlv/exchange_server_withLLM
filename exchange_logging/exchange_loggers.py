@@ -1,5 +1,8 @@
 import logging as log
 
+PLACE_LIMIT_ORDER_ACTION = "place_limit_order"
+CANCEL_LIMIT_ORDER_ACTION = "cancel_limit_order"
+
 class BookLogger():
     def __init__(self, log_filepath, logger_name):
         book_log_formatter = log.Formatter('{\"timestamp\": %(timestamp)s, \"book\": %(message)s}')
@@ -38,4 +41,62 @@ class TransactionLogger():
     
     # The server + clients should call this whenever a transaction takes place in the market
     def update_log(self, transaction):
-        self.logger.info(transaction)
+        transaction_str = f"{transaction['order_token']} executed {transaction['executed_shares']} shares@ ${transaction['execution_price']}"
+        self.logger.info(transaction_str)
+
+
+class ClientStateLogger():
+    def __init__(self, log_filepath, logger_name):
+        book_log_formatter = log.Formatter('{\"timestamp\": %(timestamp)s, \"state\": %(message)s}')
+        #create logger
+        self.logger = log.getLogger(logger_name)
+        self.logger.setLevel(log.INFO)
+        # set formatter
+        self.log_formatter = book_log_formatter
+        # create console handler and set level to debug
+        self.logger_fh = log.FileHandler(filename=log_filepath, mode='w')
+        self.logger_fh.setLevel(log.INFO)
+        # add formatter to fh
+        self.logger_fh.setFormatter(self.log_formatter)
+        # add ch to logger
+        self.logger.addHandler(self.logger_fh)
+    
+    # The clients should call this whenever their account/states gets updated
+    def update_log(self, client_info, timestamp):
+        self.logger.info(client_info, extra={"timestamp" : timestamp})
+
+class ClientActionLogger():
+    def __init__(self, log_filepath, logger_name):
+        book_log_formatter = log.Formatter('{\"timestamp\": %(timestamp)s, \"action\": %(message)s}')
+        #create logger
+        self.logger = log.getLogger(logger_name)
+        self.logger.setLevel(log.INFO)
+        # set formatter
+        self.log_formatter = book_log_formatter
+        # create console handler and set level to debug
+        self.logger_fh = log.FileHandler(filename=log_filepath, mode='w')
+        self.logger_fh.setLevel(log.INFO)
+        # add formatter to fh
+        self.logger_fh.setFormatter(self.log_formatter)
+        # add ch to logger
+        self.logger.addHandler(self.logger_fh)
+    
+    # The server should call this whenever they receive a request from a client to do a market action (i.e, place_order, cancel_order)
+    def update_log(self, action_type, client_action_msg, timestamp):
+        action_data = {}
+        
+        if action_type == PLACE_LIMIT_ORDER_ACTION:
+            token_id = client_action_msg['order_token']
+            direction = client_action_msg['buy_sell_indicator']
+            order_price = client_action_msg['price']
+            order_shares = client_action_msg['shares']
+            action_data = {"token" : token_id, "direction" : direction, "price" : order_price, "shares" : order_shares}
+        elif action_type == CANCEL_LIMIT_ORDER_ACTION:
+            print("CLIENT ACTION MSG: ", client_action_msg)
+            token_id = client_action_msg['order_token']
+            canceled_shares = client_action_msg['shares']
+            action_data = {"token" : token_id, "shares" : canceled_shares}
+        
+        action_json = {"action_type" : action_type, "action_data" : action_data}
+        
+        self.logger.info(action_json, extra={"timestamp" : timestamp})

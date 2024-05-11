@@ -1,6 +1,0 @@
-{"timestamp": 56073382577000, "book": {"bids": [{"price": 3, "quantity": 3}], "asks": []}}
-{"timestamp": 56077737963000, "book": {"bids": [{"price": 3, "quantity": 6}], "asks": []}}
-{"timestamp": 56082084317000, "book": {"bids": [{"price": 3, "quantity": 9}], "asks": []}}
-{"timestamp": 56086437491000, "book": {"bids": [{"price": 3, "quantity": 12}], "asks": []}}
-{"timestamp": 56090790119000, "book": {"bids": [{"price": 3, "quantity": 15}], "asks": []}}
-{"timestamp": 56095124610000, "book": {"bids": [{"price": 3, "quantity": 18}], "asks": []}}
