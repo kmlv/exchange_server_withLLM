@@ -1,12 +1,6 @@
-{"timestamp": 56073382577000, "book": {"bids": [{"price": 3, "quantity": 3}], "asks": []}}
-{"timestamp": 56077741568000, "book": {"bids": [{"price": 3, "quantity": 6}], "asks": []}}
-{"timestamp": 56082087593000, "book": {"bids": [{"price": 3, "quantity": 9}], "asks": []}}
-{"timestamp": 56086441130000, "book": {"bids": [{"price": 3, "quantity": 12}], "asks": []}}
-{"timestamp": 56090791616000, "book": {"bids": [{"price": 3, "quantity": 15}], "asks": []}}
-{"timestamp": 56095134639000, "book": {"bids": [{"price": 3, "quantity": 18}], "asks": []}}
-{"timestamp": 56173404176000, "book": {"bids": [{"price": 3, "quantity": 15}], "asks": []}}
-{"timestamp": 56177764058000, "book": {"bids": [{"price": 3, "quantity": 12}], "asks": []}}
-{"timestamp": 56182099349000, "book": {"bids": [{"price": 3, "quantity": 9}], "asks": []}}
-{"timestamp": 56186450991000, "book": {"bids": [{"price": 3, "quantity": 6}], "asks": []}}
-{"timestamp": 56190804357000, "book": {"bids": [{"price": 3, "quantity": 3}], "asks": []}}
-{"timestamp": 56195141884000, "book": {"bids": [], "asks": []}}
+{"timestamp": 41089413975000, "book": {"bids": [{"price": 4, "quantity": 3}], "asks": []}}
+{"timestamp": 41166001859000, "book": {"bids": [{"price": 5, "quantity": 3}, {"price": 4, "quantity": 3}], "asks": []}}
+{"timestamp": 41288424660000, "book": {"bids": [{"price": 5, "quantity": 3}], "asks": []}}
+{"timestamp": 41295169172000, "book": {"bids": [{"price": 6, "quantity": 6}, {"price": 5, "quantity": 3}], "asks": []}}
+{"timestamp": 41299884973000, "book": {"bids": [{"price": 5, "quantity": 3}], "asks": []}}
+{"timestamp": 41299885974000, "book": {"bids": [{"price": 5, "quantity": 3}], "asks": []}}

@@ -373,12 +373,8 @@ class Client():
                 break
             count +=1 
 
-        # Verify that order_token exists
-        if not isinstance(order_token, bytes):
-            return None
-
         cancel_request = OuchClientMessages.CancelOrder(
-            order_token=order_token, 
+            order_token=order_token.encode("ASCII"), 
             shares=quantity_remaining,
         )
         return cancel_request
