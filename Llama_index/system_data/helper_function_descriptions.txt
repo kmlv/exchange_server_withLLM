@@ -13,8 +13,8 @@ Where id is a string, balance is an integer, active_orders is a dictionary, and 
 def account_info()
     return {"id" : self.id, "balance" : self.balance,"orders" : self.orders, "owned_shares" : self.owned_shares}
 
-get_book_history is a python function that will retrieve the market history, including the most recent history, as a list of dictionaries. 
-The most recent market data will be located at the 0th index; whereas, the oldest market data can be accessed at the largest largest index or the -1 index. 
+get_book_history is a python function that will retrieve the market book history, including the most recent history, as a list of dictionaries. 
+The most recent book data will be located at the 0th index; whereas, the oldest book data can be accessed at the largest largest index or the -1 index. 
 Each dictionaries at each indice of the data contains the keys ["timestamp", "bids", "asks"]. Where timestamp is a string, bids is a dictionary of buy orders, and asks is a dictionary of sell orders. 
 An example of bids looks like: "bids": [{"price": 13, "quantity": 120}, {"price": 5, "quantity": 64}, {"price": 3, "quantity": 594}] where each entry is sorted by price
 in descending order. 
@@ -26,3 +26,25 @@ def get_book_history():
             {'timestamp': 51279084953000, 'book': {'bids': [{'price': 7, 'quantity': 90}], 'asks': [{"price": 9, "quantity": 13}]}}, 
             {'timestamp': 51270996375000, 'book': {'bids': [{'price': 7, 'quantity': 60}], 'asks': [{"price": 9, "quantity": 13}, {"price": 39, "quantity": 99}]}}, 
             {'timestamp': 51262883790000, 'book': {'bids': [{'price': 7, 'quantity': 30}], 'asks': [{"price": 9, "quantity": 13}, {"price": 39, "quantity": 99}, {"price": 94, "quantity": 85}]}}] 
+
+get_transaction_history is a python function that will retrieve the market transaction history, including the most recent history, as a list of dictionaries.
+The most recent transaction that took place in the market will be located at the 0th index; whereas, the first transaction to take place will be located at the largest index or the -1 index.
+Each dictionaries at each indice of the data contains the keys ["timestamp", "transaction"]. Where "timestamp" is a string, and "transaction" is a dictionary of the transaction information.
+An example of "transaction" looks like: "transaction": ["token": b'add197e47cf942b2a71242ef33bfc863', "shares": 4, "price": 5], where "token" is the transacted order token, "shares" is the number of transacted shares, and "price" is the price of the executed transaction.
+Here is an example of how to call the function and what the general structure looks like.
+def get_transaction_history():
+    return [{"timestamp": 42063064685000, "transaction": {'token': b'98c0e269830b46b09c8d29d52965f826', 'shares': 4, 'price': 5}},
+            {"timestamp": 42063065275000, "transaction": {'token': b'a5d855754cda40c6b9dc6e673f2c0c38', 'shares': 4, 'price': 5}},
+            {"timestamp": 42080673030000, "transaction": {'token': b'827639ffafd542f6a1e66c8e5433529b', 'shares': 6, 'price': 7}},
+            {"timestamp": 42080673530000, "transaction": {'token': b'3666113edef747a9a7f0aa0dccca02be', 'shares': 6, 'price': 7}}]
+
+get_account_history is a python function that will retrieve the client's account information history, including the most recent account information, as a list of dictionaries.
+The client's most recent account information will be located at the 0th index; whereas, the client's initial account information will be located at the largest index or the -1 index.
+Each dictionaries at each indice of the data contains the keys ["timestamp", "state"]. Where "timestamp" is a string, and "state" is a dictionary of the client account information.
+In the "state" dictionary, there are the following keys ["id", "balance", "orders", "owned_shares"]. Where id is a string, balance is an integer, active_orders is a dictionary, and owned_assets is an integer.
+Here is an example of how to call the function and what the general structure looks like.
+def get_account_history():
+    return [{"timestamp": 45840969198000, "state": {"id": "cce63b8c9a80480ebd2887effdc675b9", "balance": 1000, "orders": {}, "owned_shares": 50}},
+            {"timestamp": 45854054341000, "state": {"id": "cce63b8c9a80480ebd2887effdc675b9", "balance": 1000, "orders": {"94b9f470e76b4165abcc0386f7cf0333": [5, 0, "B"]}, "owned_shares": 50}},
+            {"timestamp": 45873094690000, "state": {"id": "cce63b8c9a80480ebd2887effdc675b9", "balance": 996, "orders": {"c673a04553f4421e9ea9e4bdc5cca5f7": [2, 2, "B"], "3c9f1d808d5e432cbfb40013066550f3": [3, 0, "B"]}, "owned_shares": 50}},
+            {"timestamp": 45877702871000, "state": {"id": "cce63b8c9a80480ebd2887effdc675b9", "balance": 1000, "orders": {"c673a04553f4421e9ea9e4bdc5cca5f7": [2, 0, "B"]}, "owned_shares": 50}}]

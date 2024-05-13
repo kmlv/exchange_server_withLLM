@@ -374,7 +374,7 @@ class Exchange:
             # log.info(f"BROADCASTING: {m}")
             if m.message_type == OuchServerMessages.Executed:
                 # self.update_transaction_log(m)
-                self.transaction_logger.update_log(transaction=m)
+                self.transaction_logger.update_log(transaction=m, timestamp=nanoseconds_since_midnight())
             await self.message_broadcast(m)
         
         # Add entry to Book Log

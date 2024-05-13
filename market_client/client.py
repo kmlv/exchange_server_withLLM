@@ -12,6 +12,7 @@ import configargparse
 import logging as log
 import uuid
 from operator import itemgetter
+from OuchServer.ouch_server import nanoseconds_since_midnight
 from exchange.order_books import cda_book
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
 import json
@@ -56,7 +57,7 @@ class Client():
         
         # Client Account History Logging
         self.state_logger = ClientStateLogger(f"market_client/market_logs/state_log_{self.id.decode()}.txt", logger_name="state_logger")
-
+        self.state_logger.update_log(self.account_info(), timestamp=nanoseconds_since_midnight())
 
     def __str__(self):
         return (f"Account Information\n"
@@ -191,7 +192,7 @@ class Client():
                     
                     # Update Book Log & Transaction Log
                     self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
-                    self.transaction_logger.update_log(transaction=response)
+                    self.transaction_logger.update_log(transaction=response, timestamp=response['timestamp'])
 
                 # update client local_book 
                 case OuchServerMessages.Accepted:
@@ -379,7 +380,7 @@ class Client():
             count +=1 
 
         cancel_request = OuchClientMessages.CancelOrder(
-            order_token=order_token.encode("ASCII"), 
+            order_token=str(order_token).encode('ASCII'), 
             shares=quantity_remaining,
         )
 
