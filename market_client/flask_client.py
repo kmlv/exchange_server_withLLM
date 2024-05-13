@@ -95,7 +95,8 @@ def cancel(token):
 
 @app.route('/info')
 def info():
-  
+    print(client.account_info())
+    print(client.order_history)
     return {"account" : client.account_info(), "order_history" : client.order_history}
 
 @app.route('/client_orders', methods=["GET"])

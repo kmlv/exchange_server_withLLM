@@ -4,6 +4,7 @@ from helper_functions.market_commands import *
 from helper_functions.client_commands import *
 
 def active_strategy():
-    print("Sorry, I was not able to implement your strategy. Please rephrase your prompt and try again.")
+    CDA_order(1, 1, 'S')
+    print(get_account_history())
 if __name__ == "__main__":
     active_strategy()

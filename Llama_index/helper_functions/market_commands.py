@@ -25,7 +25,3 @@ def CDA_order(shares: int, price: int, direction: str):
 def CDA_order_cancel(token: int):
     print("Cancelling order: ", token, time.time(), flush=True)
     resp = requests.request("POST", f"http://{_CLIENT_ADDR}:{_CLIENT_PORT}/cancel/{token}", json=dict())
-
-# TODO: this is currently just returning hard-coded values.
-def best_offer():
-    return {"best_buy":4, "best_sell":9}
