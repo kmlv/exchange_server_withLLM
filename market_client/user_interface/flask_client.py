@@ -10,7 +10,7 @@ which will then perform operations on a Client class object to:
 3) retrieve client orders
 4) retrieve limit order book
 """
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request, make_response, jsonify, render_template
 from market_client.client import Client
 import threading
 import asyncio
@@ -39,6 +39,7 @@ async def start(input_client: Client):
     print(client)
     # Run flask endpoint in separate thread to prevent it from blocking 
     # asyncio tcp connection to market
+   
     t = threading.Thread(target=run_flask)
     t.start()
     await asyncio.gather(client.recver())
@@ -58,7 +59,7 @@ def send_to_market(request):
 
 @app.route('/')
 def home():
-    return client.__str__()
+    return render_template("home.html")
 
 @app.route('/prompt', methods=["POST"])
 def prompt():

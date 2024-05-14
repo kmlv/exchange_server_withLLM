@@ -1,7 +1,7 @@
 """
 Continuous Double Auction client that sends buy/sell or cancel orders
 """
-from market_client import flask_client
+from market_client.user_interface import flask_client
 from market_client.client import Client
 from dev.dev_run_client import *
 import asyncio

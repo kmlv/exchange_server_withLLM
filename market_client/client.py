@@ -161,11 +161,16 @@ class Client():
     async def recver(self):
         """Listener to all broadcasts sent from the exchange server"""
         if self.reader is None or self.writer is None:
-            reader, writer = await asyncio.streams.open_connection(
-            options.host, 
-            options.port)
-            self.reader = reader
-            self.writer = writer
+            try:
+                reader, writer = await asyncio.streams.open_connection(
+                options.host, 
+                options.port)
+                self.reader = reader
+                self.writer = writer
+            except ConnectionRefusedError:
+                print("Exchange not Started!", flush=True)
+                return
+
         while not self.reader.at_eof():
             response, message_type = await self.recv()
             if response is None or message_type is None:
