@@ -34,8 +34,8 @@ async def start(input_client: Client, openai_api_key):
     if not input_client or not isinstance(input_client, Client):
         raise Exception(f"Cannot Start Non-Client object {input_client}")
     client = input_client
-    # interpretor = LlamaRag(openai_api_key)
-    # interpretor.configure_query_engine()
+    interpretor = LlamaRag(openai_api_key)
+    interpretor.configure_query_engine()
     print(client)
     # Run flask endpoint in separate thread to prevent it from blocking 
     # asyncio tcp connection to market
@@ -69,12 +69,12 @@ def debug():
 def home():
     return client.__str__()
 
-@app.route('/prompt', methods=["POST"])
+@app.route('/prompt', methods=["POST", "GET"])
 def prompt():
-    data = request.get_json()
-    prompt = data['prompt']
+    # data = request.get_json()
+    # prompt = data['prompt']
     
-    # interpretor.execute_query(prompt)
+    interpretor.execute_query("buy 1 share at 50 dollars")
 
     return "ok"
 

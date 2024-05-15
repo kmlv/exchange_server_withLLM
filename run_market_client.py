@@ -15,6 +15,7 @@ p.add('--mode', '-m', type=str, default='flask',choices=['dev', 'flask'])
 p.add('--key', type=str, default=os.getenv("OPENAI_API_KEY"), help="OPEN_API_KEY")
 options, args = p.parse_known_args()
 async def main():
+
     if options.mode == "dev":
         await run_dev_client(options.host, options.port)
     if options.mode == "flask":

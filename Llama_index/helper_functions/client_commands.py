@@ -8,7 +8,7 @@ NOTE: if you add any additional functions here you must add a description
 import requests
 import json
 _CLIENT_ADDR = "localhost"
-_CLIENT_PORT = "5001"
+_CLIENT_PORT = "8090"
 
 
 

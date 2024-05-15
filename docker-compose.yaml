@@ -11,18 +11,28 @@ services:
         ipv4_address: 10.10.0.2
   client:
     image: project
-    deploy:
-      replicas: 2
     ports:
       - '8083:8090'
     environment:
       - SERVER_NAME="exchange"
-      - OPENAI_API_KEY="hi"
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     depends_on:
       - continuous_double_auction
     networks:
       exchange:
         ipv4_address: 10.10.0.3
+  client_2:
+    image: project
+    ports:
+      - '8084:8090'
+    environment:
+      - SERVER_NAME="exchange"
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - continuous_double_auction
+    networks:
+      exchange:
+        ipv4_address: 10.10.0.4
 
 networks:
   exchange:
