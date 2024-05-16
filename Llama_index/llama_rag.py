@@ -24,10 +24,15 @@ import_lines = """# Generated code
 from helper_functions.market_commands import *
 from helper_functions.client_commands import *
 
+# Imports
+from sys import exit
+
 """
 
 execution_lines = """if __name__ == "__main__":
     active_strategy()
+    print("EXIT active_strategy()")
+    exit(0)
 """
 
 class LlamaRag:
@@ -103,6 +108,9 @@ class LlamaRag:
 
         # try to run the script that was written
         self.running_script = subprocess.Popen(['python' if (platform.system() == 'Windows') else 'python3', self._script_path], text=True)
+        poll = self.running_script.poll()
+        if poll:
+            self.running_script.terminate()
 
     def get_confirmation(self, code_chunk):
         """User confirmation 

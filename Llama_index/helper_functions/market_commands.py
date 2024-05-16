@@ -14,9 +14,9 @@ with open('./market_client/config.toml', 'r') as f:
         _CLIENT_ADDR = config['client']['addr']
         _CLIENT_PORT = config['client']['flask_port']
 
-def CDA_order(shares: int, price: int, direction: str):
-    data = {"quantity" : shares, "price" : price, "direction" : direction, "time": 10}
-    print("Placing order: ", direction, shares, "@", price, time.time(), flush=True)
+def CDA_order(shares: int, price: int, direction: str, time_in_force):
+    data = {"quantity" : shares, "price" : price, "direction" : direction, "time": time_in_force}
+    print("Placing order: ", direction, shares, "@", price, "lasting ", time_in_force, "s at ", time.time(), flush=True)
 
     try: 
         resp = requests.request("POST", f"http://{_CLIENT_ADDR}:{_CLIENT_PORT}/place_order", json=data)

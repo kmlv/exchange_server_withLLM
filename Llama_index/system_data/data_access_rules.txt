@@ -1,0 +1,2 @@
+To access the current balance of the client, call (account_info()["balance"]). Do not call anything else to try and retrieve the balance.
+To access the current owned shares of the client, call (account_info()["owned_shares"]). Do not call anything else to try and retrieve the owned shares.
