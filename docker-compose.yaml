@@ -2,23 +2,45 @@ version: '3'
 
 services:
   continuous_double_auction:
+    image: project
     build: .
-    image: exchange_server
     ports:
-      - '9001:9001'
-
-  frequent_batch_auction:
-    image: exchange_server
+      - '8082:8090'
+    networks:
+      exchange:
+        ipv4_address: 10.10.0.2
+  client:
+    image: project
     ports:
-      - '9002:9001'
+      - '8083:8090'
     environment:
-      - MECHANISM=fba
-      - INTERVAL=10
-
-  iex:
-    image: exchange_server
+      - SERVER_NAME="exchange"
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - CLIENT_PORT="8090"
+    depends_on:
+      - continuous_double_auction
+    networks:
+      exchange:
+        ipv4_address: 10.10.0.3
+  client_2:
+    image: project
     ports:
-      - '9003:9001'
+      - '8084:8090'
     environment:
-      - MECHANISM=iex
-      - DELAY=1
+      - SERVER_NAME="exchange"
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - CLIENT_PORT="8090"
+    depends_on:
+      - continuous_double_auction
+    networks:
+      exchange:
+        ipv4_address: 10.10.0.4
+
+networks:
+  exchange:
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.10.0.0/16"
+
+

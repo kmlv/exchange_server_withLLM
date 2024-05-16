@@ -19,8 +19,6 @@ import json
 from exchange_logging.exchange_loggers import BookLogger, TransactionLogger, ClientStateLogger, ClientActionLogger
 
 p = configargparse.ArgParser()
-p.add('--port', default=8090)
-p.add('--host', default='127.0.0.1', help="Address of server")
 p.add('--delay', default=0, type=float, help="Delay in seconds between sending messages")
 p.add('--debug', action='store_true')
 p.add('--time_in_force', default=99999, type=int)
@@ -28,7 +26,7 @@ options, args = p.parse_known_args()
 
 
 
-class Client():
+class Client:
     """A client that can communicate with a CDA
 
     Attributes:
@@ -41,7 +39,7 @@ class Client():
             where keys are order IDs and values are tuples representing order information
         book_copy: A CDABook() that the client tries to replicate from the CDA exchange
     """
-    def __init__(self, balance=1000, starting_shares=50):
+    def __init__(self, balance=1000, starting_shares=50, host="127.0.0.1", port=8090):
         self.reader = None
         self.writer = None
         self.balance = balance
@@ -50,7 +48,8 @@ class Client():
         self.orders = dict()
         self.book_copy = cda_book.CDABook()
         self.order_history = []
-
+        self.host = host
+        self.port = port
         # Market History Logging
         self.book_logger = BookLogger(log_filepath=f"market_client/market_logs/book_log_{self.id.decode()}.txt", logger_name="book_logger")
         self.transaction_logger = TransactionLogger(f"market_client/market_logs/transaction_log_{self.id.decode()}.txt", logger_name="transaction_logger")
@@ -144,8 +143,6 @@ class Client():
         except asyncio.IncompleteReadError:
             log.error('connection terminated without response')
             return None, None
-        log.debug('Received Ouch header as binary: %r', header)
-        log.debug('bytes: %r', list(header))
         message_type = OuchServerMessages.lookup_by_header_bytes(header)
         try:
             payload = (await self.reader.readexactly(message_type.payload_size))
@@ -161,11 +158,16 @@ class Client():
     async def recver(self):
         """Listener to all broadcasts sent from the exchange server"""
         if self.reader is None or self.writer is None:
-            reader, writer = await asyncio.streams.open_connection(
-            options.host, 
-            options.port)
-            self.reader = reader
-            self.writer = writer
+            print(f"CONNECTING to  to {self.host}:{self.port}...", flush=True)
+            try:
+                reader, writer = await asyncio.streams.open_connection(
+                self.host, 
+                self.port)
+                self.reader = reader
+                self.writer = writer
+            except ConnectionRefusedError:
+                print(f"Could not connect to {self.host}:{self.port}")
+                return
         while not self.reader.at_eof():
             response, message_type = await self.recv()
             if response is None or message_type is None:
@@ -179,7 +181,6 @@ class Client():
                     print("new best buy offer: ", response)
                 case OuchServerMessages.Executed:
                     # Trade has been made
-
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
                     order_id = response['order_token']
                     if order_id in self.orders:
@@ -190,7 +191,7 @@ class Client():
                         #self.order_history = sorted_history
                         self._update_active_orders(response)
                     
-                    # Update Book Log & Transaction Log
+                    # WIP - update Book Log & Transaction Log
                     self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
                     self.transaction_logger.update_log(transaction=response, timestamp=response['timestamp'])
 
@@ -212,10 +213,12 @@ class Client():
                 # update client local_book
                 case OuchServerMessages.Canceled:
                     print("The server canceled order", response['order_token'])
+                    quantity = 0
                     cancelled_order_id = response['order_token']
                     cancelled_order_id = cancelled_order_id.decode()
                     if cancelled_order_id in self.orders:
                         price, quantity, direction = self.orders[cancelled_order_id]
+                        print(quantity, flush=True)
                         # Update order based on remaining shares
                         self.orders[cancelled_order_id] = (price, quantity - response['decrement_shares'], direction)
                         if direction == 'B':
@@ -288,11 +291,15 @@ class Client():
         print("Sending ", request)
         """Send Ouch message to server"""
         if self.reader is None or self.writer is None:
-            reader, writer = await asyncio.streams.open_connection(
-            options.host, 
-            options.port)
-            self.reader = reader
-            self.writer = writer
+            try:
+                reader, writer = await asyncio.streams.open_connection(
+                self.host, 
+                self.port)
+                self.reader = reader
+                self.writer = writer
+            except ConnectionRefusedError:
+                print(f"Could not connect to {self.host}:{self.port}")
+                return
         if not request:
             print("Invalid order")
             return
@@ -394,8 +401,8 @@ class Client():
         """
         if self.reader is None:
             reader, writer = await asyncio.streams.open_connection(
-            options.host, 
-            options.port)
+            self.host, 
+            self.port)
             self.reader = reader
             self.writer = writer
         while True:

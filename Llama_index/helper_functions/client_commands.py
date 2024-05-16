@@ -8,7 +8,7 @@ NOTE: if you add any additional functions here you must add a description
 import requests
 import json
 _CLIENT_ADDR = "localhost"
-_CLIENT_PORT = "5001"
+_CLIENT_PORT = "8090"
 
 
 
@@ -23,7 +23,7 @@ def get_client_order_history():
 def get_book_history():
     client_id = account_info()["id"]
     market_data = list()
-    with open(f"market_client/market_logs/book_log_{client_id}.txt", mode="r") as f:
+    with open(f"market_client/market_logs/book_log.txt", mode="r") as f:
         for line in f:
             entry = json.loads(line)
 

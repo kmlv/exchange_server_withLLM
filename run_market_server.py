@@ -35,7 +35,7 @@ async def main():
         filename = options.logfile)
 
     loop = asyncio.get_event_loop()
-    server = ProtocolMessageServer(OuchClientMessages)
+    server = ProtocolMessageServer(OuchClientMessages, options.host, options.port)
     
     if options.mechanism == 'cda':        
         book = CDABook()

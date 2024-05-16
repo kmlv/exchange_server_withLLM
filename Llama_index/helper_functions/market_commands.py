@@ -8,7 +8,7 @@ import time
 import requests
 import json
 _CLIENT_ADDR = "localhost"
-_CLIENT_PORT = "5001"
+_CLIENT_PORT = "8090"
 
 def CDA_order(shares: int, price: int, direction: str):
     data = {"quantity" : shares, "price" : price, "direction" : direction, "time": 100}
