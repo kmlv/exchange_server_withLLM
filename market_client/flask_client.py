@@ -14,6 +14,7 @@ from flask import Flask, request, make_response, jsonify
 from market_client.client import Client
 import threading
 import asyncio
+import toml
 from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
@@ -24,7 +25,9 @@ interpretor = None
 
 def run_flask():
     """Start flask app"""
-    app.run(host="0.0.0.0", port=8090)
+    with open('./market_client/config.toml', 'r') as f:
+        config = toml.load(f)
+    app.run(host="0.0.0.0", port=config['client']['flask_port'])
 
 async def start(input_client: Client, openai_api_key):
     """Start client flask endpoint and connect to Market"""
@@ -58,7 +61,7 @@ def send_to_market(request):
 
 @app.route('/debug')
 def debug():
-    ouch_order_request = client.place_order(5, 3, 'B', 50)
+    ouch_order_request = client.place_order(5, 3, 'B', 10)
     if ouch_order_request:
         send_to_market(ouch_order_request)
         placed_order_token = ouch_order_request['order_token'].decode()

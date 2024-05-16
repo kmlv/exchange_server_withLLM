@@ -7,8 +7,11 @@ NOTE: if you add any additional functions here you must add a description
 """
 import requests
 import json
-_CLIENT_ADDR = "localhost"
-_CLIENT_PORT = "8090"
+import toml
+with open('./market_client/config.toml', 'r') as f:
+        config = toml.load(f)
+        _CLIENT_ADDR = config['client']['addr']
+        _CLIENT_PORT = config['client']['flask_port']
 
 
 

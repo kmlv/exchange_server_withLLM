@@ -119,8 +119,9 @@ class LlamaRag:
                                            + code_chunk + 
                                            "\n\n DONT MENTION TOKENS, and be EXTREMELY concise. Summary:")
 
-        user_response = input("Is this what you would like to deploy? (yes/no): \n\n" + '\033[1m' + str(response) + "\033[0m\n\n").lower().strip()
-
+        # user_response = input("Is this what you would like to deploy? (yes/no): \n\n" + '\033[1m' + str(response) + "\033[0m\n\n").lower().strip()
+        # FIXME: please remove this
+        user_response = 'yes'
         # Check user response
         if user_response == 'yes':
             print("Ok, Deploying now...")

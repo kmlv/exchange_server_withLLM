@@ -337,7 +337,7 @@ class Client:
             return None
         # Generate unique token
         order_token=str(uuid.uuid4().hex).encode('ascii')
-
+        
         order_request = OuchClientMessages.EnterOrder(
             order_token=order_token,
             buy_sell_indicator=b'B' if direction == 'B' else b'S',

@@ -7,11 +7,15 @@ NOTE: if you add any additional functions here you must add a description
 import time
 import requests
 import json
-_CLIENT_ADDR = "localhost"
-_CLIENT_PORT = "8090"
+import toml
+
+with open('./market_client/config.toml', 'r') as f:
+        config = toml.load(f)
+        _CLIENT_ADDR = config['client']['addr']
+        _CLIENT_PORT = config['client']['flask_port']
 
 def CDA_order(shares: int, price: int, direction: str):
-    data = {"quantity" : shares, "price" : price, "direction" : direction, "time": 100}
+    data = {"quantity" : shares, "price" : price, "direction" : direction, "time": 10}
     print("Placing order: ", direction, shares, "@", price, time.time(), flush=True)
 
     try: 

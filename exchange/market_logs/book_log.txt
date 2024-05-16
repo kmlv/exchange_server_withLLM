@@ -1,2 +1,1 @@
-
-{"timestamp": 61738137032000, "book": {"bids": [{"price": 20, "quantity": 3}], "asks": []}}
+{"timestamp": 72304936474000, "book": {"bids": [{"price": 5, "quantity": 3}], "asks": []}}
