@@ -21,7 +21,7 @@ from exchange_logging.exchange_loggers import BookLogger, TransactionLogger, Cli
 p = configargparse.ArgParser()
 p.add('--delay', default=0, type=float, help="Delay in seconds between sending messages")
 p.add('--debug', action='store_true')
-p.add('--time_in_force', default=99999, type=int)
+p.add('--time_in_force', default=0, type=int)
 options, args = p.parse_known_args()
 
 
@@ -64,9 +64,7 @@ class Client:
                 f"Owned_shares: {self.owned_shares}\n"
                 f"Orders: {self.orders}\n"
                 f"Order History: {self.order_history}\n")
-    # 0 price
-    # 1 quantity
-    # 2 direction
+
     def print_active_orders(self):
         """Display active client orders"""
         print(f'Your active orders')
@@ -96,6 +94,12 @@ class Client:
         
         # Update Client StateLog
         self.state_logger.update_log(client_info = self.account_info(), timestamp=timestamp)
+
+    def _rejected_order_account_handler(self, rejected_order):
+        if rejected_order['order_token'] in self.orders:
+            order = self.orders.pop(rejected_order['order_token'])
+            self.balance += order['price'] * order['quantity'] * (-1 if order['direction'] == 'B' else 1)
+
 
     def _update_active_orders(self, execution: OuchServerMessages.Executed):
         """Update client account based on details of the original order and
@@ -236,6 +240,21 @@ class Client:
                         quantity - response['decrement_shares'],
                         response['buy_sell_indicator']
                     )
+
+                    # Update Book Log
+                    self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
+
+                case OuchServerMessages.Rejected:
+                    print("The server rejected the order", response['order_token'])
+                    quantity = 0
+                    rejected_order_id = response['order_token'].decode()
+                    if rejected_order_id in self.orders:
+                        price, quantity, direction = self.orders[rejected_order_id].values()
+
+                        self._update_account(price, quantity, direction, response['timestamp'])
+                        # Remove order if all shares were canceled
+                        self.orders.pop(rejected_order_id)
+
 
                     # Update Book Log
                     self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
