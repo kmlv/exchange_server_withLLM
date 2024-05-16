@@ -18,8 +18,6 @@ import json
 from exchange_logging.exchange_loggers import BookLogger, TransactionLogger
 
 p = configargparse.ArgParser()
-# p.add('--port', default=8090)
-# p.add('--host', default='10.10.0.2', help="Address of server")
 p.add('--delay', default=0, type=float, help="Delay in seconds between sending messages")
 p.add('--debug', action='store_true')
 p.add('--time_in_force', default=99999, type=int)
@@ -140,8 +138,6 @@ class Client:
         except asyncio.IncompleteReadError:
             log.error('connection terminated without response')
             return None, None
-        log.debug('Received Ouch header as binary: %r', header)
-        log.debug('bytes: %r', list(header))
         message_type = OuchServerMessages.lookup_by_header_bytes(header)
         try:
             payload = (await self.reader.readexactly(message_type.payload_size))
@@ -157,12 +153,16 @@ class Client:
     async def recver(self):
         """Listener to all broadcasts sent from the exchange server"""
         if self.reader is None or self.writer is None:
-            print("CONNECTING...", flush=True)
-            reader, writer = await asyncio.streams.open_connection(
-            self.host, 
-            self.port)
-            self.reader = reader
-            self.writer = writer
+            print(f"CONNECTING to  to {self.host}:{self.port}...", flush=True)
+            try:
+                reader, writer = await asyncio.streams.open_connection(
+                self.host, 
+                self.port)
+                self.reader = reader
+                self.writer = writer
+            except ConnectionRefusedError:
+                print(f"Could not connect to {self.host}:{self.port}")
+                return
         while not self.reader.at_eof():
             response, message_type = await self.recv()
             if response is None or message_type is None:
@@ -286,11 +286,15 @@ class Client:
         print("Sending ", request)
         """Send Ouch message to server"""
         if self.reader is None or self.writer is None:
-            reader, writer = await asyncio.streams.open_connection(
-            self.host, 
-            self.port)
-            self.reader = reader
-            self.writer = writer
+            try:
+                reader, writer = await asyncio.streams.open_connection(
+                self.host, 
+                self.port)
+                self.reader = reader
+                self.writer = writer
+            except ConnectionRefusedError:
+                print(f"Could not connect to {self.host}:{self.port}")
+                return
         if not request:
             print("Invalid order")
             return
