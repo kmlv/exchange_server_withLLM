@@ -10,11 +10,13 @@ which will then perform operations on a Client class object to:
 3) retrieve client orders
 4) retrieve limit order book
 """
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request, make_response, jsonify, render_template
 from market_client.client import Client
 import threading
 import asyncio
 from flask_cors import CORS
+
+import logging
 app = Flask(__name__)
 CORS(app)
 
@@ -37,6 +39,7 @@ async def start(input_client: Client):
     print(client)
     # Run flask endpoint in separate thread to prevent it from blocking 
     # asyncio tcp connection to market
+   
     t = threading.Thread(target=run_flask)
     t.start()
     await asyncio.gather(client.recver())
@@ -56,7 +59,7 @@ def send_to_market(request):
 
 @app.route('/')
 def home():
-    return client.__str__()
+    return render_template("home.html")
 
 @app.route('/prompt', methods=["POST"])
 def prompt():
@@ -112,6 +115,18 @@ def get_client_orders():
         orders_list.append({"order_num": order_num.decode(), "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
 
     return jsonify({"balance": balance, "shares": shares, "orders": orders_list})
+
+@app.route('/order_book', methods=["GET"])
+def get_order_book():
+    '''
+    Returns order book
+        format: {'bids': [{'price': 5, 'quantity': 3}], 
+                 'asks': [{'price': 52, 'quantity': 8}]}
+    
+    '''
+    book = client.order_book().get("book")
+
+    return book
 
 if __name__ == '__main__':
     app.run()

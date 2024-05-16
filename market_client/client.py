@@ -78,7 +78,7 @@ class Client():
         return {"id" : self.id.decode(), "balance" : self.balance, "orders" : self.orders, "owned_shares" : self.owned_shares}
     
     def order_book(self):
-        return {"book": self.book_copy}
+        return {"book": self.book_copy.as_json()}
 
     def _update_account(self, cost_per_share, num_shares, direction, timestamp):
         """update the state of account upon successful trade
@@ -161,11 +161,16 @@ class Client():
     async def recver(self):
         """Listener to all broadcasts sent from the exchange server"""
         if self.reader is None or self.writer is None:
-            reader, writer = await asyncio.streams.open_connection(
-            options.host, 
-            options.port)
-            self.reader = reader
-            self.writer = writer
+            try:
+                reader, writer = await asyncio.streams.open_connection(
+                options.host, 
+                options.port)
+                self.reader = reader
+                self.writer = writer
+            except ConnectionRefusedError:
+                print("Exchange not Started!", flush=True)
+                return
+
         while not self.reader.at_eof():
             response, message_type = await self.recv()
             if response is None or message_type is None:
