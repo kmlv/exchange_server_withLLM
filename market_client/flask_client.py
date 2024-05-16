@@ -27,6 +27,7 @@ def run_flask():
     """Start flask app"""
     with open('./market_client/config.toml', 'r') as f:
         config = toml.load(f)
+    print("AAAAAAAAAA IM FLUSHING", flush=True)
     app.run(host="0.0.0.0", port=config['client']['flask_port'])
 
 async def start(input_client: Client, openai_api_key):

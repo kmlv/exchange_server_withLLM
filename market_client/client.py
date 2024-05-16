@@ -51,11 +51,11 @@ class Client:
         self.host = host
         self.port = port
         # Market History Logging
-        self.book_logger = BookLogger(log_filepath=f"market_client/market_logs/book_log_{self.id.decode()}.txt", logger_name="book_logger")
-        self.transaction_logger = TransactionLogger(f"market_client/market_logs/transaction_log_{self.id.decode()}.txt", logger_name="transaction_logger")
+        self.book_logger = BookLogger(log_filepath=f"market_client/market_logs/book_log.txt", logger_name="book_logger")
+        self.transaction_logger = TransactionLogger(f"market_client/market_logs/transaction_log.txt", logger_name="transaction_logger")
         
         # Client Account History Logging
-        self.state_logger = ClientStateLogger(f"market_client/market_logs/state_log_{self.id.decode()}.txt", logger_name="state_logger")
+        self.state_logger = ClientStateLogger(f"market_client/market_logs/state_log.txt", logger_name="state_logger")
         self.state_logger.update_log(self.account_info(), timestamp=nanoseconds_since_midnight())
 
     def __str__(self):
@@ -64,13 +64,15 @@ class Client:
                 f"Owned_shares: {self.owned_shares}\n"
                 f"Orders: {self.orders}\n"
                 f"Order History: {self.order_history}\n")
-    
+    # 0 price
+    # 1 quantity
+    # 2 direction
     def print_active_orders(self):
         """Display active client orders"""
         print(f'Your active orders')
         count = 1
         for order_id in self.orders:
-            print(f'ID: {count}, {self.orders[order_id][1]} shares @ ${self.orders[order_id][0]}')
+            print(f"ID: {count}, {self.orders[order_id]['quantity']} shares @ ${self.orders[order_id]['price']}")
             count += 1
         
     def account_info(self):
@@ -108,18 +110,18 @@ class Client:
         order_id = order_id.decode()
         timestamp = execution['timestamp']
         # Get details of the original order from client
-        proposed_price, desired_shares, direction = self.orders[order_id]
+        proposed_price, desired_shares, direction = self.orders[order_id].values()
         self._update_account(price_per_share, sold_shares, direction, timestamp)
        
         # Check that order was completely fulfilled
         if sold_shares == desired_shares:
             self.orders.pop(order_id)
         else:
-            self.orders[order_id] = (
-                proposed_price,
-                desired_shares - sold_shares,
-                direction
-            )   
+            self.orders[order_id] = {
+                'price' : proposed_price,
+                'quantity' : desired_shares - sold_shares,
+                'direction' : direction
+            }   
     
     def _can_afford(self, cost_per_share, num_shares):
         """Can client create the order with their current balance?
@@ -184,14 +186,12 @@ class Client:
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
                     order_id = response['order_token']
                     if order_id in self.orders:
-                        transaction_data = {"price" : response['execution_price'], "quantity" : response["executed_shares"], "direction" : self.orders[order_id][2], "timestamp" : response['timestamp']}
+                        transaction_data = {"price" : response['execution_price'], "quantity" : response["executed_shares"], "direction" : self.orders[order_id]['direction'], "timestamp" : response['timestamp']}
                         self.order_history.append(transaction_data)
                         print(type(response['timestamp']), flush=True)
-                        #sorted_history = sorted(self.order_history, key=itemgetter('timestamp'))
-                        #self.order_history = sorted_history
                         self._update_active_orders(response)
                     
-                    # WIP - update Book Log & Transaction Log
+                    # Update Book Log & Transaction Log
                     self.book_logger.update_log(book=self.book_copy, timestamp=response['timestamp'])
                     self.transaction_logger.update_log(transaction=response, timestamp=response['timestamp'])
 
@@ -217,10 +217,9 @@ class Client:
                     cancelled_order_id = response['order_token']
                     cancelled_order_id = cancelled_order_id.decode()
                     if cancelled_order_id in self.orders:
-                        price, quantity, direction = self.orders[cancelled_order_id]
-                        print(quantity, flush=True)
+                        price, quantity, direction = self.orders[cancelled_order_id].values()
                         # Update order based on remaining shares
-                        self.orders[cancelled_order_id] = (price, quantity - response['decrement_shares'], direction)
+                        self.orders[cancelled_order_id] = {"price" : price, "quantity" : quantity - response['decrement_shares'], "direction" : direction}
                         if direction == 'B':
                             direction = 'S'
                         else:
@@ -356,7 +355,7 @@ class Client:
         )
 
         # update local orders
-        self.orders[order_token.decode()] = (price, quantity, direction)
+        self.orders[order_token.decode()] = {"price" : price, "quantity" : quantity, "direction" : direction}
 
         return order_request
 

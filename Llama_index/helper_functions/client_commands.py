@@ -37,7 +37,7 @@ def get_book_history():
 def get_transaction_history():
     client_id = account_info()["id"]
     market_data = list()
-    with open(f"market_client/market_logs/transaction_log_{client_id}.txt", mode="r") as f:
+    with open(f"market_client/market_logs/transaction_log.txt", mode="r") as f:
         for line in f:
             entry = json.loads(line)
             market_data.append(entry)
@@ -47,7 +47,7 @@ def get_transaction_history():
 def get_account_history():
     client_id = account_info()["id"]
     client_data = list()
-    with open(f"market_client/market_logs/state_log_{client_id}.txt", mode="r") as f:
+    with open(f"market_client/market_logs/state_log.txt", mode="r") as f:
         for line in f:
             entry = json.loads(line)
             client_data.append(entry)

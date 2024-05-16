@@ -9,7 +9,10 @@ CDA_order_cancel is a python function that will cancel an order given the order 
 def CDA_order_cancel(token):
 
 account_info is a python function that will retrieve the client's information as a dictionary containing the keys ["id", "balance", "active_orders", "owned_assets"].
-Where id is a string, balance is an integer, active_orders is a dictionary, and owned_assets is an integer.
+Where "id" is a string, "balance" is an integer, "orders" is a dictionary of the client's active orders, and "owned_shares" is an integer.
+The keys of the "orders" dictionary are the tokens of each active order placed by the client. Each key is paired to a dictionary representing the order, which has the keys ["quantity", "price", "direction"], 
+where "quantity" is an integer representing the desired amount of shares to trade, "price" is an integer representing the desired price for the order to trade at, and direction 
+(a string of value 'B' or 'S', where 'B' means the order is a buy order and 'S' is a sell order).
 def account_info()
     return {"id" : self.id, "balance" : self.balance,"orders" : self.orders, "owned_shares" : self.owned_shares}
 
