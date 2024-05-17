@@ -3,13 +3,28 @@ import PropTypes from "prop-types";
 import "./index.css";
 
 export default function Order_Cards(props) {
+
+  // Different styles depending on sell and buy order
+  const cardClassName =
+    props.direction === "B"
+      ? "buy-card"
+      : props.direction === "S"
+      ? "sell-card"
+      : "";
+    
   return (
-    <div className="order-card">
-      <h3>
-        price: {props.price}
-        quantity: {props.quantity}
-        direction: {props.direction}
-      </h3>
+    <div className={cardClassName}>
+
+      <h3>{props.direction === "B" ? "Buy Order" : props.direction === "S"
+      ? "Sell Order": ""}</h3>
+      <div className = "container">
+        <h4>
+          price: {props.price}
+        </h4>
+        <h4>
+          quantity: {props.quantity}
+        </h4>
+      </div>
     </div>
   );
 }

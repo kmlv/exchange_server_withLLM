@@ -1,0 +1,17 @@
+{% extends "base.html" %} 
+{# NOTE: this is using Jinja templating. everything here is additive to base.html #}
+{% block title %}Home{% endblock %}
+
+
+
+{% block content %}
+ <div id="testComponent">This is the initial text.</div>
+{% endblock %}
+
+{% block script %}
+<!--Import Scripts here-->
+<script
+type = "text/javascript"
+src = "{{ url_for('static', filename='test.js') }}"
+></script>
+{%endblock%}
