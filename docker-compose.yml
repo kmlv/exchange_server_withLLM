@@ -20,6 +20,17 @@ services:
     networks:
       exchange:
         ipv4_address: 10.10.0.3
+  react_app_0:
+    image: app
+    ports:
+      - '5171:5173'
+    depends_on:
+      - client_0
+    environment:
+        - VITE_API_URL=http://localhost:8083
+    networks:
+      exchange:
+        ipv4_address: 10.10.0.9
   client_1:
     image: project
     ports:
@@ -31,14 +42,14 @@ services:
     networks:
       exchange:
         ipv4_address: 10.10.0.4
-  react_app:
+  react_app_1:
     image: app
     ports:
-      - '5173:5173'
+      - '5170:5173'
     depends_on:
       - client_0
     environment:
-        - REACT_APP_API_URL=http://backend_user2:5000/api
+        - VITE_API_URL=http://localhost:8084
     networks:
       exchange:
         ipv4_address: 10.10.0.10

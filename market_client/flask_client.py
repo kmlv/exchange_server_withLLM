@@ -74,10 +74,10 @@ def home():
 
 @app.route('/prompt', methods=["POST", "GET"])
 def prompt():
-    # data = request.get_json()
-    # prompt = data['prompt']
+    data = request.get_json()
+    prompt = data['prompt']
     
-    interpretor.execute_query("buy 1 share at 50 dollars")
+    interpretor.execute_query(prompt)
 
     return "ok"
 
@@ -122,8 +122,8 @@ def get_client_orders():
     orders_list = []
     
     for order_num, order_data in orders.items():
-        print({"order_num": order_num, "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
-        orders_list.append({"order_num": order_num.decode(), "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
+        # print({"order_num": order_num, "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
+        orders_list.append({"order_num": order_num, "price": order_data["price"], "quantity": order_data["quantity"], "direction": order_data["direction"]})
 
     return jsonify({"balance": balance, "shares": shares, "orders": orders_list})
 

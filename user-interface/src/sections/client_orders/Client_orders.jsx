@@ -10,7 +10,7 @@ const Client_orders = () => {
   // Fetch orders from the API endpoint
   const fetchOrders = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8083/client_orders");
+      const response = await fetch(import.meta.env.VITE_API_URL + "/client_orders");
       if (!response.ok) {
         throw new Error("Failed to fetch orders");
       }
