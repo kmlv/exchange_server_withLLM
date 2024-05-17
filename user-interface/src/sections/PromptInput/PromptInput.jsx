@@ -10,7 +10,7 @@ export default function PromptInput() {
   const sendRequest = async () => {
     console.log(prompt);
     try {
-      const response = await axios.post("http://localhost:5001/prompt", {
+      const response = await axios.post("http://localhost:8083/prompt", {
         prompt: prompt,
       });
       console.log(response);

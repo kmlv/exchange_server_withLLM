@@ -10,7 +10,7 @@ const Client_orders = () => {
   // Fetch orders from the API endpoint
   const fetchOrders = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5001/client_orders");
+      const response = await fetch("http://127.0.0.1:8083/client_orders");
       if (!response.ok) {
         throw new Error("Failed to fetch orders");
       }
@@ -32,7 +32,7 @@ const Client_orders = () => {
         setBalance(newOrders.balance);
         setShares(newOrders.shares);
       });
-    }, 10000); // Update every second (adjust as needed)
+    }, 3000); // Update every second (adjust as needed)
 
     return () => clearInterval(interval);
   }, []); // Empty dependency array means run once on mount

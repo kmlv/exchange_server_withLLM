@@ -31,28 +31,17 @@ services:
     networks:
       exchange:
         ipv4_address: 10.10.0.4
-  client_2:
-    image: project
+  react_app:
+    image: app
     ports:
-      - '8085:8090'
-    env_file:
-       - 'variables.env'
+      - '5173:5173'
     depends_on:
-      - continuous_double_auction
+      - client_0
+    environment:
+        - REACT_APP_API_URL=http://backend_user2:5000/api
     networks:
       exchange:
-        ipv4_address: 10.10.0.5
-  client_3:
-    image: project
-    ports:
-      - '8086:8090'
-    env_file:
-       - 'variables.env'
-    depends_on:
-      - continuous_double_auction
-    networks:
-      exchange:
-        ipv4_address: 10.10.0.6
+        ipv4_address: 10.10.0.10
 networks:
   exchange:
     ipam:
