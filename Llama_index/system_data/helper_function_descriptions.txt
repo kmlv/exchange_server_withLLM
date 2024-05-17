@@ -1,17 +1,20 @@
 Usable Python functions:
 
-CDA_order is a python function that will send an order given the number of shares, price per share, and direction('B' or 'S').
+CDA_order is a python function that will send an order given the number of shares, price per share, direction('B' or 'S'), and duration of time to be in the market.
 CDA_order returns the token of the order sent.
-def CDA_order(shares: int, price: int, direction: str):
+def CDA_order(shares: int, price: int, direction: str, time_in_force: int):
     return token
 
 CDA_order_cancel is a python function that will cancel an order given the order token
 def CDA_order_cancel(token):
 
-account_info is a python function that will retrieve the client's information as a dictionary containing the keys ["id", "balance", "active_orders", "owned_assets"].
-Where id is a string, balance is an integer, active_orders is a dictionary, and owned_assets is an integer.
+account_info is a python function that will retrieve the client's information as a dictionary containing the keys ["id", "balance", "active_orders", "owned_shares"].
+Where "id" is a string, "balance" is an integer, "orders" is a dictionary of the client's active orders, and "owned_shares" is an integer.
+The keys of the "orders" dictionary are the tokens of each active order placed by the client. Each key is paired to a dictionary representing the order, which has the keys ["quantity", "price", "direction"], 
+where "quantity" is an integer representing the desired amount of shares to trade, "price" is an integer representing the desired price for the order to trade at, and direction 
+(a string of value 'B' or 'S', where 'B' means the order is a buy order and 'S' is a sell order).
 def account_info()
-    return {"id" : self.id, "balance" : self.balance,"orders" : self.orders, "owned_shares" : self.owned_shares}
+    return {"id" : id, "balance" : balance, "orders" : orders, "owned_shares" : owned_shares}
 
 get_book_history is a python function that will retrieve the market book history, including the most recent history, as a list of dictionaries. 
 The most recent book data will be located at the 0th index; whereas, the oldest book data can be accessed at the largest largest index or the -1 index. 
@@ -41,7 +44,7 @@ def get_transaction_history():
 get_account_history is a python function that will retrieve the client's account information history, including the most recent account information, as a list of dictionaries.
 The client's most recent account information will be located at the 0th index; whereas, the client's initial account information will be located at the largest index or the -1 index.
 Each dictionaries at each indice of the data contains the keys ["timestamp", "state"]. Where "timestamp" is a string, and "state" is a dictionary of the client account information.
-In the "state" dictionary, there are the following keys ["id", "balance", "orders", "owned_shares"]. Where id is a string, balance is an integer, active_orders is a dictionary, and owned_assets is an integer.
+In the "state" dictionary, there are the following keys ["id", "balance", "orders", "owned_shares"]. Where id is a string, balance is an integer, active_orders is a dictionary, and owned_shares is an integer.
 Here is an example of how to call the function and what the general structure looks like.
 def get_account_history():
     return [{"timestamp": 45840969198000, "state": {"id": "cce63b8c9a80480ebd2887effdc675b9", "balance": 1000, "orders": {}, "owned_shares": 50}},

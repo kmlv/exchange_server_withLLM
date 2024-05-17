@@ -17,12 +17,6 @@ from .ouch_messages import OuchClientMessages, OuchServerMessages
 
 DEFAULT_TIMEZONE = pytz.timezone('US/Pacific')
 
-p = configargparse.ArgParser()
-p.add('--port', default=8090)
-p.add('--host', default='127.0.0.1', help="Address to bind to / listen on")
-options, args = p.parse_known_args()
-
-
 
 class ProtocolMessageServer(object): 
     """
@@ -30,13 +24,17 @@ class ProtocolMessageServer(object):
     """
     ClientInfo = namedtuple('ClientInfo', ['task', 'reader', 'writer'])
     
-    def __init__(self, ProtocolMessageTypes):
+    def __init__(self, ProtocolMessageTypes, host='0.0.0.0', port=8090):
         self._ProtocolMessageCls = ProtocolMessageTypes.get_message_class()
         self._ProtocolMessageTypes = ProtocolMessageTypes
         self._tokens = itertools.count(0,2)  # evens
         self.server = None # encapsulates the server sockets
         self.clients = {}  # token -> ClientInfo
         self.listeners = {}  # token -> callback    
+
+        # server host and port
+        self.host = host
+        self.port = port
     @property
     def ProtocolMessageCls(self):
         return self._ProtocolMessageCls
@@ -128,8 +126,8 @@ class ProtocolMessageServer(object):
         are ready to accept connections.
         """
         self.server = await asyncio.streams.start_server(self._accept_client,
-                                         options.host, 
-                                         options.port
+                                         self.host, 
+                                         self.port
                                          )
 
     def stop(self, loop):
@@ -170,21 +168,4 @@ async def message_acker(callback, message):
     response.meta = message.meta
     await callback(response)
 
-def main():
-    log.basicConfig(level=log.DEBUG)
 
-    log.debug(options)
-
-    loop = asyncio.get_event_loop()
-
-    # creates a server and starts listening to TCP connections
-    server = ProtocolMessageServer(OuchClientMessages)
-    server.register_listener(partial(message_acker, server.send_server_response))
-    server.start(loop)
-    try:
-        loop.run_forever()
-    finally:
-        loop.close()
-
-if __name__ == '__main__':
-    main()

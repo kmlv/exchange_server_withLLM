@@ -14,6 +14,7 @@ from flask import Flask, request, make_response, jsonify, render_template
 from market_client.client import Client
 import threading
 import asyncio
+import toml
 from flask_cors import CORS
 
 import logging
@@ -22,20 +23,24 @@ CORS(app)
 
 
 client = None
-interpetor = LlamaRag()
+interpretor = None
 
 def run_flask():
     """Start flask app"""
-    app.run(host="0.0.0.0", port=5001)
+    with open('./market_client/config.toml', 'r') as f:
+        config = toml.load(f)
+    app.run(host="0.0.0.0", port=config['client']['flask_port'])
 
-async def start(input_client: Client):
+async def start(input_client: Client, openai_api_key):
     """Start client flask endpoint and connect to Market"""
     global client
+    global interpretor
     # verify client class object is getting started
     if not input_client or not isinstance(input_client, Client):
         raise Exception(f"Cannot Start Non-Client object {input_client}")
     client = input_client
-    interpetor.configure_query_engine()
+    interpretor = LlamaRag(openai_api_key)
+    interpretor.configure_query_engine()
     print(client)
     # Run flask endpoint in separate thread to prevent it from blocking 
     # asyncio tcp connection to market
@@ -57,16 +62,25 @@ def send_to_market(request):
     else:
         loop.run_until_complete(client.send(request))
 
+@app.route('/debug')
+def debug():
+    ouch_order_request = client.place_order(5, 3, 'B', 10)
+    if ouch_order_request:
+        send_to_market(ouch_order_request)
+        placed_order_token = ouch_order_request['order_token'].decode()
+        return {"order_token" : placed_order_token}
+    return make_response(jsonify(error="Order Failed"),400)
+
 @app.route('/')
 def home():
     return render_template("home.html")
 
-@app.route('/prompt', methods=["POST"])
+@app.route('/prompt', methods=["POST", "GET"])
 def prompt():
     data = request.get_json()
     prompt = data['prompt']
     
-    interpetor.execute_query(prompt)
+    interpretor.execute_query(prompt)
 
     return "ok"
 
@@ -111,8 +125,8 @@ def get_client_orders():
     orders_list = []
     
     for order_num, order_data in orders.items():
-        print({"order_num": order_num, "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
-        orders_list.append({"order_num": order_num.decode(), "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
+        # print({"order_num": order_num, "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
+        orders_list.append({"order_num": order_num, "price": order_data["price"], "quantity": order_data["quantity"], "direction": order_data["direction"]})
 
     return jsonify({"balance": balance, "shares": shares, "orders": orders_list})
 

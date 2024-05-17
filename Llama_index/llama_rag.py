@@ -24,18 +24,23 @@ import_lines = """# Generated code
 from helper_functions.market_commands import *
 from helper_functions.client_commands import *
 
+# Imports
+from sys import exit
+
 """
 
 execution_lines = """if __name__ == "__main__":
     active_strategy()
+    print("EXIT active_strategy()")
+    exit(0)
 """
 
 class LlamaRag:
-    def __init__(self):
+    def __init__(self, openai_api_key=None):
         self._GPT_MODEL = "gpt-3.5-turbo"
         self._dir = "./Llama_index/"
         self._DATA_FOLDER = f"{self._dir}system_data"
-        self._API_KEY = os.getenv("OPENAI_API_KEY")
+        self._API_KEY = os.getenv("OPENAI_API_KEY") if not openai_api_key else openai_api_key
         self._script_path = f"{self._dir}active_strategy.py"
         self.running_script = None
 
@@ -119,8 +124,9 @@ class LlamaRag:
                                            + code_chunk + 
                                            "\n\n DONT MENTION TOKENS, and be EXTREMELY concise. Summary:")
 
-        user_response = input("Is this what you would like to deploy? (yes/no): \n\n" + '\033[1m' + str(response) + "\033[0m\n\n").lower().strip()
-
+        # user_response = input("Is this what you would like to deploy? (yes/no): \n\n" + '\033[1m' + str(response) + "\033[0m\n\n").lower().strip()
+        # FIXME: please remove this
+        user_response = 'yes'
         # Check user response
         if user_response == 'yes':
             print("Ok, Deploying now...")

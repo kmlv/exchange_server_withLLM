@@ -1,3 +1,5 @@
+# Note: Unused. See exchange_logging/exchange_loggers.py for used loggers
+
 import os
 
 class BookLogger():
