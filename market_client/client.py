@@ -64,9 +64,7 @@ class Client:
                 f"Owned_shares: {self.owned_shares}\n"
                 f"Orders: {self.orders}\n"
                 f"Order History: {self.order_history}\n")
-    # 0 price
-    # 1 quantity
-    # 2 direction
+
     def print_active_orders(self):
         """Display active client orders"""
         print(f'Your active orders')
