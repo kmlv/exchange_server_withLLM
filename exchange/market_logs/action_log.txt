@@ -1,8 +1,3 @@
-{"timestamp": 31098880763000, "action": {"action_type": "place_limit_order", "action_data": {"token": "5936e2d37e534fd1a17db85ed5d159ce", "direction": "B", "price": 50, "shares": 3}}}
-{"timestamp": 31098880763000, "action": {"action_type": "cancel_limit_order", "action_data": {"token": "5936e2d37e534fd1a17db85ed5d159ce", "shares": 0}}}
-{"timestamp": 31198044243000, "action": {"action_type": "place_limit_order", "action_data": {"token": "696d06772c824313ba7cb828184daab8", "direction": "B", "price": 40, "shares": 3}}}
-{"timestamp": 31198044243000, "action": {"action_type": "cancel_limit_order", "action_data": {"token": "696d06772c824313ba7cb828184daab8", "shares": 0}}}
-{"timestamp": 31267667728000, "action": {"action_type": "place_limit_order", "action_data": {"token": "2b431263d70e4810bd2040d030ad271d", "direction": "B", "price": 40, "shares": 3}}}
-{"timestamp": 31267667728000, "action": {"action_type": "cancel_limit_order", "action_data": {"token": "2b431263d70e4810bd2040d030ad271d", "shares": 0}}}
-{"timestamp": 31372422911000, "action": {"action_type": "place_limit_order", "action_data": {"token": "6b4fa247958a4e448d3c345e93c505e6", "direction": "S", "price": 50, "shares": 9}}}
-{"timestamp": 31372422911000, "action": {"action_type": "cancel_limit_order", "action_data": {"token": "6b4fa247958a4e448d3c345e93c505e6", "shares": 0}}}
+{"timestamp": 28741772488000, "action": {"action_type": "place_limit_order", "action_data": {"token": "2899b803cdba40da81ae9a1efa6c6b95", "direction": "B", "price": 10, "shares": 3}}}
+{"timestamp": 28752121396000, "action": {"action_type": "place_limit_order", "action_data": {"token": "849c1ecf69274c509738a616cac211a0", "direction": "S", "price": 8, "shares": 2}}}
+{"timestamp": 28761694085000, "action": {"action_type": "cancel_limit_order", "action_data": {"token": "2899b803cdba40da81ae9a1efa6c6b95", "shares": 0}}}
