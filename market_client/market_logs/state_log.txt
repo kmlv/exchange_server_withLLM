@@ -1,3 +1,1 @@
-{"timestamp": 31250122495000, "state": {"id": "d797b09bded14be09346ff50c3b33918", "balance": 1000, "orders": {}, "owned_shares": 100}}
-{"timestamp": 31267667728000, "state": {"id": "d797b09bded14be09346ff50c3b33918", "balance": 1000, "orders": {"2b431263d70e4810bd2040d030ad271d": {"price": 40, "quantity": 0, "direction": "B"}}, "owned_shares": 100}}
-{"timestamp": 31372422911000, "state": {"id": "d797b09bded14be09346ff50c3b33918", "balance": 1000, "orders": {"6b4fa247958a4e448d3c345e93c505e6": {"price": 50, "quantity": 0, "direction": "S"}}, "owned_shares": 100}}
+{"timestamp": 84476921739000, "state": {"id": "5f374de1b91c484d8e81a933024b3881", "balance": 1000, "orders": {}, "owned_shares": 100}}

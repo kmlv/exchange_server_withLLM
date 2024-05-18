@@ -80,9 +80,15 @@ def prompt():
     data = request.get_json()
     prompt = data['prompt']
     
-    interpretor.execute_query(prompt)
+    confirmation_message = interpretor.send_query(prompt)
+    return jsonify({"confirmation": confirmation_message})
 
-    return "ok"
+@app.route('/execute', methods=["POST"])
+def execute():
+
+    interpretor.run_script()
+    return jsonify({"status": "successful trade execution"})
+
 
 @app.route('/place_order', methods=["POST"])
 def place_order():

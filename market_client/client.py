@@ -135,7 +135,15 @@ class Client:
         return self.balance >= (cost_per_share * num_shares)
     
     async def recv(self):
-        """Convert response from bytes into ouch response format
+        """Convert response from bytes into ouch response formatp = configargparse.ArgParser()
+p.add('--addr', default='localhost', help="Address of client's flask endpoint")
+p.add('--local', default=8090, help="Port of client's flask endpoint")
+p.add('--port', default=8090, type=int)
+p.add('--host', default='10.10.0.2', help="Address of server")
+p.add('--mode', '-m', type=str, default='flask',choices=['dev', 'flask'], help="Specify mode to run system")
+p.add('--key', type=str, default=os.getenv("OPENAI_API_KEY"), help="OPEN_API_KEY(required to use interpreter)")
+options, args = p.parse_known_args()
+
         
         Returns: OuchServer.ouch_message object in the format of one of the many formats
         (found in Lines past 134 in OuchServer\ouch_messages.py):
