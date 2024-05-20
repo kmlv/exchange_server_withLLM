@@ -11,12 +11,16 @@ const Client_orders = () => {
   const [order_book_sell, setSellOrders] = useState([]);
   const [order_book_buy, setBuyOrders] = useState([]);
 
+
   var client_addr = import.meta.env.VITE_API_URL 
   if (import.meta.env.VITE_API_URL === undefined) 
   {
     client_addr = "http://127.0.0.1:5001";
   }
   
+
+  const [message, setMessage] = useState("AA")
+
 
   // Fetch orders from the API endpoint
   const fetchOrders = async () => {
@@ -41,10 +45,12 @@ const Client_orders = () => {
 
     try {
       const response = await fetch(client_addr + "/order_book");
+
       const data = await response.json();
 
       setSellOrders(data.asks);
       setBuyOrders(data.bids);
+      
     } catch(error) {
       console.error("Error fetching orders:", error);
     }
@@ -75,6 +81,7 @@ const Client_orders = () => {
         <OrderBox Orders={order_book_sell} Title = "Market Sell orders"/>
       </div>
       <button onClick={fetch_order_book}>Fetch Order Book</button>
+      
     </>
   );
 };

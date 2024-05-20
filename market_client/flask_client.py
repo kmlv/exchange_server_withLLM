@@ -10,7 +10,8 @@ which will then perform operations on a Client class object to:
 3) retrieve client orders
 4) retrieve limit order book
 """
-from flask import Flask, request, make_response, jsonify
+
+from flask import Flask, request, make_response, jsonify, render_template
 from market_client.client import Client
 import threading
 import asyncio
@@ -75,14 +76,21 @@ def debug():
 def home():
     return client.__str__()
 
+
 @app.route('/prompt', methods=["POST", "GET"])
 def prompt():
     data = request.get_json()
     prompt = data['prompt']
     
-    interpretor.execute_query(prompt)
+    confirmation_message = interpretor.send_query(prompt)
+    return jsonify({"confirmation": confirmation_message})
 
-    return "ok"
+@app.route('/execute', methods=["POST"])
+def execute():
+
+    interpretor.run_script()
+    return jsonify({"status": "successful trade execution"})
+
 
 @app.route('/place_order', methods=["POST"])
 def place_order():
