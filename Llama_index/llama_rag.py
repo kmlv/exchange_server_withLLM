@@ -100,22 +100,15 @@ class LlamaRag:
             # write code that will execute code
             file.write(execution_lines)
 
-    def _run_script(self, code_str):
+    def run_script(self):
         """Run a code string as a subprocess"""
-
-        # Write to a file
-        self._write_script(code_str)
 
         # try to run the script that was written
         self.running_script = subprocess.Popen(['python' if (platform.system() == 'Windows') else 'python3', self._script_path], text=True)
-        poll = self.running_script.poll()
-        if poll:
-            self.running_script.terminate()
 
-    def get_confirmation(self, code_chunk):
-        """User confirmation 
-        Addressing: Before active_strategy() calls CDA_client functions to make market orders, 
-        it must confirm with the user that it is making the right function call
+    def send_confirmation_message(self, code_chunk):
+        """
+        Generates a confirmation message for the user
         """
         if "stop" in code_chunk.lower(): # adjust error handling here for relevancy
             self.stop_script()
@@ -127,19 +120,12 @@ class LlamaRag:
                                            + code_chunk + 
                                            "\n\n DONT MENTION TOKENS, and be EXTREMELY concise. Summary:")
 
-        # user_response = input("Is this what you would like to deploy? (yes/no): \n\n" + '\033[1m' + str(response) + "\033[0m\n\n").lower().strip()
-        # FIXME: please remove this
-        user_response = 'yes'
-        # Check user response
-        if user_response == 'yes':
-            print("Ok, Deploying now...")
-            return True
-        else:
-            print("Aborting active strategy deployment.")
-            return False
+        return response
         
-    def execute_query(self, prompt):
-        """Generate and execute from a prompt\n
+    def send_query(self, prompt):
+        """Generates and writes code to the prompt and returns a message 
+        for the user to confirm
+        \n
         Basic prompt overview
         Handles:
         - function description active_strategy()
@@ -155,9 +141,12 @@ class LlamaRag:
         response = self.query_engine.query("Write a Python function named active_strategy() that implements the following: \n" + prompt + 
                                 " \n\n DO NOT INCLUDE A DESCRIPTION OF THE CODE OR ANYTHING THAT IS NOT THE CODE ITSELF! \n" +
                                 " Include any necessary conditional statements ('if', 'elif', 'else') or calculations needed to accomplish the task or answer the question. \n")
+         # Write to a file
+        self._write_script(str(response))
 
-        if self.get_confirmation(str(response)):
-            self._run_script(str(response))
+        return str(self.send_confirmation_message(str(response)))
+
+        
 
     def stop_script(self):
         if self.running_script:

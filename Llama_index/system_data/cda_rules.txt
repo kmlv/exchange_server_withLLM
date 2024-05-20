@@ -10,6 +10,8 @@ Buy and Sell Orders: Participants can submit both buy and sell orders at any tim
     - Price and Quantity: Each order specifies both a price and a quantity. The price represents the maximum (for buy orders) or minimum (for sell orders) that the trader is willing to accept. 
       The quantity represents the number of shares or units the trader wishes to buy or sell.
 
+    -Time: Each order should specify a time. The time represents how long the order will last. If the order doesn't specify a time, make it default 20 seconds.
+
 Matching/Trading: The trading system continuously matches buy and sell orders based on their prices. 
     - Trades occur when:
         - a buy order's price is equal to or greater than a sell order's price or

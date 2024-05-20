@@ -10,12 +10,15 @@ which will then perform operations on a Client class object to:
 3) retrieve client orders
 4) retrieve limit order book
 """
-from flask import Flask, request, make_response, jsonify
+
+from flask import Flask, request, make_response, jsonify, render_template
 from market_client.client import Client
 import threading
 import asyncio
 import toml
 from flask_cors import CORS
+
+import logging
 app = Flask(__name__)
 CORS(app)
 
@@ -42,6 +45,7 @@ async def start(input_client: Client, openai_api_key):
     print(client)
     # Run flask endpoint in separate thread to prevent it from blocking 
     # asyncio tcp connection to market
+   
     t = threading.Thread(target=run_flask)
     t.start()
     await asyncio.gather(client.recver())
@@ -72,14 +76,21 @@ def debug():
 def home():
     return client.__str__()
 
+
 @app.route('/prompt', methods=["POST", "GET"])
 def prompt():
-    # data = request.get_json()
-    # prompt = data['prompt']
+    data = request.get_json()
+    prompt = data['prompt']
     
-    interpretor.execute_query("buy 1 share at 50 dollars")
+    confirmation_message = interpretor.send_query(prompt)
+    return jsonify({"confirmation": confirmation_message})
 
-    return "ok"
+@app.route('/execute', methods=["POST"])
+def execute():
+
+    interpretor.run_script()
+    return jsonify({"status": "successful trade execution"})
+
 
 @app.route('/place_order', methods=["POST"])
 def place_order():
@@ -122,10 +133,22 @@ def get_client_orders():
     orders_list = []
     
     for order_num, order_data in orders.items():
-        print({"order_num": order_num, "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
-        orders_list.append({"order_num": order_num.decode(), "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
+        # print({"order_num": order_num, "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
+        orders_list.append({"order_num": order_num, "price": order_data["price"], "quantity": order_data["quantity"], "direction": order_data["direction"]})
 
     return jsonify({"balance": balance, "shares": shares, "orders": orders_list})
+
+@app.route('/order_book', methods=["GET"])
+def get_order_book():
+    '''
+    Returns order book
+        format: {'bids': [{'price': 5, 'quantity': 3}], 
+                 'asks': [{'price': 52, 'quantity': 8}]}
+    
+    '''
+    book = client.order_book().get("book")
+
+    return book
 
 if __name__ == '__main__':
     app.run()

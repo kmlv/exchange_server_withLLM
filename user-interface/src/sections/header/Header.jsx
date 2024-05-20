@@ -13,9 +13,9 @@ const Header = () => {
       </div>
       <nav>
         <ul>
-          <li><a href="#">Github</a></li>
-          <li><a href="#">Linkdin</a></li>
-          <li><a href="#">Contact</a></li>
+          <li><a href="https://github.com/william-siegmund/exchange_server">Github</a></li>
+          <li><a href="https://www.linkedin.com/in/kristian-l-b9a38028/">Linkdin</a></li>
+          <li><a href="mailto:tchen175@ucsc.edu">Contact</a></li>
         </ul>
       </nav>
     </header>

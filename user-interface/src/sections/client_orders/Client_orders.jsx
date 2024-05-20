@@ -1,16 +1,31 @@
 // OrdersTracker.js
 import React, { useState, useEffect } from "react";
-import Order_Cards from "../../Components/Orders/Order_Cards";
+import OrderBox from "../../Components/OrderBox/OrderBox";
+import "./index.css";
 
 const Client_orders = () => {
   const [orders, setOrders] = useState([]);
   const [balance, setBalance] = useState(0);
   const [shares, setShares] = useState(0);
 
+  const [order_book_sell, setSellOrders] = useState([]);
+  const [order_book_buy, setBuyOrders] = useState([]);
+
+
+  var client_addr = import.meta.env.VITE_API_URL 
+  if (import.meta.env.VITE_API_URL === undefined) 
+  {
+    client_addr = "http://127.0.0.1:5001";
+  }
+  
+
+  const [message, setMessage] = useState("AA")
+
+
   // Fetch orders from the API endpoint
   const fetchOrders = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5001/client_orders");
+      const response = await fetch(client_addr + "/client_orders");
       if (!response.ok) {
         throw new Error("Failed to fetch orders");
       }
@@ -24,6 +39,23 @@ const Client_orders = () => {
       return [];
     }
   };
+
+
+  const fetch_order_book = async () => {
+
+    try {
+      const response = await fetch(client_addr + "/order_book");
+
+      const data = await response.json();
+
+      setSellOrders(data.asks);
+      setBuyOrders(data.bids);
+      
+    } catch(error) {
+      console.error("Error fetching orders:", error);
+    }
+  }
+
   // jsonify({"balance": balance, "shares": shares, "orders": orders_list})
   useEffect(() => {
     const interval = setInterval(() => {
@@ -32,25 +64,24 @@ const Client_orders = () => {
         setBalance(newOrders.balance);
         setShares(newOrders.shares);
       });
-    }, 10000); // Update every second (adjust as needed)
+    }, 3000); // Update every second (adjust as needed)
 
     return () => clearInterval(interval);
   }, []); // Empty dependency array means run once on mount
+
+  
 
   return (
     <>
       <div>Balance: {balance}</div>
       <div>Shares: {shares}</div>
-      <div className="orders-tracker">
-        <h2>Orders Tracker</h2>
-        {orders.map((order) => (
-          <Order_Cards
-            price={order.price}
-            quantity={order.quantity}
-            direction={order.direction}
-          />
-        ))}
+      <div className="order-tracker-container">
+        <OrderBox Orders={orders} Title = "Your Orders"/>
+        <OrderBox Orders={order_book_buy} Title = "Market Buy orders"/>
+        <OrderBox Orders={order_book_sell} Title = "Market Sell orders"/>
       </div>
+      <button onClick={fetch_order_book}>Fetch Order Book</button>
+      
     </>
   );
 };

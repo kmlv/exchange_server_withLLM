@@ -371,7 +371,6 @@ class Exchange:
         """Send Server OuchMessage to all connected clients"""
         while len(self.outgoing_broadcast_messages)>0:
             m = self.outgoing_broadcast_messages.popleft()
-            # log.info(f"BROADCASTING: {m}")
             if m.message_type == OuchServerMessages.Executed:
                 # self.update_transaction_log(m)
                 self.transaction_logger.update_log(transaction=m, timestamp=nanoseconds_since_midnight())
