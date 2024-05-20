@@ -16,6 +16,12 @@ where "quantity" is an integer representing the desired amount of shares to trad
 def account_info()
     return {"id" : id, "balance" : balance, "orders" : orders, "owned_shares" : owned_shares}
 
+get_client_order_history is a python function that will retrieve the client's order history, for all past orders the client has placed that have been traded.
+Returns a list of dictionaries representing each order in the order history. Each dictionary has the following keys dictionary containing the keys ["price", "quantity", "direction", "timestamp"].
+Where "price" is the price of the order traded, "quantity" is the number of executed shares, "direction" (which will be set to 'B' for buy orders and 'S' for sell orders), and "timestamp" is the time at which the order was traded in the exchange.
+def get_client_order_history()
+    return [{"price" : price, "quantity" : quantity, "direction" : direction, "timestamp": timestamp}]
+
 get_book_history is a python function that will retrieve the market book history, including the most recent history, as a list of dictionaries. 
 The most recent book data will be located at the 0th index; whereas, the oldest book data can be accessed at the largest largest index or the -1 index. 
 Each dictionaries at each indice of the data contains the keys ["timestamp", "bids", "asks"]. Where timestamp is a string, bids is a dictionary of buy orders, and asks is a dictionary of sell orders. 
