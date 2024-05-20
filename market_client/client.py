@@ -170,8 +170,8 @@ options, args = p.parse_known_args()
         if self.reader is None or self.writer is None:
             try:
                 reader, writer = await asyncio.streams.open_connection(
-                options.host, 
-                options.port)
+                self.host, 
+                self.port)
                 self.reader = reader
                 self.writer = writer
             except ConnectionRefusedError:
@@ -192,11 +192,10 @@ options, args = p.parse_known_args()
                 case OuchServerMessages.Executed:
                     # Trade has been made
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
-                    order_id = response['order_token']
+                    order_id = response['order_token'].decode()
                     if order_id in self.orders:
                         transaction_data = {"price" : response['execution_price'], "quantity" : response["executed_shares"], "direction" : self.orders[order_id]['direction'], "timestamp" : response['timestamp']}
                         self.order_history.append(transaction_data)
-                        print(type(response['timestamp']), flush=True)
                         self._update_active_orders(response)
                     
                     # Update Book Log & Transaction Log
@@ -222,8 +221,7 @@ options, args = p.parse_known_args()
                 case OuchServerMessages.Canceled:
                     print("The server canceled order", response['order_token'])
                     quantity = 0
-                    cancelled_order_id = response['order_token']
-                    cancelled_order_id = cancelled_order_id.decode()
+                    cancelled_order_id = response['order_token'].decode()
                     if cancelled_order_id in self.orders:
                         price, quantity, direction = self.orders[cancelled_order_id].values()
                         # Update order based on remaining shares
@@ -238,10 +236,12 @@ options, args = p.parse_known_args()
                         if quantity == response['decrement_shares']:
                             self.orders.pop(cancelled_order_id)
 
+                    # Cancel order from book_copy
+                    # NOTE: The quantity canceled is how many shares should remain
                     self.book_copy.cancel_order(
                         response['order_token'],
                         response['price'],
-                        quantity - response['decrement_shares'],
+                        quantity - response['decrement_shares'] if quantity else 0,
                         response['buy_sell_indicator']
                     )
 
@@ -287,6 +287,8 @@ options, args = p.parse_known_args()
             
             if time_in_force is not None:
                 time_in_force = int(time_in_force)
+                if time_in_force == 0:
+                    time_in_force = 10
                 if time_in_force < 1 or time_in_force > 99998:
                     return False
 
@@ -410,10 +412,12 @@ options, args = p.parse_known_args()
             reader, writer = await asyncio.streams.open_connection(
             self.host, 
             self.port)
-            self.reader = reader
-            self.writer = writer
+            if not self.reader:
+                self.reader = reader
+                self.writer = writer
         while True:
             print(self)
+            print(self.book_copy.as_json())
             cmd = input("Make a command order(O) or cancel(C): ")
             await asyncio.sleep(0.5)
             if cmd == "O":

@@ -10,6 +10,7 @@ which will then perform operations on a Client class object to:
 3) retrieve client orders
 4) retrieve limit order book
 """
+
 from flask import Flask, request, make_response, jsonify, render_template
 from market_client.client import Client
 import threading
@@ -73,7 +74,8 @@ def debug():
 
 @app.route('/')
 def home():
-    return render_template("home.html")
+    return client.__str__()
+
 
 @app.route('/prompt', methods=["POST", "GET"])
 def prompt():
