@@ -1,8 +1,14 @@
+"""There can be multiple orders with the same price.
+BookPriceQ organizes this information by combining the total amount of
+shares for the price as 'interest'. While maintaining distinction
+between multiple clients' orders.
+"""
 import logging as log
 from collections import OrderedDict
 
 
 class BookPriceQ:
+	""""""
 	def __init__(self, price):
 		self.interest = 0 	#sum of interest at this price
 		self.order_q = OrderedDict()

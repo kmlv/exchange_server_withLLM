@@ -2,10 +2,7 @@
 Client class that communicates with a Continuous Double Auction exchange following the
 ITCH message Protocol
 """ 
-from re import M
-import sys
 import asyncio
-import binascii
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
 import asyncio.streams
 import configargparse
@@ -27,7 +24,7 @@ options, args = p.parse_known_args()
 
 
 class Client:
-    """A client that can communicate with a CDA
+    """A client that can communicate with a Continuous Double Auction(CDA)
 
     Attributes:
         reader: StreamReader instance that listens to CDA
@@ -36,8 +33,10 @@ class Client:
         owned_shares: An integer representing the amount of shares a client owns 
         id: uuid that separates the client instance from others
         orders: A dict describing the client's personal active orders
-            where keys are order IDs and values are tuples representing order information
+            where keys are order IDs and values is a dict {"price": order_price,"quantity": order_quantity, "direction": 'B' or 'S'}
         book_copy: A CDABook() that the client tries to replicate from the CDA exchange
+        order_history: a list of clients' successful transactions in the format 
+                       {"price" : traded_price, "quantity" : traded_quantity, "direction" : 'B' or 'S', "timestamp" : time} 
     """
     def __init__(self, balance=1000, starting_shares=50, host="127.0.0.1", port=8090):
         self.reader = None
@@ -133,15 +132,7 @@ class Client:
         return self.balance >= (cost_per_share * num_shares)
     
     async def recv(self):
-        """Convert response from bytes into ouch response formatp = configargparse.ArgParser()
-p.add('--addr', default='localhost', help="Address of client's flask endpoint")
-p.add('--local', default=8090, help="Port of client's flask endpoint")
-p.add('--port', default=8090, type=int)
-p.add('--host', default='10.10.0.2', help="Address of server")
-p.add('--mode', '-m', type=str, default='flask',choices=['dev', 'flask'], help="Specify mode to run system")
-p.add('--key', type=str, default=os.getenv("OPENAI_API_KEY"), help="OPEN_API_KEY(required to use interpreter)")
-options, args = p.parse_known_args()
-
+        """Convert response from bytes into ouch response format
         
         Returns: OuchServer.ouch_message object in the format of one of the many formats
         (found in Lines past 134 in OuchServer\ouch_messages.py):
@@ -295,8 +286,12 @@ options, args = p.parse_known_args()
             return False
 
     async def send(self, request):
-        print("Sending ", request)
-        """Send Ouch message to server"""
+        """Send Ouch message to server
+        
+        Args:
+            request: an OuchClientMessages object representing a buy/sell or cancel order
+         
+        """
         if self.reader is None or self.writer is None:
             try:
                 reader, writer = await asyncio.streams.open_connection(
@@ -307,6 +302,7 @@ options, args = p.parse_known_args()
             except ConnectionRefusedError:
                 print(f"Could not connect to {self.host}:{self.port}")
                 return
+        # Ignore None requests
         if not request:
             print("Invalid order")
             return
@@ -379,6 +375,10 @@ options, args = p.parse_known_args()
         Note:
             Cancel all or part of an order. quantity_remaining refers to the desired remaining shares to be executed: 
             if it is 0, the order is fully cancelled, otherwise an order of quantity_remaining remains.
+        
+        Ex: cancel_order 3 shares for a buy order of 4 shares for $6 will adjust the buy order to 3 shares for $6
+        Ex: cancel_order 0 shares for a buy order of 4 shares for $6 will adjust the buy order to 0 shares for $6.
+            This will remove the order from the exchange and refund the client.
 
         """
         res = self._valid_order_input(order_token=order_token, quantity=quantity_remaining)
@@ -404,7 +404,9 @@ options, args = p.parse_known_args()
 
     async def sender(self):
         """
-        Currently, this is where all Client send operations are called
+        Currently, this is where all Client send operations are called.
+
+        This is only used when using the --mode dev in run_market_client.py
         """
         if self.reader is None:
             reader, writer = await asyncio.streams.open_connection(

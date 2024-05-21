@@ -1,10 +1,14 @@
-import sys
+"""Continuous Double Auction Exchange implementation that handles buy/sell, cancelation, and
+execution of Limit Orders. This exchange Originally was used to support the Nasdaq Ouch protocol.
+It has been refactored to support the Nasdaq ITCH protocol.
+
+NOTE: Market Orders are not supported
+"""
+
 import asyncio
 import asyncio.streams
-import configargparse
 import logging as log
 import itertools
-import copy
 from functools import partial
 from collections import deque
 
@@ -17,14 +21,18 @@ from exchange_logging.exchange_loggers import BookLogger, TransactionLogger, Cli
 
 class Exchange:
     def __init__(self, order_book, order_reply, loop, message_broadcast = None, book_log='book_log.txt', transaction_log='transaction_log.txt', action_log='action_log.txt'):
-        '''
-        order_book - the book!
-        order_reply - post office reply function, takes in 
+        """
+        order_store: tracks orders submitted to the exchange and their status(expiration)
+        order_book: Limit Order book that self updates and matches buy and sell orders
+        order_reply: post office reply function, takes in 
                 message 
                 original order
                 context
-            and does whatever we need to get that info back to order sender                             
-        '''
+            and does whatever we need to get that info back to order sender
+        message_broadcast: 
+        outgoing_broadcast_messages: 
+        handlers: A dict of methods to handle corresponding client message
+        """
         self.order_store = OrderStore()
         self.order_book = order_book
         self.order_reply = order_reply
@@ -33,7 +41,7 @@ class Exchange:
         self.loop = loop
         self.outgoing_messages = deque()
         self.order_ref_numbers = itertools.count(1, 2)  # odds    
-        self.outgoing_broadcast_messages = deque()  # ali
+        self.outgoing_broadcast_messages = deque() 
         self.handlers = { 
             OuchClientMessages.EnterOrder: self.enter_order_atomic,
             OuchClientMessages.ReplaceOrder: self.replace_order_atomic,
@@ -54,7 +62,8 @@ class Exchange:
         self.action_logger = ClientActionLogger(f"exchange/market_logs/{action_log}", logger_name="action_logger")
 
 
-    def system_start_atomic(self, system_event_message, timestamp):  
+    def system_start_atomic(self, system_event_message, timestamp):
+        """Clear past data of exchange to simulate the creation of a new exchange"""  
         self.order_store.clear_order_store()
         self.order_book.reset_book()
         m = OuchServerMessages.SystemEvent(event_code=b'S', timestamp=timestamp)
@@ -62,6 +71,16 @@ class Exchange:
         self.outgoing_messages.append(m)
 
     def accepted_from_enter(self, enter_order_message, timestamp, order_reference_number, order_state=b'L', bbo_weight_indicator=b' '):
+        """Create Accept server response from a buy/sell order message
+        
+        Args:
+            enter_order_message: OuchClientMessage representing a buy/sell order
+            timestamp: Time(in seconds) the client's order was entered
+            order_reference_number: A int for the order number in context of the entire exchange
+            order_state: A byte string representing whether the order is Limit order(b'L')
+        Returns:
+            OuchServerMessages.Accepted message containing information about the clients' order and Exchange internal information
+        """
         m = OuchServerMessages.Accepted(
             timestamp=timestamp,
             order_reference_number=order_reference_number, 
@@ -87,6 +106,8 @@ class Exchange:
         """Create CancelOrder on behalf of client when order exceeds time_in_force
         Args:
             enter_order_message: Original OuchClientMessages.Order that is used to compose CancelOrder
+        Returns:
+            OuchCLientMessages.Cancel 
         """
         m = OuchClientMessages.CancelOrder(
             order_token = enter_order_message['order_token'],
@@ -95,6 +116,7 @@ class Exchange:
         m.meta = enter_order_message.meta
         return m
 
+    # NOTE: Unused
     def cancel_order_from_replace_order(self, replace_order_message, reason = b'U'):
         m = OuchClientMessages.CancelOrder(
             #order_token = replace_order_message['replacement_order_token'],
@@ -103,9 +125,17 @@ class Exchange:
             )
         m.meta = replace_order_message.meta
         return m
-
+    
     def order_cancelled_from_cancel(self, original_enter_message, timestamp, amount_canceled, reason=b'U',order_token = None):
-
+        """Create CancelOrder when Clients' request to cancel an order
+        Args:
+            original_enter_message: OuchClientMessage representing the buy/sell order the client wants to cancel
+            timestamp: Time(in seconds) of when the order was canceled
+            amount_canceled: The amount of shares to remain
+            order_token: The unique token representing the clients' order
+        Returns:
+            OuchCLientMessages.Cancel 
+        """
         order_token = original_enter_message['order_token'] if order_token is None else order_token
         m = OuchServerMessages.Canceled(timestamp = timestamp,
                             order_token = order_token,
@@ -127,7 +157,16 @@ class Exchange:
         return m
 
     def process_cross(self, id, fulfilling_order_id, price, volume, timestamp, liquidity_flag = b'?'):
-        """Create response msgs for clients involved in a trade(when orders cross)"""
+        """Create response msgs for clients involved in a trade(when orders cross)
+        Args:
+            id: Order_token for newly entered order
+            fulfilling_order_id: Order_token for order already in the exchange
+            price: An int representing price overlap
+            volume: An int representing the amount of shares that will be exchanged
+            timestamp: Time(in seconds) of initial transaction
+        Returns:
+            A list of size 2 containing OuchServerMesssages for each client in the trade
+        """
         log.info('Orders (%s, %s) crossed at price %s, volume %s', id, fulfilling_order_id, price, volume)
         order_message = self.order_store.orders[id].first_message
         fulfilling_order_message = self.order_store.orders[fulfilling_order_id].first_message
@@ -161,12 +200,11 @@ class Exchange:
         return [r1, r2]
 
     def enter_order_atomic(self, enter_order_message, timestamp, executed_quantity = 0):
-        """add an order to the exchange
+        """Add an order to the exchange
         Args:
             enter_order_message: OuchMessage.EnterOrder
             timestamp: int that represents time(in seconds) of when order was made
             executed_quantity: int specifying amount of shares to sell/buy
-
         """
         order_stored = self.order_store.store_order( 
             id = enter_order_message['order_token'], 
@@ -260,23 +298,24 @@ class Exchange:
             loop = asyncio.get_event_loop()
             loop.call_soon_threadsafe(loop.create_task, self.send_outgoing_broadcast_messages())
 
-      # """
-        # NASDAQ may respond to the Replace Order Message in several ways:
-        #     1) If the order for the existing Order Token is no longer live or if the replacement Order
-        #         Token was already used, the replacement will be silently ignored.
-        #     2) If the order for the existing Order Token is live but the details of the replace are
-        #         invalid (e.g.: new Shares >= 1,000,000), a Canceled Order Message will take the
-        #         existing order out of the book. The replacement Order Token will not be consumed,
-        #         and may be reused in this case.
-        #     3) If the order for the existing Order Token is live but the existing order cannot be
-        #         canceled (e.g.: the existing Order is a cross order in the late period), there will be a
-        #         Reject Message. This reject message denotes that no change has occurred to the
-        #         existing order; the existing order remains fully intact with its original instructions.
-        #         The Reject Message consumes the replacement Order Token, so the replacement
-        #         Order Token may not be reused.
-        #     4) If the order for the existing Order Token is live and can be replaced, you will receive
-        #         either a Replaced Message or an Atomically Replaced and Canceled Message.
-        # """
+    # """
+    # NASDAQ may respond to the Replace Order Message in several ways:
+    #     1) If the order for the existing Order Token is no longer live or if the replacement Order
+    #         Token was already used, the replacement will be silently ignored.
+    #     2) If the order for the existing Order Token is live but the details of the replace are
+    #         invalid (e.g.: new Shares >= 1,000,000), a Canceled Order Message will take the
+    #         existing order out of the book. The replacement Order Token will not be consumed,
+    #         and may be reused in this case.
+    #     3) If the order for the existing Order Token is live but the existing order cannot be
+    #         canceled (e.g.: the existing Order is a cross order in the late period), there will be a
+    #         Reject Message. This reject message denotes that no change has occurred to the
+    #         existing order; the existing order remains fully intact with its original instructions.
+    #         The Reject Message consumes the replacement Order Token, so the replacement
+    #         Order Token may not be reused.
+    #     4) If the order for the existing Order Token is live and can be replaced, you will receive
+    #         either a Replaced Message or an Atomically Replaced and Canceled Message.
+    # """
+    # NOTE: CURRENTLY UNUSED
     def replace_order_atomic(self, replace_order_message, timestamp):
         if replace_order_message['existing_order_token'] not in self.order_store.orders:
             log.debug('Existing token %s unknown, siliently ignoring', replace_order_message['existing_order_token'])
@@ -322,7 +361,6 @@ class Exchange:
                             replace_order_message['price'],
                             liable_shares,
                             enter_into_book)
-                    #log.debug("Resulting book: %s", self.order_book)
 
                     r = OuchServerMessages.Replaced(
                             timestamp=timestamp,
@@ -365,8 +403,6 @@ class Exchange:
                     if bbo_message:
                         self.outgoing_broadcast_messages.append(bbo_message)
 
-        #log.debug("Resulting orderstore: %s", self.order_store)
-
     async def send_outgoing_broadcast_messages(self):
         """Send Server OuchMessage to all connected clients"""
         while len(self.outgoing_broadcast_messages)>0:
@@ -376,11 +412,7 @@ class Exchange:
                 self.transaction_logger.update_log(transaction=m, timestamp=nanoseconds_since_midnight())
             await self.message_broadcast(m)
         
-        # Add entry to Book Log
-        # if m == OuchServerMessages.Accepted:
-        # self.update_book_log()
         self.book_logger.update_log(book=self.order_book, timestamp=nanoseconds_since_midnight())
-        # print(self.order_book.as_dict())
 
     async def send_outgoing_messages(self):
         """Send Server OuchMessage directly to sender"""
@@ -390,8 +422,12 @@ class Exchange:
             await self.order_reply(m)
 
     async def process_message(self, message):
-        """process Client OuchMessage"""
-        log.debug('Processing message %s', message)
+        """process Client OuchMessage
+        Args:
+            message: a OuchClientMessages object representing a buy/sell or cancel order command
+        Returns False, if unsupported message is received, otherwise, responds to corresponding
+            sender.
+        """
         print(f"processing msg {message}, {type(message)}")
 
         # Perform operation associated with message type
