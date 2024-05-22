@@ -37,7 +37,6 @@ def get_book_history():
         Returns:
             market_data, which is a list of JSON-formatted CDABook entries found in the book log file.
     """
-    client_id = account_info()["id"]
     market_data = list()
     with open(f"market_client/market_logs/book_log.txt", mode="r") as f:
         for line in f:
@@ -53,7 +52,6 @@ def get_transaction_history():
         Returns:
             market_data, which is a list of JSON-formatted order transaction entries found in the transaction log file.
     """
-    client_id = account_info()["id"]
     market_data = list()
     with open(f"market_client/market_logs/transaction_log.txt", mode="r") as f:
         for line in f:
@@ -68,7 +66,6 @@ def get_account_history():
         Returns:
             client_data, which is a list of JSON-formatted account_info() entries found in the client's state log file.
     """
-    client_id = account_info()["id"]
     client_data = list()
     with open(f"market_client/market_logs/state_log.txt", mode="r") as f:
         for line in f:
