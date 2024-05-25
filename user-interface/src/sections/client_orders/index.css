@@ -1,12 +1,45 @@
+
 .order-tracker-container {
+  /* padding: 20px; */
   display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  margin-left: 50px;
-  margin-right: 50px;
-  
+  margin-top: 30px;
+  /* margin-left: 50px;
+  margin-right: 500px; */
+  border: 1px solid #ccc;
+  background-color: #e7e3e9;
 }
+
+.button-container {
+  margin-top: 50px;
+  margin-left: 100px;
+  margin-right: 50px; 
+}
+
+.button-text {
+  font-size: 30px;
+  /* margin-top: 10px; */
+  margin-left: 50px;
+  margin-right: 50px; 
+}
+
+.user-data-title {
+  font-size: 20px;
+  font-weight: 30px;
+}
+
+.user-data-container {
+  border: 1px solid #ccc;
+  padding: 10px;
+  align-items: left;
+  width: 200px;
+  height: 310px;
+  margin-right: 100px;
+  background-color: white;
+}
+
 
 
 

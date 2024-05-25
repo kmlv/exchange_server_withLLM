@@ -44,19 +44,21 @@ export default function PromptInput() {
 
   return (
     <>
-      <div className = "inputDiv">
-        <input
-          value={prompt}
-          placeholder="Enter a Prompt"
-          onChange={(e) => setPrompt(e.target.value)}
-        />
-        <button onClick={sendRequest}>Enter</button>
-      </div>
-      <div>
-        <div className="message_container">
-          {message}
-          {confirm && <button onClick={() => sendConfirmation(true)}>Confirm</button>}
-          {confirm && <button onClick={() => sendConfirmation(false)}>Reject</button>}
+      <div className="chat-container">
+        <div className = "inputDiv">
+          <input
+            value={prompt}
+            placeholder="Enter a Prompt"
+            onChange={(e) => setPrompt(e.target.value)}
+          />
+          <button onClick={sendRequest}>Enter</button>
+        </div>
+        <div>
+          <div className="message-container">
+            {message}
+            {confirm && <button onClick={() => sendConfirmation(true)}>Confirm</button>}
+            {confirm && <button onClick={() => sendConfirmation(false)}>Reject</button>}
+          </div>
         </div>
       </div>
     </>
