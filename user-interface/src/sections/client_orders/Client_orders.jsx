@@ -19,7 +19,6 @@ const Client_orders = () => {
   }
   
 
-  const [message, setMessage] = useState("AA")
 
 
   // Fetch orders from the API endpoint
