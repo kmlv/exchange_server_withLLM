@@ -6,11 +6,11 @@ from helper_functions.client_commands import *
 # Imports
 from sys import exit
 
-#<s>
-def active_strategy():
-    order_token = CDA_order(5, 3, 'B', 20)
-    return order_token
-#</s>
+# Start of Generated Code
+import time
+import random
+
+
 if __name__ == "__main__":
     active_strategy()
     print("EXIT active_strategy()")

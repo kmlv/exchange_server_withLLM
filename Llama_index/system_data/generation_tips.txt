@@ -1,0 +1,2 @@
+Checking for change in stock price/value:
+    if current_stock_price > (change_in_price) * past_stock_price:

@@ -1,3 +1,4 @@
+"""Limit Order Book for a Continuous Double Auction"""
 import sys
 from collections import OrderedDict
 import logging as log
@@ -126,7 +127,16 @@ class CDABook:
 
 	def enter_buy(self, id, price, volume, enter_into_book):
 		'''
-		Enter a limit order to buy at price price: first, try and fulfill as much as possible, then enter a
+		Enter a limit order to buy at price price: first, try and fulfill as much as possible, then enter the
+		remaining as a limit buy
+
+		Args:
+			id: order_token of the order to enter into the book
+			price: An int representing the price of the book
+			volume: An int representing the amount of shares in the order
+			enter_into_book: A bool representing whether to store the order in the book
+		Returns: 
+			A Tuple containing any orders that were traded, the order entered in the book, new best buy/sell offer 
 		'''
 		order_crosses=[]
 		entered_order = None
@@ -160,6 +170,15 @@ class CDABook:
 		'''
 		Enter a limit order to sell at price price: first try and fulfill as much as possible, then enter the
 		remaining as a limit sell
+
+		Args:
+			id: order_token of the order to enter into the book
+			price: An int representing the price of the book
+			volume: An int representing the amount of shares in the order
+			enter_into_book: A bool representing whether to store the order in the book
+
+		Returns: 
+			A Tuple containing any orders that were traded, the order entered in the book, new best buy/sell offer 
 		'''
 		order_crosses=[]
 		entered_order = None

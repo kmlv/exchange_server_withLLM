@@ -107,6 +107,7 @@ LookupByHeaderBytesMixin = create_attr_lookup_mixin(
     'LookupByHeaderBytesMixin_ClientMsgs', 'header_bytes')
 class OuchClientMessages(LookupByHeaderBytesMixin, OuchMessageTypeSpec,
                          DuplicateFreeEnum):
+    """Datatype representing messages sent from clients"""
     EnterOrder = ('{order_token}:{buy_sell_indicator}{shares}x{stock}@{price}',
             {'msg_type': b'O'},
             ['order_token', 'buy_sell_indicator', 'shares', 'stock',
@@ -149,6 +150,7 @@ LookupByHeaderBytesMixin = create_attr_lookup_mixin(
     'LookupByHeaderBytesMixin_ServerMsgs', 'header_bytes')
 class OuchServerMessages(LookupByHeaderBytesMixin, OuchMessageTypeSpec,
                          DuplicateFreeEnum):
+    """Datatype representing messages sent from an Exchange"""
     SystemEvent = ('{timestamp}:{event_code}',
             {'msg_type': b'S'},
             ['timestamp', 'event_code']
