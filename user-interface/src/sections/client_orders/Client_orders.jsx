@@ -19,7 +19,6 @@ const Client_orders = () => {
   }
   
 
-  const [message, setMessage] = useState("AA")
 
 
   // Fetch orders from the API endpoint
@@ -73,15 +72,31 @@ const Client_orders = () => {
 
   return (
     <>
-      <div>Balance: {balance}</div>
-      <div>Shares: {shares}</div>
-      <div className="order-tracker-container">
-        <OrderBox Orders={orders} Title = "Your Orders"/>
-        <OrderBox Orders={order_book_buy} Title = "Market Buy orders"/>
-        <OrderBox Orders={order_book_sell} Title = "Market Sell orders"/>
-      </div>
-      <button onClick={fetch_order_book}>Fetch Order Book</button>
       
+      <div className="order-tracker-container">
+        <div className="user-data-container">
+          <div className="user-data-title">Your Info:</div>
+          <div>Balance: {balance}</div>
+          <div>Shares: {shares}</div>
+        </div>
+        <div>
+          <OrderBox Orders={orders} Title = "Your Orders"/>
+        </div>
+
+        <div>
+          <OrderBox Orders={order_book_buy} Title = "Market Buy orders"/>
+        </div>
+
+        <div>
+         <OrderBox Orders={order_book_sell} Title = "Market Sell orders"/>
+        </div>
+      </div>
+      
+      <div className="button-container">
+        <button onClick={fetch_order_book}>
+          <div className="button-text">Fetch Order Book</div>
+        </button>
+      </div>
     </>
   );
 };

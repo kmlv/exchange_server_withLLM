@@ -34,6 +34,11 @@
     display: flex;
     justify-content: space-evenly;
   }
+
+  .best-price-card{
+    color: green;
+  }
+
   
 
   

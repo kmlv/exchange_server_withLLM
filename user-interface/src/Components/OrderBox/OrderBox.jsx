@@ -23,6 +23,7 @@ const OrderBox = ({ Orders, Title }) => {
             price={Order.price}
             quantity={Order.quantity}
             direction={Order.direction}
+            best_price = {index === 0} 
           />
         ))}
       </div>

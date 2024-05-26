@@ -3,6 +3,12 @@ import "./index.css";
 
 import axios from "axios";
 
+var client_addr = import.meta.env.VITE_API_URL 
+  if (import.meta.env.VITE_API_URL === undefined) 
+  {
+    client_addr = "http://127.0.0.1:5001";
+  }
+  
 
 export default function PromptInput() {
   const [prompt, setPrompt] = useState("");
@@ -12,7 +18,7 @@ export default function PromptInput() {
   const sendRequest = async () => {
     console.log(prompt);
     try {
-      const response = await axios.post(import.meta.env.VITE_API_URL +"/prompt", {
+      const response = await axios.post(client_addr +"/prompt", {
         prompt: prompt,
       });
       console.log(response.data.confirmation);
@@ -31,7 +37,7 @@ export default function PromptInput() {
       return;
     }
     try{
-      const response = await axios.post(import.meta.env.VITE_API_URL + "/execute");
+      const response = await axios.post(client_addr + "/execute");
       console.log(response.data.confirmation);
       setMessage(response.data.confirmation);
     }catch (error) {
@@ -44,19 +50,21 @@ export default function PromptInput() {
 
   return (
     <>
-      <div className = "inputDiv">
-        <input
-          value={prompt}
-          placeholder="Enter a Prompt"
-          onChange={(e) => setPrompt(e.target.value)}
-        />
-        <button onClick={sendRequest}>Enter</button>
-      </div>
-      <div>
-        <div className="message_container">
-          {message}
-          {confirm && <button onClick={() => sendConfirmation(true)}>Confirm</button>}
-          {confirm && <button onClick={() => sendConfirmation(false)}>Reject</button>}
+      <div className="chat-container">
+        <div className = "inputDiv">
+          <input
+            value={prompt}
+            placeholder="Enter a Prompt"
+            onChange={(e) => setPrompt(e.target.value)}
+          />
+          <button onClick={sendRequest}>Enter</button>
+        </div>
+        <div>
+          <div className="message-container">
+            {message}
+            {confirm && <button onClick={() => sendConfirmation(true)}>Confirm</button>}
+            {confirm && <button onClick={() => sendConfirmation(false)}>Reject</button>}
+          </div>
         </div>
       </div>
     </>
