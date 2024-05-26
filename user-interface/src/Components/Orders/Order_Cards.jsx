@@ -10,7 +10,12 @@ export default function Order_Cards(props) {
       ? "buy-card"
       : props.direction === "S"
       ? "sell-card"
+      : props.best_price
+      ? "best-price-card"
       : "";
+  
+  
+  
     
   return (
     <div className={cardClassName}>
@@ -33,4 +38,5 @@ Order_Cards.propTypes = {
   price: PropTypes.number,
   quantity: PropTypes.number,
   direction: PropTypes.string,
+  best_price: PropTypes.bool,
 };

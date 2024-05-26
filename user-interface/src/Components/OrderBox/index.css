@@ -4,8 +4,8 @@
     overflow: auto;
     border: 1px solid #ccc;
     margin: 30px;
-    display: flex;
-    justify-content: center;
+    justify-items: center;
+    text-align: center;
     background-color: white;
   }
   
@@ -13,6 +13,7 @@
     display: flex;
     flex-direction: column;
     padding: 10px;
+    margin: 10px;
   }
   
  
