@@ -12,12 +12,11 @@ from llama_index.core.postprocessor import SimilarityPostprocessor
 import subprocess
 import os
 import sys
-# from prompt_eng import get_confirmation
 
 import platform
 
-_START = "#<s>"
-_STOP = "#</s>"
+_START = "# Start of Generated Code"
+_STOP = "# End of Generated Code"
 
 import_lines = """# Generated code
 # Helper functions
@@ -83,6 +82,7 @@ class LlamaRag:
         )
 
     def _write_script(self, code_str):
+        print(code_str, flush=True)
         """Write a code string to the class file descriped by self._script"""
         with open(self._script_path, 'r+') as file:
             # Clean file
@@ -97,13 +97,12 @@ class LlamaRag:
                 if "```" in line:
                     line = line.replace(line, _STOP)
                 file.write(line + '\n')
-            # write code that will execute code
+            # write code that will execute strategy
             file.write(execution_lines)
 
     def run_script(self):
         """Run a code string as a subprocess"""
 
-        # try to run the script that was written
         self.running_script = subprocess.Popen(['python' if (platform.system() == 'Windows') else 'python3', self._script_path], text=True)
 
     def send_confirmation_message(self, code_chunk):
@@ -140,8 +139,9 @@ class LlamaRag:
             return
         response = self.query_engine.query("Write a Python function named active_strategy() that implements the following: \n" + prompt + 
                                 " \n\n DO NOT INCLUDE A DESCRIPTION OF THE CODE OR ANYTHING THAT IS NOT THE CODE ITSELF! \n" +
-                                " Include any necessary conditional statements ('if', 'elif', 'else') or calculations needed to accomplish the task or answer the question. \n")
-         # Write to a file
+                                " Include any necessary imports or calculations needed to accomplish the task or answer the question.\n" +
+                                "active_strategy() must not return anything.")
+        # Write to a file
         self._write_script(str(response))
 
         return str(self.send_confirmation_message(str(response)))
@@ -160,4 +160,4 @@ if __name__ == "__main__":
     llama_rag.configure_query_engine()
     # Send prompt
     prompt = input("Enter prompt: ")
-    llama_rag.execute_query(prompt)
+    llama_rag.send_query(prompt)

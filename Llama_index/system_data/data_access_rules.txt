@@ -1,2 +1,11 @@
 To access the current balance of the client, call (account_info()["balance"]). Do not call anything else to try and retrieve the balance.
 To access the current owned shares of the client, call (account_info()["owned_shares"]). Do not call anything else to try and retrieve the owned shares.
+To access the current active orders of the client, call (account_info()["orders"]) to retrieve a list of the form:
+{order_token_1 : {"quantity": quantity_one, "price": price_one, "direction": 'B' or 'S', "time_in_force": order_1_lifetime}, order_token_2 : {"quantity": quantity_two, "price": price_two, "direction": 'B' or 'S'}, "time_in_force": order_2_lifetime}.
+A way to access specific information of all active orders of the client iterate through each token in account_info()["orders"] and then filter by the "time_in_force"
+To access the time_in_force of all orders of the client, call(account_info["orders"]) and then iterate by the "time_in_force" key
+Use get_transaction_history() to retrieve stock price and stock price history: 
+    - Always check if the retrieved data is non-empty and is the length supporting the indexed value
+    - To access the current stock price, call (get_transaction_history()[0]["price"])
+    - To access the previous stock price, call (get_account_history()[1]["price"])
+    - To access the oldest stock price, call (get_transaction_history()[-1]["price"])

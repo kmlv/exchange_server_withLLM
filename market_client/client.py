@@ -107,7 +107,7 @@ class Client:
         order_id = order_id.decode()
         timestamp = execution['timestamp']
         # Get details of the original order from client
-        proposed_price, desired_shares, direction = self.orders[order_id].values()
+        proposed_price, desired_shares, direction, time_in_force = self.orders[order_id].values()
         self._update_account(price_per_share, sold_shares, direction, timestamp)
        
         # Check that order was completely fulfilled
@@ -115,9 +115,10 @@ class Client:
             self.orders.pop(order_id)
         else:
             self.orders[order_id] = {
-                'price' : proposed_price,
-                'quantity' : desired_shares - sold_shares,
-                'direction' : direction
+                "price" : proposed_price,
+                "quantity" : desired_shares - sold_shares,
+                "direction" : direction,
+                "time_in_force": time_in_force
             }   
     
     def _can_afford(self, cost_per_share, num_shares):
@@ -212,9 +213,9 @@ class Client:
                     quantity = 0
                     cancelled_order_id = response['order_token'].decode()
                     if cancelled_order_id in self.orders:
-                        price, quantity, direction = self.orders[cancelled_order_id].values()
+                        price, quantity, direction, time_in_force = self.orders[cancelled_order_id].values()
                         # Update order based on remaining shares
-                        self.orders[cancelled_order_id] = {"price" : price, "quantity" : quantity - response['decrement_shares'], "direction" : direction}
+                        self.orders[cancelled_order_id] = {"price" : price, "quantity" : quantity - response['decrement_shares'], "direction" : direction, "time_in_force": time_in_force}
                         if direction == 'B':
                             direction = 'S'
                         else:
@@ -345,7 +346,7 @@ class Client:
             order_token=order_token,
             buy_sell_indicator=b'B' if direction == 'B' else b'S',
             shares=quantity,
-            stock=b'AMAZGOOG',
+            stock=b'FIRST',#b'AMAZGOOG',
             price=price,
             time_in_force=time_in_force if time_in_force else options.time_in_force,
             firm=bytes(self.id),
@@ -359,7 +360,7 @@ class Client:
         )
 
         # update local orders
-        self.orders[order_token.decode()] = {"price" : price, "quantity" : quantity, "direction" : direction}
+        self.orders[order_token.decode()] = {"price" : price, "quantity" : quantity, "direction" : direction, "time_in_force": time_in_force}
 
         return order_request
 
