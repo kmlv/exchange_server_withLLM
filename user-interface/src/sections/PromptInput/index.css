@@ -20,10 +20,7 @@ button {
     background-color: #333;
     color: #fff;
     padding-left: 10px;
-    padding-right: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    padding-right: 10px;    
 }
 
 input{
@@ -43,19 +40,24 @@ input{
     justify-items: center;
     
 }
+.enter-button{
+    height :106px;
+}
 
 .message-container {
     border: 1px solid #333;
-    display: 1;
     margin: 15px;
     padding: 20px;
     width: 900px;
     height: 50px;
-    align-items: center;
+    
     background-color: #e7e3e9;
+    
+}
+
+
+.button-container1 {
+    display: flex;
     justify-content: center;
-    align-content: center;
-    
-    
-    
-  }
+    margin-top: 3px;
+}

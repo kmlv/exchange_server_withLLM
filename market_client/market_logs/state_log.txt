@@ -1,1 +1,1 @@
-{"timestamp": 15930686923000, "state": {"id": "6f48a1e63e3346acb3bda3639a0eeb95", "balance": 1000, "orders": {}, "owned_shares": 100}}
+{"timestamp": 5107599110000, "state": {"id": "58a0229519254e2c82bf09f5483c543d", "balance": 1000, "orders": {}, "owned_shares": 100}}
