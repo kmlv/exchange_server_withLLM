@@ -10,11 +10,11 @@ def CDA_order_cancel(token):
 
 account_info is a python function that will retrieve the client's information as a dictionary containing the keys ["id", "balance", "active_orders", "owned_shares"].
 Where "id" is a string, "balance" is an integer, "orders" is a dictionary of the client's active orders, and "owned_shares" is an integer.
-The keys of the "orders" dictionary are the tokens of each active order placed by the client. Each key is paired to a dictionary representing the order, which has the keys ["quantity", "price", "direction"], 
+The keys of the "orders" dictionary are the tokens of each active order placed by the client. Each key is paired to a dictionary representing the order, which has the keys ["quantity", "price", "direction", "time_in_force", "timestamp"], 
 where "quantity" is an integer representing the desired amount of shares to trade, "price" is an integer representing the desired price for the order to trade at, and direction 
-(a string of value 'B' or 'S', where 'B' means the order is a buy order and 'S' is a sell order).
+(a string of value 'B' or 'S', where 'B' means the order is a buy order and 'S' is a sell order). "timestamp" is an integer representing the time the order was added to the market.
 def account_info()
-    return {"id" : id, "balance" : balance, "orders" : {order_token_1 : {"quantity": quantity_one, "price": price_one, "direction": 'B' or 'S', "time_in_force": order_1_lifetime}, order_token_2 : {"quantity": quantity_two, "price": price_two, "direction": 'B' or 'S', "time_in_force": order_2_lifetime}}, "owned_shares" : owned_shares}
+    return {"id" : id, "balance" : balance, "orders" : {order_token_1 : {"quantity": quantity_1, "price": price_1, "direction": 'B' or 'S', "time_in_force": order_1_lifetime, "timestamp": timestamp_1}, order_token_2 : {"quantity": quantity_2, "price": price_2, "direction": 'B' or 'S', "time_in_force": order_2_lifetime, "timestamp": timestamp_1}}, "owned_shares" : owned_shares}
 
 get_client_order_history is a python function that will retrieve the client's order history, for all past orders the client has placed that have been traded.
 Returns a list of dictionaries representing each order in the order history. Each dictionary has the following keys dictionary containing the keys ["price", "quantity", "direction", "timestamp"].
@@ -53,3 +53,5 @@ def get_account_history():
             {"timestamp": 45854054341000, "state": {"id": "cce63b8c9a80480ebd2887effdc675b9", "balance": 1000, "orders": {"94b9f470e76b4165abcc0386f7cf0333": [5, 0, "B"]}, "owned_shares": 50}},
             {"timestamp": 45873094690000, "state": {"id": "cce63b8c9a80480ebd2887effdc675b9", "balance": 996, "orders": {"c673a04553f4421e9ea9e4bdc5cca5f7": [2, 2, "B"], "3c9f1d808d5e432cbfb40013066550f3": [3, 0, "B"]}, "owned_shares": 50}},
             {"timestamp": 45877702871000, "state": {"id": "cce63b8c9a80480ebd2887effdc675b9", "balance": 1000, "orders": {"c673a04553f4421e9ea9e4bdc5cca5f7": [2, 0, "B"]}, "owned_shares": 50}}]
+
+def get_current_time is a python function that will return an integer representing the current time and can be used to compare the the timestamp of orders to calculate how long an order has been in the market.

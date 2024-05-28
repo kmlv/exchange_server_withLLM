@@ -5,7 +5,6 @@ To access the current active orders of the client, call (account_info()["orders"
 A way to access specific information of all active orders of the client iterate through each token in account_info()["orders"] and then filter by the "time_in_force"
 To access the time_in_force of all orders of the client, call(account_info["orders"]) and then iterate by the "time_in_force" key
 Use get_transaction_history() to retrieve stock price and stock price history: 
-    - Always check if the retrieved data is non-empty and is the length supporting the indexed value
     - To access the current stock price, call (get_transaction_history()[0]["price"])
     - To access the previous stock price, call (get_account_history()[1]["price"])
     - To access the oldest stock price, call (get_transaction_history()[-1]["price"])

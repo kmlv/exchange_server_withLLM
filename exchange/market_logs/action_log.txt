@@ -1,0 +1,2 @@
+{"timestamp": 27386813646000, "action": {"action_type": "place_limit_order", "action_data": {"token": "e462e19ead31477880c43d7b4be8d795", "direction": "B", "price": 6, "shares": 3}}}
+{"timestamp": 27410988665000, "action": {"action_type": "place_limit_order", "action_data": {"token": "8af7df3d4015463eb3c7542e55820c99", "direction": "S", "price": 6, "shares": 3}}}

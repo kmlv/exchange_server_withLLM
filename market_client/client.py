@@ -103,13 +103,12 @@ class Client:
         """
         sold_shares = execution['executed_shares']
         price_per_share = execution['execution_price']
-        order_id = execution['order_token']
-        order_id = order_id.decode()
+        order_id = execution['order_token'].decode()
         timestamp = execution['timestamp']
         # Get details of the original order from client
-        proposed_price, desired_shares, direction, time_in_force = self.orders[order_id].values()
+        proposed_price, desired_shares, direction, time_in_force, order_timestamp = self.orders[order_id].values()
         self._update_account(price_per_share, sold_shares, direction, timestamp)
-       
+        print(self.orders[order_id], flush=True)
         # Check that order was completely fulfilled
         if sold_shares == desired_shares:
             self.orders.pop(order_id)
@@ -118,7 +117,8 @@ class Client:
                 "price" : proposed_price,
                 "quantity" : desired_shares - sold_shares,
                 "direction" : direction,
-                "time_in_force": time_in_force
+                "time_in_force": time_in_force,
+                "timestamp": order_timestamp
             }   
     
     def _can_afford(self, cost_per_share, num_shares):
@@ -182,6 +182,7 @@ class Client:
                 case OuchServerMessages.Executed:
                     # Trade has been made
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
+              
                     order_id = response['order_token'].decode()
                     if order_id in self.orders:
                         transaction_data = {"price" : response['execution_price'], "quantity" : response["executed_shares"], "direction" : self.orders[order_id]['direction'], "timestamp" : response['timestamp']}
@@ -194,7 +195,12 @@ class Client:
 
                 # update client local_book 
                 case OuchServerMessages.Accepted:
-                    print("The server Accepted order ", response['order_token'])
+                    decoded_token = response['order_token'].decode() 
+                    print("The server Accepted order ", decoded_token)
+                    # check if OUR order was accepted and add a timestamp
+                    if decoded_token in self.orders:
+                        self.orders[decoded_token]["timestamp"] = response["timestamp"]
+                    
                     time_in_force = response['time_in_force']
                     enter_into_book = True if time_in_force > 0 else False
                     enter_order_func = self.book_copy.enter_buy if response['buy_sell_indicator'] == b'B' else self.book_copy.enter_sell
@@ -213,9 +219,9 @@ class Client:
                     quantity = 0
                     cancelled_order_id = response['order_token'].decode()
                     if cancelled_order_id in self.orders:
-                        price, quantity, direction, time_in_force = self.orders[cancelled_order_id].values()
+                        price, quantity, direction, time_in_force, timestamp = self.orders[cancelled_order_id].values()
                         # Update order based on remaining shares
-                        self.orders[cancelled_order_id] = {"price" : price, "quantity" : quantity - response['decrement_shares'], "direction" : direction, "time_in_force": time_in_force}
+                        self.orders[cancelled_order_id] = {"price" : price, "quantity" : quantity - response['decrement_shares'], "direction" : direction, "time_in_force": time_in_force, "timestamp" : timestamp}
                         if direction == 'B':
                             direction = 'S'
                         else:
