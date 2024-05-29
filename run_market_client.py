@@ -21,8 +21,8 @@ key: ChatGPT API key
 """
 p = configargparse.ArgParser()
 p.add('--addr', default='localhost', help="Address of client's flask endpoint")
-p.add('--local', default=8090, help="Port of client's flask endpoint")
-p.add('--port', default=8090, type=int)
+p.add('--port', default=8090, help="Port of client's flask endpoint")
+p.add('--server_port', default=8090, type=int)
 p.add('--host', default='10.10.0.2', help="Address of server")
 p.add('--mode', '-m', type=str, default='flask',choices=['dev', 'flask'], help="Specify mode to run system")
 p.add('--key', type=str, default=os.getenv("OPENAI_API_KEY"), help="OPEN_API_KEY(required to use interpreter)")
@@ -37,16 +37,16 @@ def define_configs():
         config = toml.load(f)
     with open('./market_client/config.toml', 'w') as f:
         config['client']['addr'] = options.addr
-        config['client']['flask_port'] = options.local
+        config['client']['flask_port'] = options.port
         toml.dump(config, f)
 
 async def main():
     define_configs()
 
     if options.mode == "dev":
-        await run_dev_client(options.host, options.port)
+        await run_dev_client(options.host, options.server_port)
     if options.mode == "flask":
-        client = Client(balance=1000, starting_shares=100, host=options.host, port=options.port)
+        client = Client(balance=1000, starting_shares=100, host=options.host, port=options.server_port)
         await flask_client.start(input_client=client, openai_api_key=options.key)
     
 

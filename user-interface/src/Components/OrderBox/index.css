@@ -3,12 +3,17 @@
     height: 300px;
     overflow: auto;
     border: 1px solid #ccc;
+    margin: 30px;
+    justify-items: center;
+    text-align: center;
+    background-color: white;
   }
   
   .scrollable-box {
     display: flex;
     flex-direction: column;
     padding: 10px;
+    margin: 10px;
   }
   
  

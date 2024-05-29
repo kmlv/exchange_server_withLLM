@@ -45,7 +45,6 @@ async def start(input_client: Client, openai_api_key):
     print(client)
     # Run flask endpoint in separate thread to prevent it from blocking 
     # asyncio tcp connection to market
-   
     t = threading.Thread(target=run_flask)
     t.start()
     await asyncio.gather(client.recver())
@@ -62,15 +61,6 @@ def send_to_market(request):
         asyncio.run(client.send(request))
     else:
         loop.run_until_complete(client.send(request))
-
-@app.route('/debug')
-def debug():
-    ouch_order_request = client.place_order(5, 3, 'B', 10)
-    if ouch_order_request:
-        send_to_market(ouch_order_request)
-        placed_order_token = ouch_order_request['order_token'].decode()
-        return {"order_token" : placed_order_token}
-    return make_response(jsonify(error="Order Failed"),400)
 
 @app.route('/')
 def home():

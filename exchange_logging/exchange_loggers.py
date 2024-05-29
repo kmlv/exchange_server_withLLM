@@ -1,99 +1,163 @@
 import logging as log
 import json
 
+# Names for the ClientActionLogger's "action_type" parameter
 PLACE_LIMIT_ORDER_ACTION = "place_limit_order"
 CANCEL_LIMIT_ORDER_ACTION = "cancel_limit_order"
 
 class BookLogger():
-    def __init__(self, log_filepath, logger_name):
+    """Object used by the Exchange and Client classes that log CDABook objects as JSON dictionaries to a specified logfile.
+       Each log entry has a timestamp and a snapshot of the CDABook at that timestamp, and are added to the next new line in the logfile.
+    Attributes:
+        logger: logger from logging
+        log_formatter: log.Formatter object for self.logger
+        logger_fh: log.FileHandler object for self.logger
+    """
 
-        book_log_formatter = log.Formatter('{\"timestamp\": %(timestamp)s, \"book\": %(message)s}')
-        #create logger
+    def __init__(self, log_filepath, logger_name):
+        """Initialize BookLogger
+        Args:
+            log_filepath: file path specifying the file for the BookLogger to write to
+            logger_name: name of the logger
+        """
         self.logger = log.getLogger(logger_name)
         self.logger.setLevel(log.INFO)
-        # set formatter
-        self.log_formatter = book_log_formatter
-        # create file handler and set level
+        
+        self.log_formatter = log.Formatter('{\"timestamp\": %(timestamp)s, \"book\": %(message)s}')
+
         self.logger_fh = log.FileHandler(filename=log_filepath, mode='w')
         self.logger_fh.setLevel(log.INFO)
-        # add formatter to fh
         self.logger_fh.setFormatter(self.log_formatter)
-        # add fh to logger
+
         self.logger.addHandler(self.logger_fh)
         self.logger.propagate=False
-    
-    # The server + clients should call this whenever the order book gets updated
+
     def update_log(self, book, timestamp):
+        """Enters a new log entry.
+           The Exchange server + Clients should call this on their BookLogger whenever the order book gets updated.
+        Args:
+            book: CDABook object specifying the current CDABook to log
+            timestamp: int specifying the timestamp of the log entry
+        """
         self.logger.info(book.as_json(), extra={"timestamp" : timestamp})        
 
-
 class TransactionLogger():
+    """Object used by the Exchange and Client classes that log transactions that occur in the exchange as JSON dictionaries to a specified logfile
+       Each log entry has a timestamp and the transaction that occurred at that timestamp, and are added to the next new line in the logfile.
+       NOTE: transactions will be logged twice - once for each order that is in the transaction.
+    Attributes:
+        logger: logger from logging
+        log_formatter: log.Formatter object for self.logger
+        logger_fh: log.FileHandler object for self.logger
+    """
+
     def __init__(self, log_filepath, logger_name):
-        #create logger
+        """Initialize TransactionLogger
+        Args:
+            log_filepath: file path specifying the file for the TransactionLogger to write to
+            logger_name: name of the logger
+        """
         self.logger = log.getLogger(logger_name)
         self.logger.setLevel(log.INFO)
-        # create & set formatter (empty format)
+
         self.log_formatter = log.Formatter('{\"timestamp\": %(timestamp)s, \"transaction\": %(message)s}')
-        # create file handler and set level
+
         self.logger_fh = log.FileHandler(filename=log_filepath, mode='w')
         self.logger_fh.setLevel(log.INFO)
-        # add formatter to fh
         self.logger_fh.setFormatter(self.log_formatter)
-        # add fh to logger
+
         self.logger.addHandler(self.logger_fh)
         self.logger.propagate=False
     
-    # The server + clients should call this whenever a transaction takes place in the market
     def update_log(self, transaction, timestamp):
+        """Enters a new log entry.
+           The Exchange server + Clients should call this whenever a transaction takes place in the market.
+        Args:
+            transaction: JSON dictionary specifying the transaction to log
+            timestamp: int specifying the timestamp of the log entry
+        """
         transaction_data = {}
         transaction_data["token"] = transaction['order_token'].decode()
         transaction_data["shares"] = transaction['executed_shares']
         transaction_data["price"] = transaction['execution_price']
-        transaction_json = json.dumps({"transaction": transaction_data})
+        transaction_json = json.dumps(transaction_data)
         self.logger.info(transaction_json, extra={"timestamp" : timestamp})
 
-
 class ClientStateLogger():
+    """Object used by the Client class that logs snapshots of the Client's account information as JSON dictionaries to a specified logfile.
+       Each log entry has a timestamp and the snapshot of the Client's account info at that timestamp, and are added to the next new line in the logfile.
+       NOTE: Only gets used by Clients, and not the Exchange server
+    Attributes:
+        logger: logger from logging
+        log_formatter: log.Formatter object for self.logger
+        logger_fh: log.FileHandler object for self.logger
+    """
+
     def __init__(self, log_filepath, logger_name):
-        book_log_formatter = log.Formatter('{\"timestamp\": %(timestamp)s, \"state\": %(message)s}')
-        #create logger
+        """Initialize ClientStateLogger
+        Args:
+            log_filepath: file path specifying the file for the ClientStateLogger to write to
+            logger_name: name of the logger
+        """
         self.logger = log.getLogger(logger_name)
         self.logger.setLevel(log.INFO)
-        # set formatter
-        self.log_formatter = book_log_formatter
-        # create file handler and set level
+
+        self.log_formatter = log.Formatter('{\"timestamp\": %(timestamp)s, \"state\": %(message)s}')
+
         self.logger_fh = log.FileHandler(filename=log_filepath, mode='w')
         self.logger_fh.setLevel(log.INFO)
-        # add formatter to fh
         self.logger_fh.setFormatter(self.log_formatter)
-        # add fh to logger
+
         self.logger.addHandler(self.logger_fh)
         self.logger.propagate=False
-    
-    # The clients should call this whenever their account/states gets updated
+
     def update_log(self, client_info, timestamp):
+        """Enters a new log entry.
+           The Clients should call this whenever their account/states gets updated
+        Args:
+            client_info: dictionary specifying the current client information to log
+            timestamp: int specifying the timestamp of the log entry
+        """
         client_info_json = json.dumps(client_info)
         self.logger.info(client_info_json, extra={"timestamp" : timestamp})
 
 class ClientActionLogger():
+    """Object used by the Exchange class that logs actions taken by Clients as JSON dictionaries to a specified logfile
+       Each log entry has a timestamp and a JSON representation of the Client action at that timestamp, and are added to the next new line in the logfile.
+       NOTE: Inside of "action", "action_type" should be accessed first in order to determine what action (i.e, place_order, cancel_order) the entry is. 
+       "action_data" can then be accessed to retrieve specific data related to the action.
+    Attributes:
+        logger: logger from logging
+        log_formatter: log.Formatter object for self.logger
+        logger_fh: log.FileHandler object for self.logger
+    """
+
     def __init__(self, log_filepath, logger_name):
-        book_log_formatter = log.Formatter('{\"timestamp\": %(timestamp)s, \"action\": %(message)s}')
-        #create logger
+        """Initialize ClientActionLogger
+        Args:
+            log_filepath: file path specifying the file for the ClientActionLogger to write to
+            logger_name: name of the logger
+        """
         self.logger = log.getLogger(logger_name)
         self.logger.setLevel(log.INFO)
-        # set formatter
-        self.log_formatter = book_log_formatter
-        # create file handler and set level
+
+        self.log_formatter = log.Formatter('{\"timestamp\": %(timestamp)s, \"action\": %(message)s}')
+        
         self.logger_fh = log.FileHandler(filename=log_filepath, mode='w')
         self.logger_fh.setLevel(log.INFO)
-        # add formatter to fh
         self.logger_fh.setFormatter(self.log_formatter)
-        # add fh to logger
+
         self.logger.addHandler(self.logger_fh)
         self.logger.propagate=False
     
-    # The server should call this whenever they receive a request from a client to do a market action (i.e, place_order, cancel_order)
     def update_log(self, action_type, client_action_msg, timestamp):
+        """Enters a new log entry.
+           The Exchange server should call this whenever they receive a request from a client to do a market action (i.e, place_order, cancel_order)
+        Args:
+            action_type: string specifying the type of action that is being logged
+            client_action_msg: dictionary specifying the data associated with the action being logged
+            timestamp: int specifying the timestamp of the log entry
+        """
         action_data = {}
         
         if action_type == PLACE_LIMIT_ORDER_ACTION:

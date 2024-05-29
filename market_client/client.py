@@ -2,10 +2,7 @@
 Client class that communicates with a Continuous Double Auction exchange following the
 ITCH message Protocol
 """ 
-from re import M
-import sys
 import asyncio
-import binascii
 from OuchServer.ouch_messages import OuchClientMessages, OuchServerMessages
 import asyncio.streams
 import configargparse
@@ -27,7 +24,7 @@ options, args = p.parse_known_args()
 
 
 class Client:
-    """A client that can communicate with a CDA
+    """A client that can communicate with a Continuous Double Auction(CDA)
 
     Attributes:
         reader: StreamReader instance that listens to CDA
@@ -36,8 +33,10 @@ class Client:
         owned_shares: An integer representing the amount of shares a client owns 
         id: uuid that separates the client instance from others
         orders: A dict describing the client's personal active orders
-            where keys are order IDs and values are tuples representing order information
+            where keys are order IDs and values is a dict {"price": order_price,"quantity": order_quantity, "direction": 'B' or 'S'}
         book_copy: A CDABook() that the client tries to replicate from the CDA exchange
+        order_history: a list of clients' successful transactions in the format 
+                       {"price" : traded_price, "quantity" : traded_quantity, "direction" : 'B' or 'S', "timestamp" : time} 
     """
     def __init__(self, balance=1000, starting_shares=50, host="127.0.0.1", port=8090):
         self.reader = None
@@ -64,9 +63,7 @@ class Client:
                 f"Owned_shares: {self.owned_shares}\n"
                 f"Orders: {self.orders}\n"
                 f"Order History: {self.order_history}\n")
-    # 0 price
-    # 1 quantity
-    # 2 direction
+
     def print_active_orders(self):
         """Display active client orders"""
         print(f'Your active orders')
@@ -106,21 +103,22 @@ class Client:
         """
         sold_shares = execution['executed_shares']
         price_per_share = execution['execution_price']
-        order_id = execution['order_token']
-        order_id = order_id.decode()
+        order_id = execution['order_token'].decode()
         timestamp = execution['timestamp']
         # Get details of the original order from client
-        proposed_price, desired_shares, direction = self.orders[order_id].values()
+        proposed_price, desired_shares, direction, time_in_force, order_timestamp = self.orders[order_id].values()
         self._update_account(price_per_share, sold_shares, direction, timestamp)
-       
+        print(self.orders[order_id], flush=True)
         # Check that order was completely fulfilled
         if sold_shares == desired_shares:
             self.orders.pop(order_id)
         else:
             self.orders[order_id] = {
-                'price' : proposed_price,
-                'quantity' : desired_shares - sold_shares,
-                'direction' : direction
+                "price" : proposed_price,
+                "quantity" : desired_shares - sold_shares,
+                "direction" : direction,
+                "time_in_force": time_in_force,
+                "timestamp": order_timestamp
             }   
     
     def _can_afford(self, cost_per_share, num_shares):
@@ -135,15 +133,7 @@ class Client:
         return self.balance >= (cost_per_share * num_shares)
     
     async def recv(self):
-        """Convert response from bytes into ouch response formatp = configargparse.ArgParser()
-p.add('--addr', default='localhost', help="Address of client's flask endpoint")
-p.add('--local', default=8090, help="Port of client's flask endpoint")
-p.add('--port', default=8090, type=int)
-p.add('--host', default='10.10.0.2', help="Address of server")
-p.add('--mode', '-m', type=str, default='flask',choices=['dev', 'flask'], help="Specify mode to run system")
-p.add('--key', type=str, default=os.getenv("OPENAI_API_KEY"), help="OPEN_API_KEY(required to use interpreter)")
-options, args = p.parse_known_args()
-
+        """Convert response from bytes into ouch response format
         
         Returns: OuchServer.ouch_message object in the format of one of the many formats
         (found in Lines past 134 in OuchServer\ouch_messages.py):
@@ -192,6 +182,7 @@ options, args = p.parse_known_args()
                 case OuchServerMessages.Executed:
                     # Trade has been made
                     print(f"{response['order_token']} executed {response['executed_shares']} shares@ ${response['execution_price']}")
+              
                     order_id = response['order_token'].decode()
                     if order_id in self.orders:
                         transaction_data = {"price" : response['execution_price'], "quantity" : response["executed_shares"], "direction" : self.orders[order_id]['direction'], "timestamp" : response['timestamp']}
@@ -204,7 +195,12 @@ options, args = p.parse_known_args()
 
                 # update client local_book 
                 case OuchServerMessages.Accepted:
-                    print("The server Accepted order ", response['order_token'])
+                    decoded_token = response['order_token'].decode() 
+                    print("The server Accepted order ", decoded_token)
+                    # check if OUR order was accepted and add a timestamp
+                    if decoded_token in self.orders:
+                        self.orders[decoded_token]["timestamp"] = response["timestamp"]
+                    
                     time_in_force = response['time_in_force']
                     enter_into_book = True if time_in_force > 0 else False
                     enter_order_func = self.book_copy.enter_buy if response['buy_sell_indicator'] == b'B' else self.book_copy.enter_sell
@@ -223,9 +219,9 @@ options, args = p.parse_known_args()
                     quantity = 0
                     cancelled_order_id = response['order_token'].decode()
                     if cancelled_order_id in self.orders:
-                        price, quantity, direction = self.orders[cancelled_order_id].values()
+                        price, quantity, direction, time_in_force, timestamp = self.orders[cancelled_order_id].values()
                         # Update order based on remaining shares
-                        self.orders[cancelled_order_id] = {"price" : price, "quantity" : quantity - response['decrement_shares'], "direction" : direction}
+                        self.orders[cancelled_order_id] = {"price" : price, "quantity" : quantity - response['decrement_shares'], "direction" : direction, "time_in_force": time_in_force, "timestamp" : timestamp}
                         if direction == 'B':
                             direction = 'S'
                         else:
@@ -297,8 +293,12 @@ options, args = p.parse_known_args()
             return False
 
     async def send(self, request):
-        print("Sending ", request)
-        """Send Ouch message to server"""
+        """Send Ouch message to server
+        
+        Args:
+            request: an OuchClientMessages object representing a buy/sell or cancel order
+         
+        """
         if self.reader is None or self.writer is None:
             try:
                 reader, writer = await asyncio.streams.open_connection(
@@ -309,6 +309,7 @@ options, args = p.parse_known_args()
             except ConnectionRefusedError:
                 print(f"Could not connect to {self.host}:{self.port}")
                 return
+        # Ignore None requests
         if not request:
             print("Invalid order")
             return
@@ -351,7 +352,7 @@ options, args = p.parse_known_args()
             order_token=order_token,
             buy_sell_indicator=b'B' if direction == 'B' else b'S',
             shares=quantity,
-            stock=b'AMAZGOOG',
+            stock=b'FIRST',#b'AMAZGOOG',
             price=price,
             time_in_force=time_in_force if time_in_force else options.time_in_force,
             firm=bytes(self.id),
@@ -365,7 +366,7 @@ options, args = p.parse_known_args()
         )
 
         # update local orders
-        self.orders[order_token.decode()] = {"price" : price, "quantity" : quantity, "direction" : direction}
+        self.orders[order_token.decode()] = {"price" : price, "quantity" : quantity, "direction" : direction, "time_in_force": time_in_force}
 
         return order_request
 
@@ -381,6 +382,10 @@ options, args = p.parse_known_args()
         Note:
             Cancel all or part of an order. quantity_remaining refers to the desired remaining shares to be executed: 
             if it is 0, the order is fully cancelled, otherwise an order of quantity_remaining remains.
+        
+        Ex: cancel_order 3 shares for a buy order of 4 shares for $6 will adjust the buy order to 3 shares for $6
+        Ex: cancel_order 0 shares for a buy order of 4 shares for $6 will adjust the buy order to 0 shares for $6.
+            This will remove the order from the exchange and refund the client.
 
         """
         res = self._valid_order_input(order_token=order_token, quantity=quantity_remaining)
@@ -406,7 +411,9 @@ options, args = p.parse_known_args()
 
     async def sender(self):
         """
-        Currently, this is where all Client send operations are called
+        Currently, this is where all Client send operations are called.
+
+        This is only used when using the --mode dev in run_market_client.py
         """
         if self.reader is None:
             reader, writer = await asyncio.streams.open_connection(

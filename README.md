@@ -37,7 +37,7 @@ Since the CDA Exchange is running locally on localhost:8090, you must specify th
 and change the port of the client to one other than 8090. An example would look like of correctly running a client
 locally looks like:
 ```bash
-python ./run_market_client.py --local 5001 --host localhost
+python ./run_market_client.py --port 5001 --host localhost
 ```
 If you want to run multiple CDA clients, run the same command in a different terminal and change the --local argument to a different unused port
 
