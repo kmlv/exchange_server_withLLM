@@ -5,8 +5,8 @@ import "./index.css";
 
 const Client_orders = () => {
   const [orders, setOrders] = useState([]);
-  const [balance, setBalance] = useState(0);
-  const [shares, setShares] = useState(0);
+  const [balance, setBalance] = useState(1000);
+  const [shares, setShares] = useState(100);
 
   const [order_book_sell, setSellOrders] = useState([]);
   const [order_book_buy, setBuyOrders] = useState([]);
