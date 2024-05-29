@@ -7,12 +7,27 @@ from helper_functions.client_commands import *
 from sys import exit
 
 # Start of Generated Code
-import time
+
+import random
 
 def active_strategy():
-    while account_info()["balance"] >= 100:
-        CDA_order(1, get_transaction_history()[0]["price"], 'B', 94)
-        time.sleep(1)
+    while True:
+        try:
+            current_balance = account_info()["balance"]
+            if current_balance > 100:
+                order_token = CDA_order(3, 3, 'B', random.randint(5, 10))
+                time.sleep(2.5)
+                current_time = get_current_time()
+                for token, order_info in account_info()["orders"].items():
+                    if current_time - order_info["timestamp"] > 8:
+                        CDA_order_cancel(token)
+                
+                current_stock_price = get_transaction_history()[0]["price"]
+                previous_stock_price = get_transaction_history()[1]["price"]
+                if current_stock_price > 1.23 * previous_stock_price:
+                    CDA_order(8, 10, 'S', 15)
+        except IndexError:
+            pass
 # End of Generated Code
 if __name__ == "__main__":
     active_strategy()

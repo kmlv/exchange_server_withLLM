@@ -8,6 +8,10 @@ import time
 import requests
 import json
 import toml
+import datetime
+import pytz
+
+DEFAULT_TIMEZONE = pytz.timezone('US/Pacific')
 
 with open('./market_client/config.toml', 'r') as f:
         config = toml.load(f)
@@ -45,3 +49,16 @@ def CDA_order_cancel(token: int):
     """
     print("Cancelling order: ", token, time.time(), flush=True)
     resp = requests.request("POST", f"http://{_CLIENT_ADDR}:{_CLIENT_PORT}/cancel/{token}", json=dict())
+
+def get_current_time(tz=DEFAULT_TIMEZONE):
+    now = datetime.datetime.now(tz=tz)
+    timestamp = 0  # since midnight
+    timestamp += now.hour
+    timestamp *= 60  # hours -> minutes
+    timestamp += now.minute
+    timestamp *= 60  # minutes -> seconds
+    timestamp += now.second
+    timestamp *= 10**6  # seconds -> microsecnds
+    timestamp += now.microsecond
+    timestamp *= 10**3  # microseconds -> nanoseconds
+    return timestamp

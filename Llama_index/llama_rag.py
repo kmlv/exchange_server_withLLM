@@ -140,7 +140,8 @@ class LlamaRag:
         response = self.query_engine.query("Write a Python function named active_strategy() that implements the following: \n" + prompt + 
                                 " \n\n DO NOT INCLUDE A DESCRIPTION OF THE CODE OR ANYTHING THAT IS NOT THE CODE ITSELF! \n" +
                                 " Include any necessary imports or calculations needed to accomplish the task or answer the question.\n" +
-                                "active_strategy() must not return anything.")
+                                "active_strategy() must not return anything. " +
+                                "Always check for an IndexError when indexing any list")
         # Write to a file
         self._write_script(str(response))
 
@@ -159,5 +160,6 @@ if __name__ == "__main__":
     # Configure it(i.e. retrieve data)
     llama_rag.configure_query_engine()
     # Send prompt
-    prompt = input("Enter prompt: ")
-    llama_rag.send_query(prompt)
+    while True:
+        prompt = input("Enter prompt: ")
+        llama_rag.send_query(prompt)

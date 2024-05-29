@@ -80,7 +80,7 @@ class TransactionLogger():
         transaction_data["token"] = transaction['order_token'].decode()
         transaction_data["shares"] = transaction['executed_shares']
         transaction_data["price"] = transaction['execution_price']
-        transaction_json = json.dumps({"transaction": transaction_data})
+        transaction_json = json.dumps(transaction_data)
         self.logger.info(transaction_json, extra={"timestamp" : timestamp})
 
 class ClientStateLogger():
