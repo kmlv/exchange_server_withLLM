@@ -1,6 +1,6 @@
 # Getting Started
 
-**NOTE:** Currently, the project supports Python 3.10.9: [Python 3.10.9 Release](https://www.python.org/downloads/release/python-3109/)
+**NOTE:** Currently, the project supports Python 3.10.9+: [Python 3.10.9 Release](https://www.python.org/downloads/release/python-3109/)  
 
 ## Install Dependencies
 
@@ -14,6 +14,21 @@ and a Continuous Double Auction exchange.
 ## Install Docker Desktop
 https://www.docker.com/get-started/
 After installing Docker Dekstop, make sure it is running while performing any docker commands
+
+## Build images
+The docker-compose file requires the images `project` and `app` to be built.  
+build `project` image
+```bash
+cd
+docker build -t project .
+```
+build `app` image
+```bash
+cd user-interface
+docker build -t app .
+```
+**Note**: You can skip these steps by running `build.sh`; however, it currently only works on linux
+
 ## Running docker-compose
 Make sure you're in the home directory where the docker-compose.yaml file is located.
 To start the system enter:
@@ -26,7 +41,8 @@ docker-compose down
 ```
 # Run Method \# 2: Run locally without Docker
 To run the system without docker, you must manually start the Continuous Double Auction
-and clients.
+and clients. This option is recommended to test/debug `flask_client.py` without having to deal with 
+the react frontend. Furthermore, a good way to test the behavior of a single client.
 
 ## Run the CDA Exchange
 ```bash
@@ -39,11 +55,21 @@ locally looks like:
 ```bash
 python ./run_market_client.py --port 5001 --host localhost
 ```
-If you want to run multiple CDA clients, run the same command in a different terminal and change the --local argument to a different unused port
+If you want to run multiple CDA clients, run the same command in a different terminal and change the --local argument to a different unused port.
+To see the clients, visit `http://localhost:<port>`. In this example you can reach the client's **Flask Endpoints** by visiting `http://localhost:5001`.
 
-# Run Method \# 3: Run locally in development mode
-`run_market_client.py` has an argument '--mode' or '-m' that's used to specify the mode to run a client.
-Using the term 'dev' will run a client in development mode.
+## run React frontend(optional)
+If you want to use the React frontend with this run option run:
+```bash
+npm run dev
+```
+**Note**: You must manually check if the React frontend fetches from the correct client's Flask port
+
+# Run Method \# 3: Run locally with clients in development mode
+This option is a recommended way to test/debug the `client.py`. This does not run client's Flask endpoint or the React frontend; it only
+establishes a simple client-exchange interaction. `run_market_client.py` has an argument '--mode' or '-m' that's used to specify the mode to run a client.
+Using the term 'dev' will run a client in development mode. For more information on client configuration arguments visit: `run_market_client.py`.
+Similarly, visit `run_market_server.py` for Exchange configuration information.
 ## Run the CDA Exchange
 ```bash
 python ./run_market_server.py
