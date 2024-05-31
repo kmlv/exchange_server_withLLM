@@ -1,16 +1,14 @@
 import React from "react";
-import Order_Cards from "../Orders/Order_Cards";
+import OrderCard from "../Orders/OrderCard";
 import "./index.css";
 
-{
-  /* <h2>Orders Tracker</h2>
-        {orders.map((order) => (
-          <Order_Cards
-            price={order.price}
-            quantity={order.quantity}
-            direction={order.direction}
-          /> */
-}
+/**
+ * A box component that displays a list of order cards
+ * 
+ * @param {Object[]} Orders - A list of orders cards to display
+ * @param {string} Title - The title of the box
+ * @returns {JSX.Element} - The box component
+ */
 
 const OrderBox = ({ Orders, Title }) => {
   return (
@@ -18,7 +16,7 @@ const OrderBox = ({ Orders, Title }) => {
         <h2>{Title}</h2>
       <div className="scrollable-box">
         {Orders.map((Order, index) => (
-          <Order_Cards
+          <OrderCard
             key={index}
             price={Order.price}
             quantity={Order.quantity}

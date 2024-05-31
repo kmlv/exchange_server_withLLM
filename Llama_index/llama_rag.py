@@ -36,7 +36,7 @@ execution_lines = """if __name__ == "__main__":
 
 class LlamaRag:
     def __init__(self, openai_api_key=None):
-        self._GPT_MODEL = "gpt-3.5-turbo"
+        self._GPT_MODEL = "gpt-4o"
         self._dir = "./Llama_index/"
         self._DATA_FOLDER = f"{self._dir}system_data"
         self._API_KEY = os.getenv("OPENAI_API_KEY") if not openai_api_key else openai_api_key

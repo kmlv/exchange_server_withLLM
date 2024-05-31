@@ -1,2 +1,0 @@
-{"timestamp": 27410991671000, "transaction": {"token": "8af7df3d4015463eb3c7542e55820c99", "shares": 3, "price": 6}}
-{"timestamp": 27410992697000, "transaction": {"token": "e462e19ead31477880c43d7b4be8d795", "shares": 3, "price": 6}}
