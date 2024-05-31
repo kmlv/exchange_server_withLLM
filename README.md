@@ -8,9 +8,9 @@
 pip install -r requirements.txt
 ```
 
-# Run Method \# 1: Run with Docker
+# Primary Run Method: Run with Docker
 Running the system with docker-compose will create a couple of clients
-and a Continuous Double Auction exchange.
+and a Continuous Double Auction exchange. This option is recommended to conduct experiments as it uses all components of the system.
 ## Install Docker Desktop
 https://www.docker.com/get-started/
 After installing Docker Dekstop, make sure it is running while performing any docker commands
@@ -39,10 +39,13 @@ To stop the system enter:
 ```bash
 docker-compose down
 ```
-# Run Method \# 2: Run locally without Docker
+# Development Information
+The following run methods are recommended approaches to debug/test the system in isolated modules.
+
+# Development Run Method \# 1: Run locally without Docker(Recommended to test a single client)
 To run the system without docker, you must manually start the Continuous Double Auction
 and clients. This option is recommended to test/debug `flask_client.py` without having to deal with 
-the react frontend. Furthermore, a good way to test the behavior of a single client.
+the react frontend. Additionally, it is recommended to use this for a single client due to the structure of the logging system.
 
 ## Run the CDA Exchange
 ```bash
@@ -65,7 +68,7 @@ npm run dev
 ```
 **Note**: You must manually check if the React frontend fetches from the correct client's Flask port
 
-# Run Method \# 3: Run locally with clients in development mode
+# Development Run Method \# 2: Run locally with clients in development mode
 This option is a recommended way to test/debug the `client.py`. This does not run client's Flask endpoint or the React frontend; it only
 establishes a simple client-exchange interaction. `run_market_client.py` has an argument '--mode' or '-m' that's used to specify the mode to run a client.
 Using the term 'dev' will run a client in development mode. For more information on client configuration arguments visit: `run_market_client.py`.
@@ -81,8 +84,20 @@ earlier, the CDA Exchange is running locally on localhost:8090 so we must specif
 python ./run_market_client.py -m dev --host localhost
 ```
 
+# Additional Development information
 
-# Development Information
+## Testing LlamaIndex and ChatGPT in an isolated environment
+Running the module located at `Llama_index\llama_rag.py` will allow you to experiment directly with the code-generation implementation.  
+Addtionally within `llama_rag.py` you can change the GPT-model to your liking. 
+After moving into the `Llama_index` directory you can run:
+```bash
+python llama_rag.py
+```
+You will be prompted to enter a prompt and then observe the generated code at:
+`Llama_index\active_strategy.py`
+
+
+# Files 
 
 **Folder: /Llama_index**
 
