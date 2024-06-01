@@ -11,7 +11,7 @@ Currently, two official plugins are available:
 # Deployment
 
 ## Run Method \# 1: Run with Docker
-See exchange_serve/README.md
+**See exchange_server/README.md**
 
 ## Run Method \# 2: Run locally
 ```bash
