@@ -36,7 +36,7 @@ execution_lines = """if __name__ == "__main__":
 
 class LlamaRag:
     def __init__(self, openai_api_key=None):
-        self._GPT_MODEL = "gpt-4o"
+        self._GPT_MODEL = 'gpt-3.5-turbo' #"gpt-4o"
         self._dir = "./Llama_index/"
         self._DATA_FOLDER = f"{self._dir}system_data"
         self._API_KEY = os.getenv("OPENAI_API_KEY") if not openai_api_key else openai_api_key
@@ -134,9 +134,9 @@ class LlamaRag:
         - irrelevant input handling
 
         """
-        if "stop" in prompt.lower():
-            self.stop_script()
-            return
+        # Stop previously running script
+        self.stop_script()
+
         response = self.query_engine.query("Write a Python function named active_strategy() that implements the following: \n" + prompt + 
                                 " \n\n DO NOT INCLUDE A DESCRIPTION OF THE CODE OR ANYTHING THAT IS NOT THE CODE ITSELF! \n" +
                                 " Include any necessary imports or calculations needed to accomplish the task or answer the question.\n" +
@@ -150,6 +150,7 @@ class LlamaRag:
         
 
     def stop_script(self):
+        """Stop the currently running script"""
         if self.running_script:
             self.running_script.terminate()
             self.running_script.wait()

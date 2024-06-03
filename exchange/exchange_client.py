@@ -1,5 +1,5 @@
 """
-Client for simple Ouch Server
+Client for simple Ouch Server(UNUSED BY CSE 115b/c team)
 """
 
 import sys

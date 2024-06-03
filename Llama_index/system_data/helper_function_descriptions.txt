@@ -54,4 +54,4 @@ def get_account_history():
             {"timestamp": 45873094690000, "state": {"id": "cce63b8c9a80480ebd2887effdc675b9", "balance": 996, "orders": {"c673a04553f4421e9ea9e4bdc5cca5f7": [2, 2, "B"], "3c9f1d808d5e432cbfb40013066550f3": [3, 0, "B"]}, "owned_shares": 50}},
             {"timestamp": 45877702871000, "state": {"id": "cce63b8c9a80480ebd2887effdc675b9", "balance": 1000, "orders": {"c673a04553f4421e9ea9e4bdc5cca5f7": [2, 0, "B"]}, "owned_shares": 50}}]
 
-def get_current_time is a python function that will return an integer representing the current time and can be used to compare the the timestamp of orders to calculate how long an order has been in the market.
+def get_current_time is a python function that will return an integer representing the current time in nanoseconds and can be used to compare the the timestamp of orders to calculate how long an order has been in the market.

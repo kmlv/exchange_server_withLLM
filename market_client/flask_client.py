@@ -114,7 +114,6 @@ def info():
 
 @app.route('/client_orders', methods=["GET"])
 def get_client_orders():
-    # return {"balance" : self.balance,"orders" : self.orders, "owned_shares" : self.owned_shares}
     account_data = client.account_info()
     balance = account_data.get("balance")
     shares = account_data.get("owned_shares")
@@ -123,7 +122,6 @@ def get_client_orders():
     orders_list = []
     
     for order_num, order_data in orders.items():
-        # print({"order_num": order_num, "price": order_data[0], "quantity": order_data[1], "direction": order_data[2]})
         orders_list.append({"order_num": order_num, "price": order_data["price"], "quantity": order_data["quantity"], "direction": order_data["direction"]})
 
     return jsonify({"balance": balance, "shares": shares, "orders": orders_list})
