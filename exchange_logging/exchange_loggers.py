@@ -8,6 +8,8 @@ CANCEL_LIMIT_ORDER_ACTION = "cancel_limit_order"
 class BookLogger():
     """Object used by the Exchange and Client classes that log CDABook objects as JSON dictionaries to a specified logfile.
        Each log entry has a timestamp and a snapshot of the CDABook at that timestamp, and are added to the next new line in the logfile.
+       Format of each log entry looks like this:
+         {"timestamp" : timestamp, "book" : {"bids" : bids, "asks" : asks}}
     Attributes:
         logger: logger from logging
         log_formatter: log.Formatter object for self.logger
@@ -45,6 +47,8 @@ class TransactionLogger():
     """Object used by the Exchange and Client classes that log transactions that occur in the exchange as JSON dictionaries to a specified logfile
        Each log entry has a timestamp and the transaction that occurred at that timestamp, and are added to the next new line in the logfile.
        NOTE: transactions will be logged twice - once for each order that is in the transaction.
+       Format of each log entry looks like this:
+         {"timestamp" : timestamp, "transaction" : {"token" : token, "price" : price, "shares" : shares}}
     Attributes:
         logger: logger from logging
         log_formatter: log.Formatter object for self.logger
@@ -87,6 +91,8 @@ class ClientStateLogger():
     """Object used by the Client class that logs snapshots of the Client's account information as JSON dictionaries to a specified logfile.
        Each log entry has a timestamp and the snapshot of the Client's account info at that timestamp, and are added to the next new line in the logfile.
        NOTE: Only gets used by Clients, and not the Exchange server
+       Format of each log entry looks like this:
+         {"timestamp" : timestamp, "state" : {"id" : id, "balance" : balance, "orders" : orders, "owned_shares" : owned_shares}}
     Attributes:
         logger: logger from logging
         log_formatter: log.Formatter object for self.logger
@@ -126,6 +132,8 @@ class ClientActionLogger():
        Each log entry has a timestamp and a JSON representation of the Client action at that timestamp, and are added to the next new line in the logfile.
        NOTE: Inside of "action", "action_type" should be accessed first in order to determine what action (i.e, place_order, cancel_order) the entry is. 
        "action_data" can then be accessed to retrieve specific data related to the action.
+       Format of each log entry looks like this:
+         {"timestamp" : timestamp, "action" : {"action_type" : action_type, "action_data" : action_data}}
     Attributes:
         logger: logger from logging
         log_formatter: log.Formatter object for self.logger

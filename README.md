@@ -110,6 +110,10 @@ You will be prompted to enter a prompt and then observe the generated code at:
 - Contains `client.py` which is the client class used in `flask_client.py`.
 - Contains `flask_client.py` that connects a client to the market and with generated strategies.
 
+**Folder: /exchange_logging**
+
+- Contains `exchange_loggers.py` which contains the logging classes used by the client and the exchange server in `client.py` and `exchange.py`.
+
 # Acknowledgements
 
 This project is based on the previous work from [Leeps-Lab/exchange_server](https://github.com/Leeps-Lab/exchange_server).
