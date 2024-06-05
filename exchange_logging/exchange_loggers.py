@@ -175,7 +175,6 @@ class ClientActionLogger():
             order_shares = client_action_msg['shares']
             action_data = {"token" : token_id, "direction" : direction, "price" : order_price, "shares" : order_shares}
         elif action_type == CANCEL_LIMIT_ORDER_ACTION:
-            print("CLIENT ACTION MSG: ", client_action_msg)
             token_id = client_action_msg['order_token'].decode("utf-8")
             canceled_shares = client_action_msg['shares']
             action_data = {"token" : token_id, "shares" : canceled_shares}

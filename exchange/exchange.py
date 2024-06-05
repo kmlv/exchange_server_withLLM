@@ -266,12 +266,9 @@ class Exchange:
             timestamp: time, in seconds, that order was cancelled
         """
         store_entry = self.order_store.orders.get(cancel_order_message['order_token'])
-        print(store_entry, flush=True)
         if store_entry is None:
-            print("BLALAB", flush=True)
             log.info(f"No such order to cancel, ignored. Token to cancel: {cancel_order_message['order_token']}")
         else:
-            print("CENCELING", cancel_order_message['shares'], "shares", flush=True)
             original_enter_message = store_entry.original_enter_message
             cancelled_orders, new_bbo = self.order_book.cancel_order(
                 id = cancel_order_message['order_token'],
@@ -284,7 +281,6 @@ class Exchange:
             if cancel_order_message['shares'] == 0:
                  self.order_store.orders.pop(cancel_order_message['order_token'], None)
             # Order was traded or canceled before it expired
-            print("CAN ORDERS", cancelled_orders, "BB", new_bbo)
             if not cancelled_orders and not new_bbo:
                 return
             # Create and broadcast cancel message(s)
@@ -424,7 +420,6 @@ class Exchange:
         """Send Server OuchMessage directly to sender"""
         while len(self.outgoing_messages)>0:
             m = self.outgoing_messages.popleft()
-            print(m, type(m))
             await self.order_reply(m)
 
     async def process_message(self, message):
@@ -434,7 +429,6 @@ class Exchange:
         Returns False, if unsupported message is received, otherwise, responds to corresponding
             sender.
         """
-        print(f"processing msg {message}, {type(message)}")
 
         # Perform operation associated with message type
         if message.message_type in self.handlers:
