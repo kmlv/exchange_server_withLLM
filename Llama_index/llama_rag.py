@@ -82,8 +82,12 @@ class LlamaRag:
         )
 
     def _write_script(self, code_str):
+        """Write a code string to the class file descriped by self._script
+        args:
+            code_str: a string representing python code that will be written to a file
+        
+        """
         print(code_str, flush=True)
-        """Write a code string to the class file descriped by self._script"""
         with open(self._script_path, 'r+') as file:
             # Clean file
             file.truncate()
@@ -107,7 +111,13 @@ class LlamaRag:
 
     def send_confirmation_message(self, code_chunk):
         """
-        Generates a confirmation message for the user
+        Allowing users to reject or accept the deployment
+        of the code based on the summary of the generated code.
+
+        args:
+            code_chunk: a string depicting python code
+        returns:
+            a summary of the code_chunk
         """
         if "stop" in code_chunk.lower(): # adjust error handling here for relevancy
             self.stop_script()

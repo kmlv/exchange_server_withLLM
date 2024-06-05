@@ -1,12 +1,16 @@
 # Getting Started
 
-**NOTE:** Currently, the project supports Python 3.10.9+: [Python 3.10.9 Release](https://www.python.org/downloads/release/python-3109/)  
+**NOTE:** Currently, the project supports Python 3.10.9+. It is recommended to use a virtual environment or install a python supported version [Python 3.10.9 Release](https://www.python.org/downloads/release/python-3109/)  
 
 ## Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
+
+## API key
+By default `variables.env` will try to retrieve an OPENAI_API_KEY set on the local device. If you named your key differently or do not have it
+set up as an environment variable, you can manually set the API key in `variables.env`.
 
 # Primary Run Method: Run with Docker
 Running the system with docker-compose will create a couple of clients
@@ -84,22 +88,9 @@ earlier, the CDA Exchange is running locally on localhost:8090 so we must specif
 python ./run_market_client.py -m dev --host localhost
 ```
 
-# Additional Development information
-
-## Testing LlamaIndex and ChatGPT in an isolated environment
-Running the module located at `Llama_index\llama_rag.py` will allow you to experiment directly with the code-generation implementation.  
-Addtionally within `llama_rag.py` you can change the GPT-model to your liking. 
-After moving into the `Llama_index` directory you can run:
-```bash
-python llama_rag.py
-```
-You will be prompted to enter a prompt and then observe the generated code at:
-`Llama_index\active_strategy.py`
-
-
 # Files 
 
-**Folder: /Llama_index**
+[**Folder: /Llama_index**](https://github.com/william-siegmund/exchange_server/tree/main/Llama_index/README.md)
 
 - Contains `llama_rag.py` which currently asks for prompts and generates code based on them.
 - Contains `/system_data` where we store descriptions of functions.

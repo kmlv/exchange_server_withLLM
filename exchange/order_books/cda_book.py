@@ -51,6 +51,15 @@ class CDABook:
 		'''
 		Cancel all or part of an order. Volume refers to the desired remaining shares to be executed: if it is 0, the order is
 		fully cancelled, otherwise an order of volume volume remains.
+
+		args:
+			id: a string representing the id of the order to cancel
+			price: an int representing the cost per share 
+			volume: an int representing the amount of shares 
+			buy_sell_indicator: a b-string specifying whether the order is a buy (b'B') or sell (b'S')
+		returns:
+			None if the order does not exist or the book is empty. Otherwise returns the status of the 
+			canceled order.
 		'''
 		orders = self.bids if buy_sell_indicator == b'B' else self.asks
 		if price not in orders or id not in orders[price].order_q:
@@ -64,7 +73,8 @@ class CDABook:
 		else:
 			amount_canceled=0
 			current_volume=orders[price].order_q[id]
-			if volume==0: 										#fully cancel
+			# fully cancel
+			if volume==0: 										
 				orders[price].cancel_order(id)
 				amount_canceled = current_volume
 				if orders[price].interest == 0:

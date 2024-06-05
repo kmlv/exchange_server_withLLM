@@ -15,8 +15,10 @@ from exchange.fba_exchange import FBAExchange
 from exchange.iex_exchange import IEXExchange
 
 p = configargparse.getArgParser()
+# Used to set port and bind address for exchange
 p.add('--port', default=8090)
 p.add('--host', default='0.0.0.0', help="Address to bind to / listen on")
+# Unused
 p.add('--debug', action='store_true')
 p.add('--logfile', default=None, type=str)
 p.add('--inputlogfile', default=None, type=str)
@@ -43,6 +45,8 @@ async def main():
                             order_reply = server.send_server_response,
                             message_broadcast = server.broadcast_server_message,
                             loop = loop)
+        
+    # untested by 115b/c team
     elif options.mechanism == 'fba':
         book = FBABook()
         exchange = FBAExchange(order_book = book,
@@ -51,6 +55,7 @@ async def main():
                             loop = loop, 
                             interval = options.interval)
         exchange.start()
+    # untested by 115b/c team
     elif options.mechanism == 'iex':
         book = IEXBook()
         exchange = IEXExchange(order_book = book,
