@@ -39,6 +39,11 @@ To start the system enter:
 ```bash
 docker-compose up
 ```
+This will create two clients:  
+client_0 is at http://localhost:5070  
+client_1 is at http://localhost:5071  
+To add more clients, update the docker-compose.yml by following the pattern for client_0 and client_1
+
 To stop the system enter:
 ```bash
 docker-compose down
@@ -104,6 +109,8 @@ python ./run_market_client.py -m dev --host localhost
 **Folder: /exchange_logging**
 
 - Contains `exchange_loggers.py` which contains the logging classes used by the client and the exchange server in `client.py` and `exchange.py`.
+
+# [Project Backlog](https://github.com/william-siegmund/exchange_server/blob/main/project_backlog.md)
 
 # Acknowledgements
 
